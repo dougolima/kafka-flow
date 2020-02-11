@@ -10,6 +10,7 @@ namespace Kafka.Consumers
         private readonly IMessageConsumer consumer;
         private readonly IOffsetManager offsetManager;
         private readonly ILogHandler logHandler;
+        private readonly IMiddlewareExecutor middlewareExecutor;
 
         private CancellationTokenSource cancellationTokenSource;
 
@@ -20,11 +21,13 @@ namespace Kafka.Consumers
             int bufferSize,
             IMessageConsumer consumer,
             IOffsetManager offsetManager,
-            ILogHandler logHandler)
+            ILogHandler logHandler,
+            IMiddlewareExecutor middlewareExecutor)
         {
             this.consumer = consumer;
             this.offsetManager = offsetManager;
             this.logHandler = logHandler;
+            this.middlewareExecutor = middlewareExecutor;
             this.messagesBuffer = Channel.CreateBounded<ConsumerMessage>(bufferSize);
         }
 
@@ -50,8 +53,10 @@ namespace Kafka.Consumers
 
                             try
                             {
-                                await this.consumer
-                                    .Cosume(message)
+                                var context = this.consumer.CreateMessageContext(message);
+
+                                await this.middlewareExecutor
+                                    .Execute(context, this.consumer.Cosume)
                                     .ConfigureAwait(false);
                             }
                             catch (Exception ex)

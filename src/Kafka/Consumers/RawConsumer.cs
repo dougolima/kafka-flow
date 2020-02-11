@@ -9,7 +9,6 @@ namespace Kafka.Consumers
     {
         private readonly RawConsumerConfiguration configuration;
         private readonly IServiceProvider serviceProvider;
-        private readonly MiddlewareExecutor middlewareExecutor;
 
         public RawConsumer(
             RawConsumerConfiguration configuration,
@@ -17,28 +16,33 @@ namespace Kafka.Consumers
         {
             this.configuration = configuration;
             this.serviceProvider = serviceProvider;
-
-            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.Middlewares, serviceProvider);
         }
 
-        public Task Cosume(ConsumerMessage message)
+        public MessageContext CreateMessageContext(ConsumerMessage message)
         {
-            return this.middlewareExecutor
-                .Execute(
-                    new MessageContext(message, null, null),
-                    async context =>
-                    {
-                        using (var scope = this.serviceProvider.CreateScope())
-                        {
-                            var handler =
-                                (IMessageHandler<byte[]>)scope.ServiceProvider.GetService(this.configuration
-                                    .HandlerType);
+            return new MessageContext(
+                message,
+                null,
+                null,
+                message.KafkaResult.Topic)
+            {
+                Partition = message.KafkaResult.Partition,
+                Offset = message.KafkaResult.Offset
+            };
+        }
 
-                            await handler
-                                .Handle(message.Value, new MessageContext(message, null, null))
-                                .ConfigureAwait(false);
-                        }
-                    });
+        public async Task Cosume(MessageContext context)
+        {
+            using (var scope = this.serviceProvider.CreateScope())
+            {
+                var handler =
+                    (IMessageHandler<byte[]>)scope.ServiceProvider.GetService(this.configuration
+                        .HandlerType);
+
+                await handler
+                    .Handle(context.Message.Value, context)
+                    .ConfigureAwait(false);
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Kafka
     using System.Threading.Tasks;
     using Kafka.Configuration;
 
-    public class MiddlewareExecutor
+    public class MiddlewareExecutor : IMiddlewareExecutor
     {
         private readonly IEnumerable<MiddlewareDefinition> middlewares;
         private readonly IServiceProvider serviceProvider;

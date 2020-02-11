@@ -10,7 +10,6 @@ namespace Kafka.Consumers
         private readonly TypedHandlerConsumerConfiguration configuration;
         private readonly ILogHandler logHandler;
         private readonly IServiceProvider serviceProvider;
-        private readonly MiddlewareExecutor middlewareExecutor;
 
         public TypedHandlerConsumer(
             TypedHandlerConsumerConfiguration configuration,
@@ -20,52 +19,51 @@ namespace Kafka.Consumers
             this.configuration = configuration;
             this.logHandler = logHandler;
             this.serviceProvider = serviceProvider;
-            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.Middlewares, this.serviceProvider);
         }
 
-        public Task Cosume(ConsumerMessage message)
+        public MessageContext CreateMessageContext(ConsumerMessage message)
         {
-            return this.middlewareExecutor
-                .Execute(
-                    new MessageContext(
-                        message,
-                        this.configuration.Serializer,
-                        this.configuration.Compressor),
-                    async context =>
-                    {
-                        using (var scope = this.serviceProvider.CreateScope())
-                        {
-                            var handlerType = this.configuration.HandlerMapping.GetHandlerType(context.MessageType);
+            return new MessageContext(
+                message,
+                this.configuration.Serializer,
+                this.configuration.Compressor,
+                message.KafkaResult.Topic)
+            {
+                Partition = message.KafkaResult.Partition,
+                Offset = message.KafkaResult.Offset
+            };
+        }
 
-                            if (handlerType == null)
-                            {
-                                this.logHandler.Info("No handler found for message type", message);
-                                return;
-                            }
+        public async Task Cosume(MessageContext context)
+        {
+            using (var scope = this.serviceProvider.CreateScope())
+            {
+                var handlerType = this.configuration.HandlerMapping.GetHandlerType(context.MessageType);
 
-                            dynamic messageObject;
+                if (handlerType == null)
+                {
+                    this.logHandler.Info("No handler found for message type", new { context.MessageType });
+                    return;
+                }
 
-                            if (message.Value == null)
-                            {
-                                messageObject = null;
-                            }
-                            else
-                            {
-                                var compressor = (IMessageCompressor)this.serviceProvider.GetService(context.Compressor);
-                                var serializer = (IMessageSerializer)this.serviceProvider.GetService(context.Serializer);
+                dynamic messageObject = null;
 
-                                var decompressedMessage = compressor.Decompress(message.Value);
+                if (context.Message.Value != null)
+                {
+                    var compressor = (IMessageCompressor)this.serviceProvider.GetService(context.Compressor);
+                    var serializer = (IMessageSerializer)this.serviceProvider.GetService(context.Serializer);
 
-                                messageObject = serializer.Desserialize(decompressedMessage, context.MessageType);
-                            }
+                    var decompressedMessage = compressor.Decompress(context.Message.Value);
 
-                            dynamic handler = scope.ServiceProvider.GetService(handlerType);
+                    messageObject = serializer.Desserialize(decompressedMessage, context.MessageType);
+                }
 
-                            var handleTask = (Task)handler.Handle(messageObject, context);
+                dynamic handler = scope.ServiceProvider.GetService(handlerType);
 
-                            await handleTask.ConfigureAwait(false);
-                        }
-                    });
+                var handleTask = (Task)handler.Handle(messageObject, context);
+
+                await handleTask.ConfigureAwait(false);
+            }
         }
     }
 }

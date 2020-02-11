@@ -12,7 +12,7 @@
     {
         private readonly ConsumerConfiguration configuration;
         private readonly ILogHandler logHandler;
-        private readonly IWorkerPool workerPool;
+        private readonly IConsumerWorkerPool consumerWorkerPool;
 
         private readonly ConsumerBuilder<byte[], byte[]> consumerBuilder;
 
@@ -22,11 +22,11 @@
         public BackgroundConsumer(
             ConsumerConfiguration configuration,
             ILogHandler logHandler,
-            IWorkerPool workerPool)
+            IConsumerWorkerPool consumerWorkerPool)
         {
             this.configuration = configuration;
             this.logHandler = logHandler;
-            this.workerPool = workerPool;
+            this.consumerWorkerPool = consumerWorkerPool;
 
             var kafkaConfig = configuration.GetKafkaConfig();
 
@@ -48,7 +48,7 @@
                     Partitions = partitions.Select(x => x.Partition.Value)
                 });
 
-            this.workerPool.StopAsync().GetAwaiter().GetResult();
+            this.consumerWorkerPool.StopAsync().GetAwaiter().GetResult();
         }
 
         private void OnPartitionAssigned(IConsumer<byte[], byte[]> consumer, List<TopicPartition> partitions)
@@ -63,7 +63,7 @@
                     Partitions = partitions.Select(x => x.Partition.Value)
                 });
 
-            this.workerPool.StartAsync(consumer, partitions).GetAwaiter().GetResult();
+            this.consumerWorkerPool.StartAsync(consumer, partitions).GetAwaiter().GetResult();
         }
 
         public Task StartAsync()
@@ -81,7 +81,7 @@
 
         public async Task StopAsync()
         {
-            await this.workerPool.StopAsync().ConfigureAwait(false);
+            await this.consumerWorkerPool.StopAsync().ConfigureAwait(false);
 
             this.cancellationTokenSource.Cancel();
             await this.backgroundTask.ConfigureAwait(false);
@@ -103,7 +103,7 @@
                             {
                                 message = new ConsumerMessage(consumer.Consume(this.cancellationTokenSource.Token));
 
-                                await this.workerPool
+                                await this.consumerWorkerPool
                                     .EnqueueAsync(message)
                                     .ConfigureAwait(false);
                             }

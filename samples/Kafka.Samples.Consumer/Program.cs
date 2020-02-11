@@ -1,6 +1,7 @@
 ﻿namespace Kafka.Samples.Consumer
 {
     using System.Threading;
+    using System.Threading.Tasks;
     using Kafka.Extensions;
     using Kafka.Samples.Common;
     using Kafka.Serializer.ProtoBuf;
@@ -8,7 +9,7 @@
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
 
@@ -43,11 +44,11 @@
 
             var bus = provider.UseKafka();
 
-            bus.StartAsync().GetAwaiter().GetResult();
+            await bus.StartAsync();
 
             while (true)
             {
-                Thread.Sleep(10000);
+                await Task.Delay(10000);
             }
         }
     }

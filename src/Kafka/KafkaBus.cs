@@ -34,15 +34,16 @@ namespace Kafka
             {
                 foreach (var consumerConfiguration in cluster.Consumers)
                 {
-                    var workerPool = new WorkerPool(
+                    var consumerWorkerPool = new ConsumerWorkerPool(
                         consumerConfiguration,
                         this.CreateConsumer(consumerConfiguration),
-                        this.logHandler);
+                        this.logHandler,
+                        new MiddlewareExecutor(consumerConfiguration.Middlewares, this.serviceProvider));
 
                     var consumer = new BackgroundConsumer(
                         consumerConfiguration,
                         this.logHandler,
-                        workerPool);
+                        consumerWorkerPool);
 
                     this.consumers.Add(consumer);
 

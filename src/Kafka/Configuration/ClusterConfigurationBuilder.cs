@@ -112,5 +112,7 @@ namespace Kafka.Configuration
 
             return this;
         }
+
+        //todo: add auth
     }
 }

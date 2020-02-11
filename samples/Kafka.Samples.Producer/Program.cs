@@ -1,6 +1,7 @@
 ﻿namespace Kafka.Samples.Producer
 {
     using System;
+    using Confluent.Kafka;
     using Kafka.Extensions;
     using Kafka.Samples.Common;
     using Kafka.Serializer.ProtoBuf;
@@ -20,7 +21,7 @@
                             .WithBrokers(new[] { "localhost:9092" })
                             .AddProducer<PrintConsoleProducer>(
                                 producer => producer
-                                    .Topic("test-topic")
+                                    .DefaultTopic("test-topic")
                                     .UseSerializer<ProtobufMessageSerializer>()
                                     .WithNoCompressor()
                                     .UseMiddleware<MessageTypeNameHeaderMiddleware>()

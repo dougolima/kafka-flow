@@ -26,7 +26,7 @@ namespace Kafka.Configuration.Producers
             this.services = services;
         }
 
-        public ProducerConfigurationBuilder<TProducer> Topic(string topic)
+        public ProducerConfigurationBuilder<TProducer> DefaultTopic(string topic)
         {
             this.topic = topic;
             return this;

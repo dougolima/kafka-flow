@@ -34,7 +34,7 @@ namespace Kafka.Producers
             string topic,
             string partitionKey,
             object message,
-            Dictionary<string,byte[]> headers = null)
+            Dictionary<string, byte[]> headers = null)
         {
             var serializedMessage = this.serializer.Serialize(message);
             var compressedMessage = this.compressor.Compress(serializedMessage);
@@ -44,14 +44,16 @@ namespace Kafka.Producers
                 new MessageContext(
                     new ProducerMessage(messageKey, compressedMessage, headers),
                     this.configuration.Serializer,
-                    this.configuration.Compressor)
+                    this.configuration.Compressor,
+                    topic)
                 {
                     MessageType = message.GetType()
                 },
-                context =>
-                    this.producer
+                async context =>
+                {
+                    var result = await this.producer
                         .ProduceAsync(
-                            topic,
+                            context.Topic,
                             new Message<byte[], byte[]>
                             {
                                 Key = context.Message.Key,
@@ -59,13 +61,18 @@ namespace Kafka.Producers
                                 Headers = context.Message.Headers.ToKafkaHeaders(),
                                 Timestamp = Timestamp.Default
                             })
-                );
+                        .ConfigureAwait(false);
+
+                    context.Offset = result.Offset;
+                    context.Partition = result.Partition;
+                }
+            );
         }
 
         public Task ProduceAsync(
             string partitionKey,
             object message,
-            Dictionary<string,byte[]> headers = null)
+            Dictionary<string, byte[]> headers = null)
         {
             return this.ProduceAsync(
                 this.configuration.Topic,
