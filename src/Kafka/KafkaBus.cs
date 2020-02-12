@@ -34,7 +34,7 @@ namespace Kafka
             {
                 foreach (var consumerConfiguration in cluster.Consumers)
                 {
-                    var consumerWorkerPool = new ConsumerWorkerPool(
+                    var consumerWorkerPool = new UnlockedConsumerWorkerPool(
                         consumerConfiguration,
                         this.CreateConsumer(consumerConfiguration),
                         this.logHandler,

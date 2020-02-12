@@ -1,6 +1,5 @@
 ﻿namespace Kafka.Samples.Consumer
 {
-    using System.Threading;
     using System.Threading.Tasks;
     using Kafka.Extensions;
     using Kafka.Samples.Common;
@@ -22,20 +21,32 @@
                             .AddRawConsumer<RawConsumerHandler>(
                                 consumer => consumer
                                     .Topic("test-topic")
-                                    .WithGroupId("test-group-raw")
+                                    .WithGroupId("raw-handler")
                                     .WithMaxWorkersCount(10)
                                     .WithBufferSize(100)
                                 )
                             .AddTypedHandlerConsumer(
                                 consumer => consumer
                                     .Topic("test-topic")
-                                    .WithGroupId("test-group")
-                                    .WithBufferSize(1000)
+                                    .WithGroupId("print-console-handler")
+                                    .WithBufferSize(100)
                                     .UseMiddleware<MessageTypeResolverMiddleware>()
                                     .UseSerializer<ProtobufMessageSerializer>()
                                     .WithNoCompressor()
-                                    .ScanHandlersFromAssemblyOf<PrintConsoleHandler>()
-                                    .WithMaxWorkersCount(30)
+                                    .AddHandlers(new[] { typeof(PrintConsoleHandler) })
+                                    .WithMaxWorkersCount(10)
+                            )
+                            .AddTypedHandlerConsumer(
+                                consumer => consumer
+                                    .Topic("test-topic")
+                                    .WithGroupId("delay-handler")
+                                    .WithBufferSize(100)
+                                    .UseMiddleware<MessageTypeResolverMiddleware>()
+                                    .UseSerializer<ProtobufMessageSerializer>()
+                                    .WithNoCompressor()
+                                    .AddHandlers(new[] { typeof(DelayHandler) })
+                                    .WithMaxWorkersCount(10)
+                                    .WithAutoCommitIntervalMs(1000)
                             )
                     )
             );

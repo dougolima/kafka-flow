@@ -118,6 +118,8 @@
                                     message);
                             }
                         }
+
+                        consumer.Close();
                     }
                 },
                 CancellationToken.None,
