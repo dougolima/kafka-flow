@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Farfetch.Framework.KafkaSimplified.Compressor.Gzip</id>
+    <version>$version$</version>
+    <title>Farfetch Framework Kafka Simplified Compressor Gzip</title>
+    <authors>Farfetch - Enabling Team</authors>
+    <owners>Farfetch</owners>
+    <licenseUrl>http://www.farfetch.com</licenseUrl>
+    <projectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Farfetch Framework Kafka Simplified Compressor Gzip</description>
+    <releaseNotes />
+    <dependencies>
+      <dependency id="Farfetch.Framework.KafkaSimplified" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\**\Kafka.Compressor.Gzip.dll" target="lib" />
+  </files>
+</package>

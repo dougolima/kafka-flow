@@ -9,4 +9,10 @@
       <ProjectReference Include="..\Kafka\Kafka.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Farfetch.Framework.KafkaSimplifier.Compressor.Gzip.nuspec">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

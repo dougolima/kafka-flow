@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Farfetch.Framework.KafkaSimplified.Serializer.Json</id>
+    <version>$version$</version>
+    <title>Farfetch Framework Kafka Simplified Serializer Json</title>
+    <authors>Farfetch - Enabling Team</authors>
+    <owners>Farfetch</owners>
+    <licenseUrl>http://www.farfetch.com</licenseUrl>
+    <projectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Farfetch Framework Kafka Simplified Serializer Json</description>
+    <releaseNotes />
+    <dependencies>
+      <dependency id="Farfetch.Framework.KafkaSimplified" />
+      <dependency id="System.Text.Json" version="4.7"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\**\Kafka.Serializer.Json.dll" target="lib" />
+  </files>
+</package>

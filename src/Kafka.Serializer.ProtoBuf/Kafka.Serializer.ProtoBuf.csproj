@@ -13,4 +13,10 @@
       <PackageReference Include="protobuf-net" Version="2.4.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Farfetch.Framework.KafkaSimplifier.Serializer.Protobuf.nuspec">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

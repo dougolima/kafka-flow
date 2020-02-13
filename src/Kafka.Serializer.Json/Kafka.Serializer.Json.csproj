@@ -13,4 +13,10 @@
       <ProjectReference Include="..\Kafka\Kafka.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Farfetch.Framework.KafkaSimplifier.Serializer.json.nuspec">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

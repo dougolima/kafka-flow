@@ -16,4 +16,10 @@
       <Folder Include="Consumers\Workers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Farfetch.Framework.KafkaSimplified.nuspec">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
