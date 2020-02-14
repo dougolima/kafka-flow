@@ -6,7 +6,7 @@
 
     public class DelayHandler : IMessageHandler<TestMessage>
     {
-        public Task Handle(TestMessage message, MessageContext context)
+        public Task Handle(MessageContext context, TestMessage message)
         {
             return Task.Delay(10);
         }

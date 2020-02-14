@@ -7,7 +7,7 @@
 
     public class PrintConsoleHandler : IMessageHandler<TestMessage>
     {
-        public Task Handle(TestMessage message, MessageContext context)
+        public Task Handle(MessageContext context, TestMessage message)
         {
             Console.WriteLine(message.Text);
             return Task.CompletedTask;

@@ -40,7 +40,7 @@ namespace Kafka.Consumers
                         .HandlerType);
 
                 await handler
-                    .Handle(context.Message.Value, context)
+                    .Handle(context, context.Message.Value)
                     .ConfigureAwait(false);
             }
         }

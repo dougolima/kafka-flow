@@ -7,7 +7,7 @@
 
     internal class RawConsumerHandler : IMessageHandler<byte[]>
     {
-        public Task Handle(byte[] message, MessageContext context)
+        public Task Handle(MessageContext context, byte[] message)
         {
             Console.WriteLine("Hit raw consumer. Partition Key: {0}", Encoding.UTF8.GetString(context.Message.Key));
             return Task.CompletedTask;

@@ -4,7 +4,7 @@ namespace Kafka.Consumers
 
     public interface IMessageHandler<in TMessage> : IMessageHandler
     {
-        Task Handle(TMessage message, MessageContext context);
+        Task Handle(MessageContext context, TMessage message);
     }
 
     public interface IMessageHandler

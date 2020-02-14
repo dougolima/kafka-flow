@@ -60,7 +60,7 @@ namespace Kafka.Consumers
 
                 dynamic handler = scope.ServiceProvider.GetService(handlerType);
 
-                var handleTask = (Task)handler.Handle(messageObject, context);
+                var handleTask = (Task)handler.Handle(context, messageObject);
 
                 await handleTask.ConfigureAwait(false);
             }
