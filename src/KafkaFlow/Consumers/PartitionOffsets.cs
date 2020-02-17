@@ -33,18 +33,10 @@ namespace KafkaFlow.Consumers
                 return false;
             }
 
-            this.LastOffset = newOffset;
-
-            var enumerator = this.pendingOffsets.GetEnumerator();
-
-            while (enumerator.MoveNext())
+            do
             {
-                if (this.LastOffset + 1 == enumerator.Current)
-                {
-                    this.pendingOffsets.Remove(++this.LastOffset);
-                    enumerator = this.pendingOffsets.GetEnumerator();
-                }
-            }
+                ++this.LastOffset;
+            } while (this.pendingOffsets.Remove(this.LastOffset + 1));
 
             return true;
         }
