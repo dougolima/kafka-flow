@@ -10,7 +10,7 @@ namespace KafkaFlow.Configuration
     {
         private readonly IServiceCollection services;
         private readonly List<ClusterConfigurationBuilder> clusters = new List<ClusterConfigurationBuilder>();
-        private Type logHandler;
+        private Type logHandler = typeof(NullLogHandler);
 
         public KafkaConfigurationBuilder(IServiceCollection services)
         {
