@@ -3,12 +3,12 @@
   <metadata>
     <id>KafkaFlow.Serializer.Json</id>
     <version>$version$</version>
-    <title>Kafka Flow</title>
+    <title>KafkaFlow.Serializer.Json</title>
     <authors>Farfetch - Enabling Team</authors>
     <owners>Farfetch</owners>
     <projectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Kafka Flow</description>
+    <description>KafkaFlow.Serializer.Json</description>
     <releaseNotes />
     <dependencies>
       <dependency id="Farfetch.Framework.KafkaSimplified" />

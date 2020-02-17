@@ -3,12 +3,12 @@
   <metadata>
     <id>KafkaFlow.Compressor.Gzip</id>
     <version>$version$</version>
-    <title>Kafka Flow</title>
+    <title>KafkaFlow.Compressor.Gzip</title>
     <authors>Farfetch - Enabling Team</authors>
     <owners>Farfetch</owners>
     <projectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Kafka Flow</description>
+    <description>KafkaFlow.Compressor.Gzip</description>
     <releaseNotes />
     <dependencies>
       <dependency id="Farfetch.Framework.KafkaSimplified" />
