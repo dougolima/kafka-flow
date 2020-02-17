@@ -70,11 +70,7 @@
         {
             this.cancellationTokenSource = new CancellationTokenSource();
 
-            var consumer = this.consumerBuilder.Build();
-
-            consumer.Subscribe(this.configuration.Topic);
-
-            this.CreateBackgroundTask(consumer);
+            this.CreateBackgroundTask();
 
             return Task.CompletedTask;
         }
@@ -88,8 +84,12 @@
             this.backgroundTask.Dispose();
         }
 
-        private void CreateBackgroundTask(IConsumer<byte[], byte[]> consumer)
+        private void CreateBackgroundTask()
         {
+            var consumer = this.consumerBuilder.Build();
+
+            consumer.Subscribe(this.configuration.Topic);
+
             this.backgroundTask = Task.Factory.StartNew(
                 async () =>
                 {
@@ -110,11 +110,22 @@
                             catch (OperationCanceledException)
                             {
                             }
-                            catch (Exception e)
+                            catch (KafkaException ex) when (ex.Error.IsFatal)
+                            {
+                                this.logHandler.Error(
+                                    "Kafka fatal error occurred. Trying to restart in 5 seconds",
+                                    ex,
+                                    message);
+
+                                _ = Task.Delay(5000).ContinueWith(t => this.CreateBackgroundTask());
+
+                                break;
+                            }
+                            catch (Exception ex)
                             {
                                 this.logHandler.Error(
                                     "Error consuming message from Kafka",
-                                    e,
+                                    ex,
                                     message);
                             }
                         }
