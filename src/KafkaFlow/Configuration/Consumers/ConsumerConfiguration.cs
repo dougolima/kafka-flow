@@ -10,7 +10,7 @@ namespace KafkaFlow.Configuration.Consumers
             ClusterConfiguration cluster,
             string topic,
             string groupId,
-            int maxWorkersCount,
+            int workersCount,
             int bufferSize,
             IEnumerable<MiddlewareDefinition> middlewares)
         {
@@ -18,9 +18,9 @@ namespace KafkaFlow.Configuration.Consumers
             this.Middlewares = middlewares;
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
-            this.MaxWorkersCount = maxWorkersCount > 0 ?
-                maxWorkersCount :
-                throw new ArgumentOutOfRangeException(nameof(maxWorkersCount), maxWorkersCount, "The value must be greater than 0");
+            this.WorkersCount = workersCount > 0 ?
+                workersCount :
+                throw new ArgumentOutOfRangeException(nameof(workersCount), workersCount, "The value must be greater than 0");
             this.BufferSize = bufferSize > 0 ?
                 bufferSize :
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), bufferSize, "The value must be greater than 0");
@@ -31,7 +31,7 @@ namespace KafkaFlow.Configuration.Consumers
             baseConfiguration.Cluster,
             baseConfiguration.Topic,
             baseConfiguration.GroupId,
-            baseConfiguration.MaxWorkersCount,
+            baseConfiguration.WorkersCount,
             baseConfiguration.BufferSize,
             baseConfiguration.Middlewares)
         {
@@ -46,7 +46,7 @@ namespace KafkaFlow.Configuration.Consumers
 
         public string Topic { get; }
 
-        public int MaxWorkersCount { get; }
+        public int WorkersCount { get; }
 
         public string GroupId { get; }
 

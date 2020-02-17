@@ -22,7 +22,7 @@
                                 consumer => consumer
                                     .Topic("test-topic")
                                     .WithGroupId("raw-handler")
-                                    .WithMaxWorkersCount(10)
+                                    .WithWorkersCount(10)
                                     .WithBufferSize(100)
                                 )
                             .AddTypedHandlerConsumer(
@@ -34,7 +34,7 @@
                                     .UseSerializer<ProtobufMessageSerializer>()
                                     .WithNoCompressor()
                                     .AddHandlers(new[] { typeof(PrintConsoleHandler) })
-                                    .WithMaxWorkersCount(10)
+                                    .WithWorkersCount(10)
                             )
                             .AddTypedHandlerConsumer(
                                 consumer => consumer
@@ -45,7 +45,7 @@
                                     .UseSerializer<ProtobufMessageSerializer>()
                                     .WithNoCompressor()
                                     .AddHandlers(new[] { typeof(DelayHandler) })
-                                    .WithMaxWorkersCount(10)
+                                    .WithWorkersCount(10)
                                     .WithAutoCommitIntervalMs(1000)
                             )
                     )

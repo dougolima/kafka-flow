@@ -24,7 +24,7 @@ namespace KafkaFlow.Consumers
         {
             if (this.LastOffset == Offset.Unset)
             {
-                throw new InvalidOperationException($"Initialize {nameof(this.LastOffset)} first");
+                throw new InvalidOperationException($"Call '{nameof(this.InitializeLastOffset)}()' first");
             }
 
             if (newOffset != this.LastOffset + 1)

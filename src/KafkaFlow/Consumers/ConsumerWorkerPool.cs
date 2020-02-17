@@ -33,7 +33,7 @@ namespace KafkaFlow.Consumers
             IConsumer<byte[], byte[]> consumer,
             IReadOnlyCollection<TopicPartition> partitions)
         {
-            var workersCount = Math.Min(this.configuration.MaxWorkersCount, partitions.Count);
+            var workersCount = Math.Min(this.configuration.WorkersCount, partitions.Count);
 
             for (var i = 0; i < workersCount; i++)
             {

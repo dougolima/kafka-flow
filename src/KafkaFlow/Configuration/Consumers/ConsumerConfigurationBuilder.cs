@@ -18,7 +18,7 @@ namespace KafkaFlow.Configuration.Consumers
         private AutoOffsetReset? autoOffsetReset;
         private int? autoCommitIntervalMs;
         private int? maxPollIntervalMs;
-        private int maxWorkersCount;
+        private int workersCount;
         private int bufferSize;
 
         private readonly List<MiddlewareDefinition> middlewares = new List<MiddlewareDefinition>();
@@ -58,9 +58,9 @@ namespace KafkaFlow.Configuration.Consumers
             return (TBuilder)this;
         }
 
-        public TBuilder WithMaxWorkersCount(int maxWorkersCount)
+        public TBuilder WithWorkersCount(int maxWorkersCount)
         {
-            this.maxWorkersCount = maxWorkersCount;
+            this.workersCount = maxWorkersCount;
             return (TBuilder)this;
         }
 
@@ -94,7 +94,7 @@ namespace KafkaFlow.Configuration.Consumers
                 clusterConfiguration,
                 this.topic,
                 this.groupId,
-                this.maxWorkersCount,
+                this.workersCount,
                 this.bufferSize,
                 combinedMiddlewares)
             {

@@ -35,7 +35,7 @@ namespace KafkaFlow.Consumers
             IReadOnlyCollection<TopicPartition> partitions)
         {
             this.offsetManager = new UnlockedOffsetManager(consumer, partitions);
-            var workersCount = this.configuration.MaxWorkersCount;
+            var workersCount = this.configuration.WorkersCount;
 
             for (var i = 0; i < workersCount; i++)
             {
