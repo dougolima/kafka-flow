@@ -3,6 +3,7 @@ namespace KafkaFlow
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
     using KafkaFlow.Configuration.Consumers;
@@ -28,7 +29,7 @@ namespace KafkaFlow
 
         public KafkaConfiguration Configuration { get; }
 
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken stopCancellationToken = default)
         {
             foreach (var cluster in this.Configuration.Clusters)
             {
@@ -48,7 +49,7 @@ namespace KafkaFlow
 
                     this.consumers.Add(consumer);
 
-                    await consumer.StartAsync().ConfigureAwait(false);
+                    await consumer.StartAsync(stopCancellationToken).ConfigureAwait(false);
                 }
             }
         }

@@ -63,12 +63,16 @@
                     Partitions = partitions.Select(x => x.Partition.Value)
                 });
 
-            this.consumerWorkerPool.StartAsync(consumer, partitions).GetAwaiter().GetResult();
+            this.consumerWorkerPool
+                .StartAsync(consumer, partitions, this.cancellationTokenSource.Token)
+                .GetAwaiter()
+                .GetResult();
         }
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken stopCancellationToken = default)
         {
-            this.cancellationTokenSource = new CancellationTokenSource();
+            this.cancellationTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(stopCancellationToken);
 
             this.CreateBackgroundTask();
 
@@ -79,7 +83,11 @@
         {
             await this.consumerWorkerPool.StopAsync().ConfigureAwait(false);
 
-            this.cancellationTokenSource.Cancel();
+            if (this.cancellationTokenSource.Token.CanBeCanceled)
+            {
+                this.cancellationTokenSource.Cancel();
+            }
+
             await this.backgroundTask.ConfigureAwait(false);
             this.backgroundTask.Dispose();
         }

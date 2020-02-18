@@ -1,6 +1,7 @@
 namespace KafkaFlow.Consumers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Confluent.Kafka;
 
@@ -8,7 +9,8 @@ namespace KafkaFlow.Consumers
     {
         Task StartAsync(
             IConsumer<byte[], byte[]> consumer,
-            IReadOnlyCollection<TopicPartition> partitions);
+            IReadOnlyCollection<TopicPartition> partitions,
+            CancellationToken stopCancellationToken = default);
 
         Task StopAsync();
 

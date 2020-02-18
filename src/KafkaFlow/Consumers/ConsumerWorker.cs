@@ -44,9 +44,10 @@ namespace KafkaFlow.Consumers
             return this.messagesBuffer.Writer.WriteAsync(message);
         }
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken stopCancellationToken = default)
         {
-            this.cancellationTokenSource = new CancellationTokenSource();
+            this.cancellationTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(stopCancellationToken);
 
             this.backgroundTask = Task.Factory.StartNew(
                 async () =>
@@ -98,7 +99,11 @@ namespace KafkaFlow.Consumers
 
         public async Task StopAsync()
         {
-            this.cancellationTokenSource.Cancel();
+            if (this.cancellationTokenSource.Token.CanBeCanceled)
+            {
+                this.cancellationTokenSource.Cancel();
+            }
+
             await this.backgroundTask.ConfigureAwait(false);
             this.backgroundTask.Dispose();
         }

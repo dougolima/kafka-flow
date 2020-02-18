@@ -2,6 +2,7 @@ namespace KafkaFlow.Consumers
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Confluent.Kafka;
     using KafkaFlow.Configuration.Consumers;
@@ -37,7 +38,8 @@ namespace KafkaFlow.Consumers
 
         public async Task StartAsync(
             IConsumer<byte[], byte[]> consumer,
-            IReadOnlyCollection<TopicPartition> partitions)
+            IReadOnlyCollection<TopicPartition> partitions,
+            CancellationToken stopCancellationToken = default)
         {
             this.offsetManager = new OffsetManager(consumer, partitions);
             var workersCount = this.configuration.WorkersCount;
@@ -55,7 +57,7 @@ namespace KafkaFlow.Consumers
 
                     this.workers.Add(worker);
 
-                    return worker.StartAsync();
+                    return worker.StartAsync(stopCancellationToken);
                 }))
                 .ConfigureAwait(false);
 

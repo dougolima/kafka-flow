@@ -1,5 +1,6 @@
 namespace KafkaFlow
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
 
@@ -7,7 +8,7 @@ namespace KafkaFlow
     {
         KafkaConfiguration Configuration { get; }
 
-        Task StartAsync();
+        Task StartAsync(CancellationToken stopCancellationToken = default);
 
         Task StopAsync();
     }
