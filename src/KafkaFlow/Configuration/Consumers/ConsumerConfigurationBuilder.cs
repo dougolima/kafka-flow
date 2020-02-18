@@ -20,6 +20,7 @@ namespace KafkaFlow.Configuration.Consumers
         private int? maxPollIntervalMs;
         private int workersCount;
         private int bufferSize;
+        private bool? autoStoreOffsets;
 
         private readonly List<MiddlewareDefinition> middlewares = new List<MiddlewareDefinition>();
 
@@ -63,10 +64,29 @@ namespace KafkaFlow.Configuration.Consumers
             this.workersCount = maxWorkersCount;
             return (TBuilder)this;
         }
-
         public TBuilder WithBufferSize(int size)
         {
             this.bufferSize = size;
+            return (TBuilder)this;
+        }
+
+        /// <summary>
+        /// Offsets will be stored after the execution of the handler and middlewares automatically, this is the default behaviour
+        /// </summary>
+        /// <returns></returns>
+        public TBuilder WithAutoStoreOffsets()
+        {
+            this.autoStoreOffsets = true;
+            return (TBuilder)this;
+        }
+
+        /// <summary>
+        /// The Handler or Middleware should call the <see cref="MessageContext.StoreOffset()"/> manually
+        /// </summary>
+        /// <returns></returns>
+        public TBuilder WithManualStoreOffsets()
+        {
+            this.autoStoreOffsets = false;
             return (TBuilder)this;
         }
 
@@ -102,6 +122,8 @@ namespace KafkaFlow.Configuration.Consumers
                 AutoCommitIntervalMs = this.autoCommitIntervalMs,
                 MaxPollIntervalMs = this.maxPollIntervalMs
             };
+
+            configuration.AutoStoreOffsets = this.autoStoreOffsets ?? configuration.AutoStoreOffsets;
 
             this.services.AddMiddlewares(configuration.Middlewares);
 

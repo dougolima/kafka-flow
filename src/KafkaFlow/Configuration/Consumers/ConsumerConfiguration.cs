@@ -38,6 +38,7 @@ namespace KafkaFlow.Configuration.Consumers
             this.MaxPollIntervalMs = baseConfiguration.MaxPollIntervalMs;
             this.AutoCommitIntervalMs = baseConfiguration.AutoCommitIntervalMs;
             this.AutoOffsetReset = baseConfiguration.AutoOffsetReset;
+            this.AutoStoreOffsets = baseConfiguration.AutoStoreOffsets;
         }
 
         public ClusterConfiguration Cluster { get; }
@@ -57,6 +58,8 @@ namespace KafkaFlow.Configuration.Consumers
         public int? AutoCommitIntervalMs { get; set; }
 
         public int? MaxPollIntervalMs { get; set; }
+
+        public bool AutoStoreOffsets { get; set; } = true;
 
         public ConsumerConfig GetKafkaConfig()
         {

@@ -7,9 +7,16 @@
 
     public class DelayHandler : IMessageHandler<TestMessage>
     {
-        public Task Handle(MessageContext context, TestMessage message)
+        public async Task Handle(MessageContext context, TestMessage message)
         {
-            return Task.Delay(10);
+            try
+            {
+                await Task.Delay(10);
+            }
+            finally
+            {
+                context.StoreOffset();
+            }
         }
     }
 }

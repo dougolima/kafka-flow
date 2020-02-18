@@ -46,6 +46,7 @@
                                     .WithNoCompressor()
                                     .AddHandlers(new[] { typeof(DelayHandler) })
                                     .WithWorkersCount(10)
+                                    .WithManualStoreOffsets()
                                     .WithAutoCommitIntervalMs(1000)
                             )
                     )

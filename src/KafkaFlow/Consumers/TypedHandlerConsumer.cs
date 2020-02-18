@@ -21,17 +21,13 @@ namespace KafkaFlow.Consumers
             this.serviceProvider = serviceProvider;
         }
 
-        public MessageContext CreateMessageContext(ConsumerMessage message)
+        public MessageContext CreateMessageContext(ConsumerMessage message, IOffsetManager offsetManager)
         {
             return new MessageContext(
                 message,
+                offsetManager,
                 this.configuration.Serializer,
-                this.configuration.Compressor,
-                message.KafkaResult.Topic)
-            {
-                Partition = message.KafkaResult.Partition,
-                Offset = message.KafkaResult.Offset
-            };
+                this.configuration.Compressor);
         }
 
         public async Task Cosume(MessageContext context)

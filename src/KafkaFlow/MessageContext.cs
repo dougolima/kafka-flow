@@ -2,17 +2,24 @@ namespace KafkaFlow
 {
     using System;
     using Confluent.Kafka;
+    using KafkaFlow.Consumers;
 
     public class MessageContext
     {
+        private readonly IOffsetManager offsetManager;
+        private readonly ConsumeResult<byte[], byte[]> kafkaResult;
+
         public MessageContext(
             ConsumerMessage message,
+            IOffsetManager offsetManager,
             Type serializer,
             Type compressor)
         {
+            this.offsetManager = offsetManager;
             this.Message = message;
             this.Serializer = serializer;
             this.Compressor = compressor;
+            this.kafkaResult = message.KafkaResult;
             this.Topic = message.KafkaResult.Topic;
             this.Partition = message.KafkaResult.Partition;
             this.Offset = message.KafkaResult.Offset;
@@ -43,5 +50,18 @@ namespace KafkaFlow
         public Partition? Partition { get; set; }
 
         public Offset? Offset { get; set; }
+
+        /// <summary>
+        /// Store the message offset when manual store option is used
+        /// </summary>
+        public void StoreOffset()
+        {
+            if (this.offsetManager == null)
+            {
+                throw new InvalidOperationException("You can only store offsets in consumers");
+            }
+
+            this.offsetManager.StoreOffset(this.kafkaResult.TopicPartitionOffset);
+        }
     }
 }

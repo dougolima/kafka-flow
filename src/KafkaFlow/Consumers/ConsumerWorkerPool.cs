@@ -38,7 +38,7 @@ namespace KafkaFlow.Consumers
             for (var i = 0; i < workersCount; i++)
             {
                 var worker = new ConsumerWorker(
-                    this.configuration.BufferSize,
+                    this.configuration,
                     this.messageConsumer,
                     new DefaultOffsetManager(consumer),
                     this.logHandler,

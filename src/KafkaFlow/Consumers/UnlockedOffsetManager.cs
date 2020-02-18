@@ -22,7 +22,10 @@ namespace KafkaFlow.Consumers
 
         public void StoreOffset(TopicPartitionOffset offset)
         {
-            var offsets = this.partitionsOffsets[offset.Partition.Value];
+            if (!this.partitionsOffsets.TryGetValue(offset.Partition.Value, out var offsets))
+            {
+                return;
+            }
 
             lock (offsets)
             {
@@ -38,9 +41,9 @@ namespace KafkaFlow.Consumers
 
         public void InitializeOffsetIfNeeded(ConsumerMessage message)
         {
-            var offsets = this.partitionsOffsets[message.KafkaResult.Partition.Value];
-
-            if (offsets.LastOffset == Offset.Unset)
+            if (
+                this.partitionsOffsets.TryGetValue(message.KafkaResult.Partition.Value, out var offsets) &&
+                offsets.LastOffset == Offset.Unset)
             {
                 offsets.InitializeLastOffset(message.KafkaResult.Offset.Value - 1);
             }

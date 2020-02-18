@@ -4,9 +4,11 @@ namespace KafkaFlow.Consumers
     using System.Threading;
     using System.Threading.Channels;
     using System.Threading.Tasks;
+    using KafkaFlow.Configuration.Consumers;
 
     public class ConsumerWorker : IConsumerWorker
     {
+        private readonly ConsumerConfiguration configuration;
         private readonly IMessageConsumer consumer;
         private readonly IOffsetManager offsetManager;
         private readonly ILogHandler logHandler;
@@ -18,17 +20,18 @@ namespace KafkaFlow.Consumers
         private Task backgroundTask;
 
         public ConsumerWorker(
-            int bufferSize,
+            ConsumerConfiguration configuration,
             IMessageConsumer consumer,
             IOffsetManager offsetManager,
             ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor)
         {
+            this.configuration = configuration;
             this.consumer = consumer;
             this.offsetManager = offsetManager;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
-            this.messagesBuffer = Channel.CreateBounded<ConsumerMessage>(bufferSize);
+            this.messagesBuffer = Channel.CreateBounded<ConsumerMessage>(configuration.BufferSize);
         }
 
         public ValueTask EnqueueAsync(ConsumerMessage message)
@@ -53,7 +56,7 @@ namespace KafkaFlow.Consumers
 
                             try
                             {
-                                var context = this.consumer.CreateMessageContext(message);
+                                var context = this.consumer.CreateMessageContext(message, this.offsetManager);
 
                                 await this.middlewareExecutor
                                     .Execute(context, this.consumer.Cosume)
@@ -68,7 +71,10 @@ namespace KafkaFlow.Consumers
                             }
                             finally
                             {
-                                this.offsetManager.StoreOffset(message.KafkaResult.TopicPartitionOffset);
+                                if (this.configuration.AutoStoreOffsets)
+                                {
+                                    this.offsetManager.StoreOffset(message.KafkaResult.TopicPartitionOffset);
+                                }
                             }
                         }
                         catch (OperationCanceledException)
