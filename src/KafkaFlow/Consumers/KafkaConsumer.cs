@@ -8,7 +8,7 @@
     using Confluent.Kafka;
     using KafkaFlow.Configuration.Consumers;
 
-    public class BackgroundConsumer
+    public class KafkaConsumer
     {
         private readonly ConsumerConfiguration configuration;
         private readonly ILogHandler logHandler;
@@ -19,7 +19,7 @@
         private CancellationTokenSource cancellationTokenSource;
         private Task backgroundTask;
 
-        public BackgroundConsumer(
+        public KafkaConsumer(
             ConsumerConfiguration configuration,
             ILogHandler logHandler,
             IConsumerWorkerPool consumerWorkerPool)

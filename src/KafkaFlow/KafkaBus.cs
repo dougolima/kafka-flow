@@ -14,7 +14,7 @@ namespace KafkaFlow
     {
         private readonly ILogHandler logHandler;
         private readonly IServiceProvider serviceProvider;
-        private readonly List<BackgroundConsumer> consumers = new List<BackgroundConsumer>();
+        private readonly List<KafkaConsumer> consumers = new List<KafkaConsumer>();
 
         public KafkaBus(
             KafkaConfiguration configuration,
@@ -34,13 +34,13 @@ namespace KafkaFlow
             {
                 foreach (var consumerConfiguration in cluster.Consumers)
                 {
-                    var consumerWorkerPool = new UnlockedConsumerWorkerPool(
+                    var consumerWorkerPool = new ConsumerWorkerPool(
                         consumerConfiguration,
                         this.CreateConsumer(consumerConfiguration),
                         this.logHandler,
                         new MiddlewareExecutor(consumerConfiguration.Middlewares, this.serviceProvider));
 
-                    var consumer = new BackgroundConsumer(
+                    var consumer = new KafkaConsumer(
                         consumerConfiguration,
                         this.logHandler,
                         consumerWorkerPool);

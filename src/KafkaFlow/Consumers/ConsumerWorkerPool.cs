@@ -1,6 +1,5 @@
 namespace KafkaFlow.Consumers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -15,7 +14,9 @@ namespace KafkaFlow.Consumers
         private readonly IMiddlewareExecutor middlewareExecutor;
 
         private readonly List<IConsumerWorker> workers = new List<IConsumerWorker>();
-        private readonly Dictionary<int, IConsumerWorker> partitionWorkers = new Dictionary<int, IConsumerWorker>();
+
+        private readonly IWorkerDistribuitionStrategy distribuitionStrategy = new SumWorkerDistribuitionStrategy();
+        private OffsetManager offsetManager;
 
         public ConsumerWorkerPool(
             ConsumerConfiguration configuration,
@@ -33,32 +34,20 @@ namespace KafkaFlow.Consumers
             IConsumer<byte[], byte[]> consumer,
             IReadOnlyCollection<TopicPartition> partitions)
         {
-            var workersCount = Math.Min(this.configuration.WorkersCount, partitions.Count);
+            this.offsetManager = new OffsetManager(consumer, partitions);
+            var workersCount = this.configuration.WorkersCount;
 
             for (var i = 0; i < workersCount; i++)
             {
                 var worker = new ConsumerWorker(
                     this.configuration,
-                    this.messageConsumer,
-                    new DefaultOffsetManager(consumer),
+                    this.messageConsumer, this.offsetManager,
                     this.logHandler,
                     this.middlewareExecutor);
 
                 await worker.StartAsync().ConfigureAwait(false);
 
                 this.workers.Add(worker);
-            }
-
-            var workerNumber = 0;
-
-            foreach (var partition in partitions)
-            {
-                this.partitionWorkers.Add(partition.Partition.Value, this.workers[workerNumber]);
-
-                if (++workerNumber >= workersCount)
-                {
-                    workerNumber = 0;
-                }
             }
         }
 
@@ -67,12 +56,15 @@ namespace KafkaFlow.Consumers
             await Task.WhenAll(this.workers.Select(x => x.StopAsync())).ConfigureAwait(false);
 
             this.workers.Clear();
-            this.partitionWorkers.Clear();
         }
 
         public ValueTask EnqueueAsync(ConsumerMessage message)
         {
-            return this.partitionWorkers[message.KafkaResult.Partition.Value].EnqueueAsync(message);
+            this.offsetManager.InitializeOffsetIfNeeded(message);
+
+            var workerNumber = this.distribuitionStrategy.Distribute(message.Key, this.workers.Count);
+
+            return this.workers[workerNumber].EnqueueAsync(message);
         }
     }
 }
