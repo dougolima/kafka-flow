@@ -42,8 +42,6 @@ namespace KafkaFlow.Consumers
                     return;
                 }
 
-                dynamic messageObject = null;
-
                 if (context.Message.Value != null)
                 {
                     var compressor = (IMessageCompressor)this.serviceProvider.GetService(context.Compressor);
@@ -51,12 +49,12 @@ namespace KafkaFlow.Consumers
 
                     var decompressedMessage = compressor.Decompress(context.Message.Value);
 
-                    messageObject = serializer.Desserialize(decompressedMessage, context.MessageType);
+                    context.MessageObject = serializer.Desserialize(decompressedMessage, context.MessageType);
                 }
 
                 dynamic handler = scope.ServiceProvider.GetService(handlerType);
 
-                var handleTask = (Task)handler.Handle(context, messageObject);
+                var handleTask = (Task)handler.Handle(context, context.MessageObject);
 
                 await handleTask.ConfigureAwait(false);
             }

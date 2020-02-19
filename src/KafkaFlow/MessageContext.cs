@@ -41,6 +41,8 @@ namespace KafkaFlow
 
         public Type MessageType { get; set; }
 
+        public object MessageObject { get; set; }
+
         public Type Serializer { get; set; }
 
         public Type Compressor { get; set; }

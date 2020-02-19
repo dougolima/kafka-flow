@@ -47,7 +47,8 @@ namespace KafkaFlow.Producers
                     this.configuration.Compressor,
                     topic)
                 {
-                    MessageType = message.GetType()
+                    MessageType = message.GetType(),
+                    MessageObject = message
                 },
                 async context =>
                 {
