@@ -6,6 +6,6 @@ namespace KafkaFlow.Consumers
     {
         MessageContext CreateMessageContext(ConsumerMessage message, IOffsetManager offsetManager);
 
-        Task Cosume(MessageContext context);
+        Task Consume(MessageContext context);
     }
 }

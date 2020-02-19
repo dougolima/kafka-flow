@@ -59,7 +59,7 @@ namespace KafkaFlow.Consumers
                                 var context = this.consumer.CreateMessageContext(message, this.offsetManager);
 
                                 await this.middlewareExecutor
-                                    .Execute(context, this.consumer.Cosume)
+                                    .Execute(context, this.consumer.Consume)
                                     .ConfigureAwait(false);
                             }
                             catch (Exception ex)

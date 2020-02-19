@@ -27,7 +27,7 @@ namespace KafkaFlow.Consumers
                 null);
         }
 
-        public async Task Cosume(MessageContext context)
+        public async Task Consume(MessageContext context)
         {
             using (var scope = this.serviceProvider.CreateScope())
             {

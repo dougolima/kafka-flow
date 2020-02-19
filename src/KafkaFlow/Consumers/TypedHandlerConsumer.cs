@@ -30,7 +30,7 @@ namespace KafkaFlow.Consumers
                 this.configuration.Compressor);
         }
 
-        public async Task Cosume(MessageContext context)
+        public async Task Consume(MessageContext context)
         {
             using (var scope = this.serviceProvider.CreateScope())
             {
