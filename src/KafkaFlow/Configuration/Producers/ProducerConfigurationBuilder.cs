@@ -26,42 +26,77 @@ namespace KafkaFlow.Configuration.Producers
             this.services = services;
         }
 
+        /// <summary>
+        /// Set the default topic to be used when producing messages
+        /// </summary>
+        /// <param name="topic">Topic name</param>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> DefaultTopic(string topic)
         {
             this.topic = topic;
             return this;
         }
 
+        /// <summary>
+        /// Set the default serializer to be used when producing messages
+        /// </summary>
+        /// <typeparam name="TSerializer">A class that implements the <see cref="IMessageSerializer"/> interface</typeparam>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> UseSerializer<TSerializer>() where TSerializer : IMessageSerializer
         {
             this.serializer = typeof(TSerializer);
             return this;
         }
 
+        /// <summary>
+        /// Set the default compressor to be used when producing messages
+        /// </summary>
+        /// <typeparam name="TCompessor">A class that implements the <see cref="IMessageCompressor"/> interface</typeparam>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> UseCompressor<TCompessor>() where TCompessor : IMessageCompressor
         {
             this.compressor = typeof(TCompessor);
             return this;
         }
 
+        /// <summary>
+        /// Configure the producer to use no compression
+        /// </summary>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> WithNoCompressor()
         {
             this.compressor = typeof(NullMessageCompressor);
             return this;
         }
 
+        /// <summary>
+        /// Set the Confluent <see cref="ProducerConfig"/> directly 
+        /// </summary>
+        /// <param name="config">The Confluent configuration</param>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> WithProducerConfig(ProducerConfig config)
         {
             this.baseProducerConfig = config;
             return this;
         }
 
+        /// <summary>
+        /// Set the <see cref="Acks"/> to be used when producing messages
+        /// </summary>
+        /// <param name="acks"></param>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> WithAcks(Acks acks)
         {
             this.acks = acks;
             return this;
         }
 
+        /// <summary>
+        /// Register a middleware to be used when producing messages
+        /// </summary>
+        /// <param name="configurator">A handler to configure the middleware</param>
+        /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> UseMiddleware<TMiddleware>(Action<TMiddleware> configurator)
             where TMiddleware : IMessageMiddleware
         {
@@ -72,6 +107,11 @@ namespace KafkaFlow.Configuration.Producers
             return this;
         }
 
+        /// <summary>
+        /// Register a middleware to be used when producing messages
+        /// </summary>
+        /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
+        /// <returns></returns>
         public ProducerConfigurationBuilder<TProducer> UseMiddleware<TMiddleware>()
             where TMiddleware : IMessageMiddleware
         {

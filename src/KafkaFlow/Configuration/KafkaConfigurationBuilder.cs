@@ -28,6 +28,11 @@ namespace KafkaFlow.Configuration
             return configuration;
         }
 
+        /// <summary>
+        /// Adds a new Cluster
+        /// </summary>
+        /// <param name="cluster"></param>
+        /// <returns></returns>
         public KafkaConfigurationBuilder AddCluster(Action<ClusterConfigurationBuilder> cluster)
         {
             var builder = new ClusterConfigurationBuilder(this.services);
@@ -39,6 +44,11 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
+        /// <summary>
+        /// Set the log handler to be used by the Framework, if none is provided the <see cref="NullLogHandler"/> will be used
+        /// </summary>
+        /// <typeparam name="TLogHandler">A class that implements the <see cref="ILogHandler"/> interface</typeparam>
+        /// <returns></returns>
         public KafkaConfigurationBuilder UseLogHandler<TLogHandler>() where TLogHandler : ILogHandler
         {
             this.logHandler = typeof(TLogHandler);

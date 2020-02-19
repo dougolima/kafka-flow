@@ -21,6 +21,11 @@ namespace KafkaFlow.Configuration.Consumers.TypedHandler
             this.services = services;
         }
 
+        /// <summary>
+        /// Set the default serializer to be used when consuming messages
+        /// </summary>
+        /// <typeparam name="TSerializer">A class that implements the <see cref="IMessageSerializer"/> interface</typeparam>
+        /// <returns></returns>
         public TypedHandlerConsumerConfigurationBuilder UseSerializer<TSerializer>()
             where TSerializer : IMessageSerializer
         {
@@ -28,6 +33,11 @@ namespace KafkaFlow.Configuration.Consumers.TypedHandler
             return this;
         }
 
+        /// <summary>
+        /// Set the default compressor to be used when consuming messages
+        /// </summary>
+        /// <typeparam name="TCompessor">A class that implements the <see cref="IMessageCompressor"/> interface</typeparam>
+        /// <returns></returns>
         public TypedHandlerConsumerConfigurationBuilder UseCompressor<TCompessor>()
             where TCompessor : IMessageCompressor
         {
@@ -35,12 +45,21 @@ namespace KafkaFlow.Configuration.Consumers.TypedHandler
             return this;
         }
 
+        /// <summary>
+        /// Configure the consumer to use no compression
+        /// </summary>
+        /// <returns></returns>
         public TypedHandlerConsumerConfigurationBuilder WithNoCompressor()
         {
             this.compressor = typeof(NullMessageCompressor);
             return this;
         }
 
+        /// <summary>
+        /// Register all classes that implements the <see cref="IMessageHandler{TMessage}"/> interface from the assembly of the provided type
+        /// </summary>
+        /// <typeparam name="T">A type that implements the <see cref="IMessageHandler{TMessage}"/> interface</typeparam>
+        /// <returns></returns>
         public TypedHandlerConsumerConfigurationBuilder ScanHandlersFromAssemblyOf<T>()
             where T : IMessageHandler
         {
@@ -53,6 +72,11 @@ namespace KafkaFlow.Configuration.Consumers.TypedHandler
             return this;
         }
 
+        /// <summary>
+        /// Manually informs the message handlers used by the consumer
+        /// </summary>
+        /// <param name="handlers"></param>
+        /// <returns></returns>
         public TypedHandlerConsumerConfigurationBuilder AddHandlers(IEnumerable<Type> handlers)
         {
             this.handlers.AddRange(handlers);
