@@ -8,10 +8,12 @@ namespace KafkaFlow.Extensions
     {
         public static IKafkaBus UseKafka(this IServiceProvider provider)
         {
+            var scope = provider.CreateScope();
+
             return new KafkaBus(
-                provider.GetRequiredService<KafkaConfiguration>(),
-                provider.GetRequiredService<ILogHandler>(),
-                provider);
+                scope.ServiceProvider.GetRequiredService<KafkaConfiguration>(),
+                scope.ServiceProvider.GetRequiredService<ILogHandler>(),
+                scope.ServiceProvider);
         }
     }
 }

@@ -4,6 +4,7 @@ namespace KafkaFlow
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class MiddlewareExecutor : IMiddlewareExecutor
     {
@@ -36,7 +37,7 @@ namespace KafkaFlow
 
             var definition = enumerator.Current;
 
-            var middleware = (IMessageMiddleware)this.serviceProvider.GetService(definition.MiddlewareType);
+            var middleware = (IMessageMiddleware)this.serviceProvider.GetRequiredService(definition.MiddlewareType);
 
             definition.Configurator(middleware);
 
