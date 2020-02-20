@@ -11,7 +11,7 @@
     <description>KafkaFlow.Serializer.Json</description>
     <releaseNotes />
     <dependencies>
-      <dependency id="Farfetch.Framework.KafkaSimplified" />
+      <dependency id="KafkaFlow"/>
       <dependency id="System.Text.Json" version="4.7"/>
     </dependencies>
   </metadata>

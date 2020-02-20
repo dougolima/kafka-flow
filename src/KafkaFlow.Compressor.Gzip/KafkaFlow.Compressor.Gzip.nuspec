@@ -11,7 +11,7 @@
     <description>KafkaFlow.Compressor.Gzip</description>
     <releaseNotes />
     <dependencies>
-      <dependency id="Farfetch.Framework.KafkaSimplified" />
+      <dependency id="KafkaFlow"/>
     </dependencies>
   </metadata>
   <files>
