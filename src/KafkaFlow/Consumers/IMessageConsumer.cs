@@ -4,7 +4,7 @@ namespace KafkaFlow.Consumers
 
     public interface IMessageConsumer
     {
-        MessageContext CreateMessageContext(ConsumerMessage message, IOffsetManager offsetManager);
+        MessageContext CreateMessageContext(ConsumerMessage message, IOffsetManager offsetManager, int workerId);
 
         Task Consume(MessageContext context);
     }

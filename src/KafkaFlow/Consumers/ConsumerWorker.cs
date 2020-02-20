@@ -8,6 +8,7 @@ namespace KafkaFlow.Consumers
 
     public class ConsumerWorker : IConsumerWorker
     {
+        private readonly int workerId;
         private readonly ConsumerConfiguration configuration;
         private readonly IMessageConsumer consumer;
         private readonly IOffsetManager offsetManager;
@@ -20,12 +21,14 @@ namespace KafkaFlow.Consumers
         private Task backgroundTask;
 
         public ConsumerWorker(
+            int workerId,
             ConsumerConfiguration configuration,
             IMessageConsumer consumer,
             IOffsetManager offsetManager,
             ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor)
         {
+            this.workerId = workerId;
             this.configuration = configuration;
             this.consumer = consumer;
             this.offsetManager = offsetManager;
@@ -56,7 +59,7 @@ namespace KafkaFlow.Consumers
 
                             try
                             {
-                                var context = this.consumer.CreateMessageContext(message, this.offsetManager);
+                                var context = this.consumer.CreateMessageContext(message, this.offsetManager, this.workerId);
 
                                 await this.middlewareExecutor
                                     .Execute(context, this.consumer.Consume)

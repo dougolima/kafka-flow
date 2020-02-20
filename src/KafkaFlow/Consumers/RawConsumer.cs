@@ -18,11 +18,15 @@ namespace KafkaFlow.Consumers
             this.serviceProvider = serviceProvider;
         }
 
-        public MessageContext CreateMessageContext(ConsumerMessage message, IOffsetManager offsetManager)
+        public MessageContext CreateMessageContext(
+            ConsumerMessage message,
+            IOffsetManager offsetManager,
+            int workerId)
         {
             return new MessageContext(
                 message,
                 offsetManager,
+                workerId,
                 null,
                 null);
         }
