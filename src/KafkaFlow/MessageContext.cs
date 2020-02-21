@@ -10,7 +10,8 @@ namespace KafkaFlow
         private readonly IOffsetManager offsetManager;
         private readonly ConsumeResult<byte[], byte[]> kafkaResult;
 
-        public MessageContext(ConsumerMessage message,
+        public MessageContext(
+            ConsumerMessage message,
             IOffsetManager offsetManager,
             int workerId,
             Type serializer,
