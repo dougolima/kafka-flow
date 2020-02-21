@@ -17,5 +17,6 @@
   </metadata>
   <files>
     <file src="bin\Release\**\KafkaFlow.Serializer.Json.dll" target="lib" />
+    <file src="bin\Release\**\KafkaFlow.Serializer.Json.pdb" target="lib" />
   </files>
 </package>
