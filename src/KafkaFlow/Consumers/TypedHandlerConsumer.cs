@@ -56,9 +56,10 @@ namespace KafkaFlow.Consumers
                     context.MessageObject = serializer.Desserialize(decompressedMessage, context.MessageType);
                 }
 
-                dynamic handler = scope.ServiceProvider.GetService(handlerType);
+                var handler = scope.ServiceProvider.GetService(handlerType);
+                var handleMethod = handler.GetType().GetMethod(nameof(IMessageHandler<object>.Handle));
 
-                var handleTask = (Task)handler.Handle(context, (dynamic)context.MessageObject);
+                var handleTask = (Task)handleMethod.Invoke(handler, new[] { context, context.MessageObject });
 
                 await handleTask.ConfigureAwait(false);
             }
