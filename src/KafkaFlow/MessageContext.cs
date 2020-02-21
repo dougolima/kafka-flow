@@ -1,6 +1,7 @@
 namespace KafkaFlow
 {
     using System;
+    using System.Text;
     using Confluent.Kafka;
     using KafkaFlow.Consumers;
 
@@ -68,5 +69,25 @@ namespace KafkaFlow
 
             this.offsetManager.StoreOffset(this.kafkaResult.TopicPartitionOffset);
         }
+
+        /// <summary>
+        /// Get a header value as string
+        /// </summary>
+        /// <param name="key">The header key</param>
+        /// <param name="encoding">The string format used to decode the value</param>
+        /// <returns></returns>
+        public string GetStringHeader(string key, Encoding encoding)
+        {
+            return this.Message.Headers.TryGetValue(key, out var data) ?
+                encoding.GetString(data) :
+                null;
+        }
+
+        /// <summary>
+        /// Get a header value as an UTF8 string
+        /// </summary>
+        /// <param name="key">The header key</param>
+        /// <returns></returns>
+        public string GetStringHeader(string key) => this.GetStringHeader(key, Encoding.UTF8);
     }
 }
