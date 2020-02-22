@@ -1,6 +1,7 @@
 namespace KafkaFlow.Consumers
 {
     using System;
+    using System.Dynamic;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration.Consumers.TypedHandler;
     using Microsoft.Extensions.DependencyInjection;
@@ -57,11 +58,11 @@ namespace KafkaFlow.Consumers
                 }
 
                 var handler = scope.ServiceProvider.GetService(handlerType);
-                var handleMethod = handler.GetType().GetMethod(nameof(IMessageHandler<object>.Handle));
 
-                var handleTask = (Task)handleMethod.Invoke(handler, new[] { context, context.MessageObject });
-
-                await handleTask.ConfigureAwait(false);
+                await HandlerExecutor
+                    .GetExecutor(context.MessageType)
+                    .Execute(handler, context, context.MessageObject)
+                    .ConfigureAwait(false);
             }
         }
     }
