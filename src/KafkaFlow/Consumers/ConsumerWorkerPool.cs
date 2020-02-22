@@ -30,26 +30,28 @@ namespace KafkaFlow.Consumers
             this.middlewareExecutor = middlewareExecutor;
         }
 
-        public async Task StartAsync(
+        public Task StartAsync(
             IConsumer<byte[], byte[]> consumer,
             IReadOnlyCollection<TopicPartition> partitions)
         {
             this.offsetManager = new OffsetManager(consumer, partitions);
             var workersCount = this.configuration.WorkersCount;
 
-            for (var i = 0; i < workersCount; i++)
-            {
-                var worker = new ConsumerWorker(
-                    i,
-                    this.configuration,
-                    this.messageConsumer, this.offsetManager,
-                    this.logHandler,
-                    this.middlewareExecutor);
+            return Task.WhenAll(Enumerable
+                .Range(0, workersCount)
+                .Select(workerId =>
+                {
+                    var worker = new ConsumerWorker(
+                        workerId,
+                        this.configuration,
+                        this.messageConsumer, this.offsetManager,
+                        this.logHandler,
+                        this.middlewareExecutor);
 
-                await worker.StartAsync().ConfigureAwait(false);
+                    this.workers.Add(worker);
 
-                this.workers.Add(worker);
-            }
+                    return worker.StartAsync();
+                }));
         }
 
         public async Task StopAsync()

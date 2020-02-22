@@ -37,7 +37,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder Topic(string topic)
         {
             this.topic = topic;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithGroupId(string groupId)
         {
             this.groupId = groupId;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithAutoOffsetReset(AutoOffsetReset autoOffsetReset)
         {
             this.autoOffsetReset = autoOffsetReset;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithAutoCommitIntervalMs(int autoCommitIntervalMs)
         {
             this.autoCommitIntervalMs = autoCommitIntervalMs;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithMaxPollIntervalMs(int maxPollIntervalMs)
         {
             this.maxPollIntervalMs = maxPollIntervalMs;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithWorkersCount(int workersCount)
         {
             this.workersCount = workersCount;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithBufferSize(int size)
         {
             this.bufferSize = size;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithAutoStoreOffsets()
         {
             this.autoStoreOffsets = true;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder WithManualStoreOffsets()
         {
             this.autoStoreOffsets = false;
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -135,15 +135,15 @@ namespace KafkaFlow.Configuration.Consumers
         /// <param name="configurator">A handler to configure the middleware</param>
         /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
-        public TBuilder UseMiddleware<TMiddleware>(Action<TMiddleware> configurator)
+        public TBuilder UseMiddleware<TMiddleware>(Action<TMiddleware, IServiceProvider> configurator)
             where TMiddleware : IMessageMiddleware
         {
             this.middlewares.Add(
                 new MiddlewareDefinition(
                     typeof(TMiddleware),
-                    middleware => configurator((TMiddleware) middleware)));
+                    (middleware, provider) => configurator((TMiddleware)middleware, provider)));
 
-            return (TBuilder) this;
+            return (TBuilder)this;
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace KafkaFlow.Configuration.Consumers
         public TBuilder UseMiddleware<TMiddleware>()
             where TMiddleware : IMessageMiddleware
         {
-            return this.UseMiddleware<TMiddleware>(configurator => { });
+            return this.UseMiddleware<TMiddleware>((middleware, provider) => { });
         }
 
         public virtual ConsumerConfiguration Build(ClusterConfiguration clusterConfiguration)

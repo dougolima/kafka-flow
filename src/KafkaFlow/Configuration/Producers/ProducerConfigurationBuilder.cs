@@ -97,12 +97,12 @@ namespace KafkaFlow.Configuration.Producers
         /// <param name="configurator">A handler to configure the middleware</param>
         /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
-        public ProducerConfigurationBuilder<TProducer> UseMiddleware<TMiddleware>(Action<TMiddleware> configurator)
+        public ProducerConfigurationBuilder<TProducer> UseMiddleware<TMiddleware>(Action<TMiddleware, IServiceProvider> configurator)
             where TMiddleware : IMessageMiddleware
         {
             this.middlewares.Add(new MiddlewareDefinition(
                 typeof(TMiddleware),
-                middleware => configurator((TMiddleware)middleware)));
+                (middleware, provider) => configurator((TMiddleware)middleware, provider)));
 
             return this;
         }
@@ -115,7 +115,7 @@ namespace KafkaFlow.Configuration.Producers
         public ProducerConfigurationBuilder<TProducer> UseMiddleware<TMiddleware>()
             where TMiddleware : IMessageMiddleware
         {
-            return this.UseMiddleware<TMiddleware>(configurator => { });
+            return this.UseMiddleware<TMiddleware>((middleware, provider) => { });
         }
 
         public ProducerConfiguration Build(ClusterConfiguration clusterConfiguration)

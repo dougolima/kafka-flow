@@ -39,7 +39,7 @@ namespace KafkaFlow
 
             var middleware = (IMessageMiddleware)this.serviceProvider.GetRequiredService(definition.MiddlewareType);
 
-            definition.Configurator(middleware);
+            definition.Configurator(middleware, this.serviceProvider);
 
             return middleware.Invoke(context, () => this.ExecuteDefinition(enumerator, context, nextOperation));
         }
