@@ -21,11 +21,11 @@ namespace KafkaFlow.Extensions
             return services;
         }
 
-        internal static IServiceCollection AddMiddlewares(this IServiceCollection services, IEnumerable<MiddlewareDefinition> middlewares)
+        internal static IServiceCollection AddMiddlewares(this IServiceCollection services, IEnumerable<ConfigurableDefinition<IMessageMiddleware>> middlewares)
         {
             foreach (var middleware in middlewares)
             {
-                services.TryAddSingleton(middleware.MiddlewareType);
+                services.TryAddSingleton(middleware.Type);
             }
 
             return services;

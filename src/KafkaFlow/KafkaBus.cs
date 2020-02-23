@@ -38,7 +38,8 @@ namespace KafkaFlow
                         consumerConfiguration,
                         this.CreateConsumer(consumerConfiguration),
                         this.logHandler,
-                        new MiddlewareExecutor(consumerConfiguration.Middlewares, this.serviceProvider));
+                        new MiddlewareExecutor(consumerConfiguration.Middlewares, this.serviceProvider),
+                        new DistribuitionStrategyFactory(this.serviceProvider, consumerConfiguration.DistribuitionStrategy));
 
                     var consumer = new KafkaConsumer(
                         consumerConfiguration,

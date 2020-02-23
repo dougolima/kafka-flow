@@ -1,7 +1,6 @@
 namespace KafkaFlow.Consumers
 {
     using System;
-    using System.Dynamic;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration.Consumers.TypedHandler;
     using Microsoft.Extensions.DependencyInjection;

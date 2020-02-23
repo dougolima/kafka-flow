@@ -17,8 +17,8 @@ namespace KafkaFlow.Configuration
         private readonly List<IProducerConfigurationBuilder> producers = new List<IProducerConfigurationBuilder>();
         private readonly List<IConsumerConfigurationBuilder> consumers = new List<IConsumerConfigurationBuilder>();
 
-        private readonly List<MiddlewareDefinition> consumersMiddlewares = new List<MiddlewareDefinition>();
-        private readonly List<MiddlewareDefinition> producersMiddlewares = new List<MiddlewareDefinition>();
+        private readonly List<ConfigurableDefinition<IMessageMiddleware>> consumersMiddlewares = new List<ConfigurableDefinition<IMessageMiddleware>>();
+        private readonly List<ConfigurableDefinition<IMessageMiddleware>> producersMiddlewares = new List<ConfigurableDefinition<IMessageMiddleware>>();
 
         private IEnumerable<string> brokers;
 
@@ -62,7 +62,7 @@ namespace KafkaFlow.Configuration
             where TMiddleware : IMessageMiddleware
         {
             this.consumersMiddlewares.Add(
-                new MiddlewareDefinition(
+                new ConfigurableDefinition<IMessageMiddleware>(
                     typeof(TMiddleware),
                     (middleware, provider) => configurator((TMiddleware)middleware, provider)));
 
@@ -90,7 +90,7 @@ namespace KafkaFlow.Configuration
             where TMiddleware : IMessageMiddleware
         {
             this.producersMiddlewares.Add(
-                new MiddlewareDefinition(
+                new ConfigurableDefinition<IMessageMiddleware>(
                     typeof(TMiddleware),
                     (middleware, provider) => configurator((TMiddleware)middleware, provider)));
 

@@ -13,8 +13,8 @@ namespace KafkaFlow.Configuration
         public ClusterConfiguration(
             KafkaConfiguration kafka,
             IReadOnlyCollection<string> brokers,
-            IReadOnlyCollection<MiddlewareDefinition> consumersMiddlewares,
-            IReadOnlyCollection<MiddlewareDefinition> producersMiddlewares)
+            IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> consumersMiddlewares,
+            IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> producersMiddlewares)
         {
             this.Kafka = kafka;
             this.ConsumersMiddlewares = consumersMiddlewares;
@@ -24,9 +24,9 @@ namespace KafkaFlow.Configuration
 
         public KafkaConfiguration Kafka { get; }
 
-        public IReadOnlyCollection<MiddlewareDefinition> ConsumersMiddlewares { get; }
+        public IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> ConsumersMiddlewares { get; }
 
-        public IReadOnlyCollection<MiddlewareDefinition> ProducersMiddlewares { get; }
+        public IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> ProducersMiddlewares { get; }
 
         public IReadOnlyCollection<string> Brokers { get; }
 

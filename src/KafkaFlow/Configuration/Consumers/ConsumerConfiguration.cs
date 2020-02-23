@@ -3,6 +3,7 @@ namespace KafkaFlow.Configuration.Consumers
     using System;
     using System.Collections.Generic;
     using Confluent.Kafka;
+    using KafkaFlow.Consumers.DistribuitionStrategies;
 
     public class ConsumerConfiguration
     {
@@ -12,9 +13,11 @@ namespace KafkaFlow.Configuration.Consumers
             string groupId,
             int workersCount,
             int bufferSize,
-            IEnumerable<MiddlewareDefinition> middlewares)
+            ConfigurableDefinition<IDistribuitionStrategy> distribuitionStrategy,
+            IEnumerable<ConfigurableDefinition<IMessageMiddleware>> middlewares)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
+            this.DistribuitionStrategy = distribuitionStrategy;
             this.Middlewares = middlewares;
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
@@ -33,6 +36,7 @@ namespace KafkaFlow.Configuration.Consumers
             baseConfiguration.GroupId,
             baseConfiguration.WorkersCount,
             baseConfiguration.BufferSize,
+            baseConfiguration.DistribuitionStrategy,
             baseConfiguration.Middlewares)
         {
             this.MaxPollIntervalMs = baseConfiguration.MaxPollIntervalMs;
@@ -43,7 +47,9 @@ namespace KafkaFlow.Configuration.Consumers
 
         public ClusterConfiguration Cluster { get; }
 
-        public IEnumerable<MiddlewareDefinition> Middlewares { get; }
+        public ConfigurableDefinition<IDistribuitionStrategy> DistribuitionStrategy { get; }
+
+        public IEnumerable<ConfigurableDefinition<IMessageMiddleware>> Middlewares { get; }
 
         public string Topic { get; }
 

@@ -8,10 +8,10 @@ namespace KafkaFlow
 
     public class MiddlewareExecutor : IMiddlewareExecutor
     {
-        private readonly IEnumerable<MiddlewareDefinition> middlewares;
+        private readonly IEnumerable<ConfigurableDefinition<IMessageMiddleware>> middlewares;
         private readonly IServiceProvider serviceProvider;
 
-        public MiddlewareExecutor(IEnumerable<MiddlewareDefinition> middlewares, IServiceProvider serviceProvider)
+        public MiddlewareExecutor(IEnumerable<ConfigurableDefinition<IMessageMiddleware>> middlewares, IServiceProvider serviceProvider)
         {
             this.middlewares = middlewares;
             this.serviceProvider = serviceProvider;
@@ -26,7 +26,7 @@ namespace KafkaFlow
         }
 
         private Task ExecuteDefinition(
-            IEnumerator<MiddlewareDefinition> enumerator,
+            IEnumerator<ConfigurableDefinition<IMessageMiddleware>> enumerator,
             MessageContext context,
             Func<MessageContext, Task> nextOperation)
         {
@@ -37,7 +37,7 @@ namespace KafkaFlow
 
             var definition = enumerator.Current;
 
-            var middleware = (IMessageMiddleware)this.serviceProvider.GetRequiredService(definition.MiddlewareType);
+            var middleware = (IMessageMiddleware)this.serviceProvider.GetRequiredService(definition.Type);
 
             definition.Configurator(middleware, this.serviceProvider);
 

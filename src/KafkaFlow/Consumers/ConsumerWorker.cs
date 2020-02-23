@@ -8,7 +8,6 @@ namespace KafkaFlow.Consumers
 
     public class ConsumerWorker : IConsumerWorker
     {
-        private readonly int workerId;
         private readonly ConsumerConfiguration configuration;
         private readonly IMessageConsumer consumer;
         private readonly IOffsetManager offsetManager;
@@ -19,6 +18,7 @@ namespace KafkaFlow.Consumers
 
         private readonly Channel<ConsumerMessage> messagesBuffer;
         private Task backgroundTask;
+        private Action onMessageFinishedHandler;
 
         public ConsumerWorker(
             int workerId,
@@ -28,7 +28,7 @@ namespace KafkaFlow.Consumers
             ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor)
         {
-            this.workerId = workerId;
+            this.Id = workerId;
             this.configuration = configuration;
             this.consumer = consumer;
             this.offsetManager = offsetManager;
@@ -36,6 +36,8 @@ namespace KafkaFlow.Consumers
             this.middlewareExecutor = middlewareExecutor;
             this.messagesBuffer = Channel.CreateBounded<ConsumerMessage>(configuration.BufferSize);
         }
+
+        public int Id { get; }
 
         public ValueTask EnqueueAsync(ConsumerMessage message)
         {
@@ -59,7 +61,7 @@ namespace KafkaFlow.Consumers
 
                             try
                             {
-                                var context = this.consumer.CreateMessageContext(message, this.offsetManager, this.workerId);
+                                var context = this.consumer.CreateMessageContext(message, this.offsetManager, this.Id);
 
                                 await this.middlewareExecutor
                                     .Execute(context, this.consumer.Consume)
@@ -78,6 +80,8 @@ namespace KafkaFlow.Consumers
                                 {
                                     this.offsetManager.StoreOffset(message.KafkaResult.TopicPartitionOffset);
                                 }
+
+                                this.onMessageFinishedHandler?.Invoke();
                             }
                         }
                         catch (OperationCanceledException)
@@ -97,6 +101,11 @@ namespace KafkaFlow.Consumers
             this.cancellationTokenSource.Cancel();
             await this.backgroundTask.ConfigureAwait(false);
             this.backgroundTask.Dispose();
+        }
+
+        public void OnTaskFinished(Action handler)
+        {
+            this.onMessageFinishedHandler = handler;
         }
     }
 }

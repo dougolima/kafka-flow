@@ -19,7 +19,7 @@ namespace KafkaFlow.Configuration.Producers
         private ProducerConfig baseProducerConfig;
         private Acks? acks;
 
-        private readonly List<MiddlewareDefinition> middlewares = new List<MiddlewareDefinition>();
+        private readonly List<ConfigurableDefinition<IMessageMiddleware>> middlewares = new List<ConfigurableDefinition<IMessageMiddleware>>();
 
         public ProducerConfigurationBuilder(IServiceCollection services)
         {
@@ -100,7 +100,7 @@ namespace KafkaFlow.Configuration.Producers
         public ProducerConfigurationBuilder<TProducer> UseMiddleware<TMiddleware>(Action<TMiddleware, IServiceProvider> configurator)
             where TMiddleware : IMessageMiddleware
         {
-            this.middlewares.Add(new MiddlewareDefinition(
+            this.middlewares.Add(new ConfigurableDefinition<IMessageMiddleware>(
                 typeof(TMiddleware),
                 (middleware, provider) => configurator((TMiddleware)middleware, provider)));
 

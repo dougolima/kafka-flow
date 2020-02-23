@@ -12,6 +12,6 @@ namespace KafkaFlow.Consumers
 
         Task StopAsync();
 
-        ValueTask EnqueueAsync(ConsumerMessage message);
+        Task EnqueueAsync(ConsumerMessage message);
     }
 }

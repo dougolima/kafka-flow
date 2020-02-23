@@ -2,7 +2,7 @@ namespace KafkaFlow.Consumers
 {
     using System.Threading.Tasks;
 
-    public interface IConsumerWorker
+    public interface IConsumerWorker : IWorker
     {
         ValueTask EnqueueAsync(ConsumerMessage message);
 

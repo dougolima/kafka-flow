@@ -4,8 +4,10 @@ namespace KafkaFlow.Configuration.Consumers
     using System.Collections.Generic;
     using System.Linq;
     using Confluent.Kafka;
+    using KafkaFlow.Consumers.DistribuitionStrategies;
     using KafkaFlow.Extensions;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public abstract class ConsumerConfigurationBuilder<TBuilder>
         : IConsumerConfigurationBuilder
@@ -22,7 +24,12 @@ namespace KafkaFlow.Configuration.Consumers
         private int bufferSize;
         private bool? autoStoreOffsets;
 
-        private readonly List<MiddlewareDefinition> middlewares = new List<MiddlewareDefinition>();
+        private ConfigurableDefinition<IDistribuitionStrategy> distribuitionStrategyDefinition =
+            new ConfigurableDefinition<IDistribuitionStrategy>(
+                typeof(BytesSumDistribuitionStrategy),
+                (strategy, provider) => { });
+
+        private readonly List<ConfigurableDefinition<IMessageMiddleware>> middlewares = new List<ConfigurableDefinition<IMessageMiddleware>>();
 
         protected ConsumerConfigurationBuilder(IServiceCollection services)
         {
@@ -110,6 +117,34 @@ namespace KafkaFlow.Configuration.Consumers
         }
 
         /// <summary>
+        /// Set the strategy to choose a worker when a message arrives
+        /// </summary>
+        /// <typeparam name="TStrategy">A class that implements the <see cref="IDistribuitionStrategy"/> interface</typeparam>
+        /// <param name="configure">A handler to configure the strategy settings</param>
+        /// <returns></returns>
+        public TBuilder WithWorkDistribuitionStretagy<TStrategy>(Action<TStrategy, IServiceProvider> configure)
+            where TStrategy : IDistribuitionStrategy
+        {
+            this.distribuitionStrategyDefinition =
+                new ConfigurableDefinition<IDistribuitionStrategy>(
+                    typeof(TStrategy),
+                    (strategy, provider) => configure((TStrategy)strategy, provider));
+
+            return (TBuilder)this;
+        }
+
+        /// <summary>
+        /// Set the strategy to choose a worker when a message arrives
+        /// </summary>
+        /// <typeparam name="TStrategy">A class that implements the <see cref="IDistribuitionStrategy"/> interface</typeparam>
+        /// <returns></returns>
+        public TBuilder WithWorkDistribuitionStretagy<TStrategy>()
+            where TStrategy : IDistribuitionStrategy
+        {
+            return this.WithWorkDistribuitionStretagy<TStrategy>((strategy, provider) => { });
+        }
+
+        /// <summary>
         /// Offsets will be stored after the execution of the handler and middlewares automatically, this is the default behaviour
         /// </summary>
         /// <returns></returns>
@@ -139,7 +174,7 @@ namespace KafkaFlow.Configuration.Consumers
             where TMiddleware : IMessageMiddleware
         {
             this.middlewares.Add(
-                new MiddlewareDefinition(
+                new ConfigurableDefinition<IMessageMiddleware>(
                     typeof(TMiddleware),
                     (middleware, provider) => configurator((TMiddleware)middleware, provider)));
 
@@ -167,6 +202,7 @@ namespace KafkaFlow.Configuration.Consumers
                 this.groupId,
                 this.workersCount,
                 this.bufferSize,
+                this.distribuitionStrategyDefinition,
                 combinedMiddlewares)
             {
                 AutoOffsetReset = this.autoOffsetReset,
@@ -176,6 +212,7 @@ namespace KafkaFlow.Configuration.Consumers
 
             configuration.AutoStoreOffsets = this.autoStoreOffsets ?? configuration.AutoStoreOffsets;
 
+            this.services.TryAddTransient(configuration.DistribuitionStrategy.Type);
             this.services.AddMiddlewares(configuration.Middlewares);
 
             return configuration;

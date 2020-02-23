@@ -11,7 +11,7 @@ namespace KafkaFlow.Configuration.Producers
             Type serializer,
             Type compressor,
             Acks? acks,
-            IEnumerable<MiddlewareDefinition> middlewares,
+            IEnumerable<ConfigurableDefinition<IMessageMiddleware>> middlewares,
             ProducerConfig baseProducerConfig)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
@@ -35,7 +35,7 @@ namespace KafkaFlow.Configuration.Producers
 
         public Acks? Acks { get; }
 
-        public IEnumerable<MiddlewareDefinition> Middlewares { get; }
+        public IEnumerable<ConfigurableDefinition<IMessageMiddleware>> Middlewares { get; }
 
         public ProducerConfig GetKafkaConfig()
         {

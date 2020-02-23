@@ -5,6 +5,7 @@ namespace KafkaFlow.Consumers
     using System.Threading.Tasks;
     using Confluent.Kafka;
     using KafkaFlow.Configuration.Consumers;
+    using KafkaFlow.Consumers.DistribuitionStrategies;
 
     public class ConsumerWorkerPool : IConsumerWorkerPool
     {
@@ -12,32 +13,36 @@ namespace KafkaFlow.Consumers
         private readonly IMessageConsumer messageConsumer;
         private readonly ILogHandler logHandler;
         private readonly IMiddlewareExecutor middlewareExecutor;
+        private readonly IDistribuitionStrategyFactory distribuitionStrategyFactory;
 
         private readonly List<IConsumerWorker> workers = new List<IConsumerWorker>();
 
-        private readonly IWorkerDistribuitionStrategy distribuitionStrategy = new SumWorkerDistribuitionStrategy();
+        private IDistribuitionStrategy distribuitionStrategy;
+
         private OffsetManager offsetManager;
 
         public ConsumerWorkerPool(
             ConsumerConfiguration configuration,
             IMessageConsumer messageConsumer,
             ILogHandler logHandler,
-            IMiddlewareExecutor middlewareExecutor)
+            IMiddlewareExecutor middlewareExecutor,
+            IDistribuitionStrategyFactory distribuitionStrategyFactory)
         {
             this.configuration = configuration;
             this.messageConsumer = messageConsumer;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
+            this.distribuitionStrategyFactory = distribuitionStrategyFactory;
         }
 
-        public Task StartAsync(
+        public async Task StartAsync(
             IConsumer<byte[], byte[]> consumer,
             IReadOnlyCollection<TopicPartition> partitions)
         {
             this.offsetManager = new OffsetManager(consumer, partitions);
             var workersCount = this.configuration.WorkersCount;
 
-            return Task.WhenAll(Enumerable
+            await Task.WhenAll(Enumerable
                 .Range(0, workersCount)
                 .Select(workerId =>
                 {
@@ -51,7 +56,11 @@ namespace KafkaFlow.Consumers
                     this.workers.Add(worker);
 
                     return worker.StartAsync();
-                }));
+                }))
+                .ConfigureAwait(false);
+
+            this.distribuitionStrategy = this.distribuitionStrategyFactory.Create();
+            this.distribuitionStrategy.Init(this.workers.AsReadOnly());
         }
 
         public async Task StopAsync()
@@ -61,13 +70,17 @@ namespace KafkaFlow.Consumers
             this.workers.Clear();
         }
 
-        public ValueTask EnqueueAsync(ConsumerMessage message)
+        public async Task EnqueueAsync(ConsumerMessage message)
         {
             this.offsetManager.InitializeOffsetIfNeeded(message);
 
-            var workerNumber = this.distribuitionStrategy.Distribute(message.Key, this.workers.Count);
+            var worker = (IConsumerWorker)await this.distribuitionStrategy
+                .GetWorkerAsync(message.Key)
+                .ConfigureAwait(false);
 
-            return this.workers[workerNumber].EnqueueAsync(message);
+            await worker
+                .EnqueueAsync(message)
+                .ConfigureAwait(false);
         }
     }
 }
