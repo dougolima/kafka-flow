@@ -1,22 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <PackageId>KafkaFlow.Serializer.ProtoBuf</PackageId>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\KafkaFlow\KafkaFlow.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="protobuf-net" Version="2.4.4" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="protobuf-net" Version="2.4.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="KafkaFlow.Serializer.ProtoBuf.nuspec">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\KafkaFlow.Abstractions\KafkaFlow.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

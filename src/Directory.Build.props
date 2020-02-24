@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Authors>Farfetch - Enabling Team</Authors>
+    <Company>Farfetch</Company>
+    <Product>KafkaFlow</Product>
+    <PackageProjectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka</PackageProjectUrl>
+    <RepositoryUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>
