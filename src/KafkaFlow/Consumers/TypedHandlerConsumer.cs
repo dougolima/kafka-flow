@@ -42,7 +42,6 @@ namespace KafkaFlow.Consumers
 
                 if (handlerType == null)
                 {
-                    this.logHandler.Info("No handler found for message type", new { context.MessageType });
                     return;
                 }
 
