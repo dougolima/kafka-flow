@@ -1,4 +1,4 @@
-namespace KafkaFlow.Consumers
+namespace KafkaFlow
 {
     using System;
 
@@ -6,6 +6,6 @@ namespace KafkaFlow.Consumers
     {
         int Id { get; }
 
-        void OnTaskFinished(Action handler);
+        void OnTaskCompleted(Action handler);
     }
 }

@@ -1,4 +1,4 @@
-namespace KafkaFlow.Consumers.DistribuitionStrategies
+namespace KafkaFlow
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

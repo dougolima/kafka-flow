@@ -103,7 +103,7 @@ namespace KafkaFlow.Consumers
             this.backgroundTask.Dispose();
         }
 
-        public void OnTaskFinished(Action handler)
+        public void OnTaskCompleted(Action handler)
         {
             this.onMessageFinishedHandler = handler;
         }
