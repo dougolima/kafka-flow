@@ -6,7 +6,7 @@
 
     public class MessageTypeNameHeaderMiddleware : IMessageMiddleware
     {
-        public Task Invoke(MessageContext context, MessageDelegate next)
+        public Task Invoke(IMessageContext context, MessageDelegate next)
         {
             context.Message.Headers["Message-Type"] = Encoding.UTF8.GetBytes(context.MessageType.FullName);
 

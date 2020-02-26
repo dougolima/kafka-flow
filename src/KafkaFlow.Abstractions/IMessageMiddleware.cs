@@ -4,6 +4,6 @@ namespace KafkaFlow
 
     public interface IMessageMiddleware
     {
-        Task Invoke(MessageContext context, MessageDelegate next);
+        Task Invoke(IMessageContext context, MessageDelegate next);
     }
 }

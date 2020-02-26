@@ -5,7 +5,7 @@ namespace KafkaFlow
     using Confluent.Kafka;
     using KafkaFlow.Consumers;
 
-    public class MessageContext
+    public class MessageContext : IMessageContext
     {
         private readonly IOffsetManager offsetManager;
         private readonly ConsumeResult<byte[], byte[]> kafkaResult;
@@ -24,8 +24,8 @@ namespace KafkaFlow
             this.Compressor = compressor;
             this.kafkaResult = message.KafkaResult;
             this.Topic = message.KafkaResult.Topic;
-            this.Partition = message.KafkaResult.Partition;
-            this.Offset = message.KafkaResult.Offset;
+            this.Partition = message.KafkaResult.Partition.Value;
+            this.Offset = message.KafkaResult.Offset.Value;
         }
 
         public MessageContext(
@@ -54,13 +54,10 @@ namespace KafkaFlow
 
         public string Topic { get; set; }
 
-        public Partition? Partition { get; set; }
+        public int? Partition { get; set; }
 
-        public Offset? Offset { get; set; }
+        public long? Offset { get; set; }
 
-        /// <summary>
-        /// Store the message offset when manual store option is used
-        /// </summary>
         public void StoreOffset()
         {
             if (this.offsetManager == null)
@@ -71,12 +68,6 @@ namespace KafkaFlow
             this.offsetManager.StoreOffset(this.kafkaResult.TopicPartitionOffset);
         }
 
-        /// <summary>
-        /// Get a header value as string
-        /// </summary>
-        /// <param name="key">The header key</param>
-        /// <param name="encoding">The string format used to decode the value</param>
-        /// <returns></returns>
         public string GetStringHeader(string key, Encoding encoding)
         {
             return this.Message.Headers.TryGetValue(key, out var data) ?
@@ -84,11 +75,6 @@ namespace KafkaFlow
                 null;
         }
 
-        /// <summary>
-        /// Get a header value as an UTF8 string
-        /// </summary>
-        /// <param name="key">The header key</param>
-        /// <returns></returns>
         public string GetStringHeader(string key) => this.GetStringHeader(key, Encoding.UTF8);
     }
 }
