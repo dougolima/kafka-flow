@@ -6,9 +6,6 @@ namespace KafkaFlow
     using System.Threading;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
-    using KafkaFlow.Configuration.Consumers;
-    using KafkaFlow.Configuration.Consumers.Raw;
-    using KafkaFlow.Configuration.Consumers.TypedHandler;
     using KafkaFlow.Consumers;
 
     public class KafkaBus : IKafkaBus
@@ -36,11 +33,11 @@ namespace KafkaFlow
                 foreach (var consumerConfiguration in cluster.Consumers)
                 {
                     var consumerWorkerPool = new ConsumerWorkerPool(
+                        this.serviceProvider,
                         consumerConfiguration,
-                        this.CreateConsumer(consumerConfiguration),
                         this.logHandler,
-                        new MiddlewareExecutor(consumerConfiguration.Middlewares, this.serviceProvider),
-                        new DistribuitionStrategyFactory(this.serviceProvider, consumerConfiguration.DistribuitionStrategy));
+                        new MiddlewareExecutor(consumerConfiguration.MiddlewaresFactories, this.serviceProvider),
+                        consumerConfiguration.DistribuitionStrategyFactory);
 
                     var consumer = new KafkaConsumer(
                         consumerConfiguration,
@@ -57,24 +54,6 @@ namespace KafkaFlow
         public Task StopAsync()
         {
             return Task.WhenAll(this.consumers.Select(x => x.StopAsync()));
-        }
-
-        private IMessageConsumer CreateConsumer(ConsumerConfiguration configuration)
-        {
-            switch (configuration)
-            {
-                case TypedHandlerConsumerConfiguration typedConsumerConfiguration:
-                    return new TypedHandlerConsumer(
-                        typedConsumerConfiguration,
-                        this.logHandler,
-                        this.serviceProvider);
-
-                case RawConsumerConfiguration rawConsumerConfiguration:
-                    return new RawConsumer(rawConsumerConfiguration, this.serviceProvider);
-
-                default:
-                    throw new InvalidOperationException($"{configuration.GetType()} not supported");
-            }
         }
     }
 }

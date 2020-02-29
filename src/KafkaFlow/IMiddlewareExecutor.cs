@@ -5,6 +5,6 @@ namespace KafkaFlow
 
     public interface IMiddlewareExecutor
     {
-        Task Execute(MessageContext context, Func<MessageContext, Task> nextOperation);
+        Task Execute(IMessageContext context, Func<IMessageContext, Task> nextOperation);
     }
 }

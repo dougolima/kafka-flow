@@ -2,8 +2,6 @@ namespace KafkaFlow.Configuration
 {
     using System.Collections.Generic;
     using System.Linq;
-    using KafkaFlow.Configuration.Consumers;
-    using KafkaFlow.Configuration.Producers;
 
     public class ClusterConfiguration
     {
@@ -12,21 +10,13 @@ namespace KafkaFlow.Configuration
 
         public ClusterConfiguration(
             KafkaConfiguration kafka,
-            IReadOnlyCollection<string> brokers,
-            IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> consumersMiddlewares,
-            IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> producersMiddlewares)
+            IReadOnlyCollection<string> brokers)
         {
             this.Kafka = kafka;
-            this.ConsumersMiddlewares = consumersMiddlewares;
-            this.ProducersMiddlewares = producersMiddlewares;
             this.Brokers = brokers.ToList();
         }
 
         public KafkaConfiguration Kafka { get; }
-
-        public IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> ConsumersMiddlewares { get; }
-
-        public IReadOnlyCollection<ConfigurableDefinition<IMessageMiddleware>> ProducersMiddlewares { get; }
 
         public IReadOnlyCollection<string> Brokers { get; }
 

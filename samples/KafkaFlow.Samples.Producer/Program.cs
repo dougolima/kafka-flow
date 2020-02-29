@@ -22,9 +22,8 @@
                                 producer => producer
                                     .DefaultTopic("test-topic")
                                     .UseSerializer<ProtobufMessageSerializer>()
-                                    .WithNoCompressor()
                                     .UseMiddleware<MessageTypeNameHeaderMiddleware>()
-                                    .WithAcks(Confluent.Kafka.Acks.All)
+                                    // .WithAcks(Confluent.Kafka.Acks.All)
                                 )
                     )
             );

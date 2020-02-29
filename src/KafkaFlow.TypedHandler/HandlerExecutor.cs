@@ -1,4 +1,4 @@
-namespace KafkaFlow.Consumers
+namespace KafkaFlow.TypedHandler
 {
     using System;
     using System.Collections.Concurrent;
@@ -16,12 +16,12 @@ namespace KafkaFlow.Consumers
                 t => (HandlerExecutor)Activator.CreateInstance(typeof(HandlerExecutor<>).MakeGenericType(messageType)));
         }
 
-        public abstract Task Execute(object handler, MessageContext context, object message);
+        public abstract Task Execute(object handler, IMessageContext context, object message);
     }
 
     public class HandlerExecutor<T> : HandlerExecutor
     {
-        public override Task Execute(object handler, MessageContext context, object message)
+        public override Task Execute(object handler, IMessageContext context, object message)
         {
             var h = (IMessageHandler<T>)handler;
 

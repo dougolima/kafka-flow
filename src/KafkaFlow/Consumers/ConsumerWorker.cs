@@ -4,12 +4,12 @@ namespace KafkaFlow.Consumers
     using System.Threading;
     using System.Threading.Channels;
     using System.Threading.Tasks;
-    using KafkaFlow.Configuration.Consumers;
+    using KafkaFlow.Configuration;
 
     public class ConsumerWorker : IConsumerWorker
     {
+        private readonly IServiceProvider serviceProvider;
         private readonly ConsumerConfiguration configuration;
-        private readonly IMessageConsumer consumer;
         private readonly IOffsetManager offsetManager;
         private readonly ILogHandler logHandler;
         private readonly IMiddlewareExecutor middlewareExecutor;
@@ -21,16 +21,16 @@ namespace KafkaFlow.Consumers
         private Action onMessageFinishedHandler;
 
         public ConsumerWorker(
+            IServiceProvider serviceProvider,
             int workerId,
             ConsumerConfiguration configuration,
-            IMessageConsumer consumer,
             IOffsetManager offsetManager,
             ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor)
         {
             this.Id = workerId;
+            this.serviceProvider = serviceProvider;
             this.configuration = configuration;
-            this.consumer = consumer;
             this.offsetManager = offsetManager;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
@@ -62,18 +62,20 @@ namespace KafkaFlow.Consumers
 
                             try
                             {
-                                var context = this.consumer.CreateMessageContext(message, this.offsetManager, this.Id);
+                                var context = new MessageContext(
+                                    message,
+                                    this.offsetManager,
+                                    this.Id,
+                                    this.configuration.SerializerFactory(this.serviceProvider),
+                                    this.configuration.CompressorFactory(this.serviceProvider));
 
                                 await this.middlewareExecutor
-                                    .Execute(context, this.consumer.Consume)
+                                    .Execute(context, con => Task.CompletedTask)
                                     .ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {
-                                this.logHandler.Error(
-                                    "Error executing consumer",
-                                    ex,
-                                    message);
+                                this.logHandler.Error("Error executing consumer", ex, message);
                             }
                             finally
                             {

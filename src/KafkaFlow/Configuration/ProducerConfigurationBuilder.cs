@@ -1,0 +1,112 @@
+namespace KafkaFlow.Configuration
+{
+    using System;
+    using System.Collections.Generic;
+    using Confluent.Kafka;
+    using KafkaFlow.Producers;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+
+    public class ProducerConfigurationBuilder : IProducerConfigurationBuilder
+    {
+        private readonly Type producerType;
+
+        private string topic;
+        private ProducerConfig baseProducerConfig;
+        private Acks? acks;
+
+        private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
+
+        private Factory<IMessageSerializer> serializerFactory;
+        private Factory<IMessageCompressor> compressorFactory = provider => new NullMessageCompressor();
+
+        public ProducerConfigurationBuilder(IServiceCollection services, Type type)
+        {
+            this.ServiceCollection = services;
+            this.producerType = type;
+        }
+
+        public IServiceCollection ServiceCollection { get; }
+
+        public IProducerConfigurationBuilder DefaultTopic(string topic)
+        {
+            this.topic = topic;
+            return this;
+        }
+
+        public IProducerConfigurationBuilder WithProducerConfig(ProducerConfig config)
+        {
+            this.baseProducerConfig = config;
+            return this;
+        }
+
+        public IProducerConfigurationBuilder WithAcks(Acks acks)
+        {
+            this.acks = acks;
+            return this;
+        }
+
+        public IProducerConfigurationBuilder UseMiddleware<T>()
+            where T : IMessageMiddleware
+        {
+            return this.UseMiddleware(provider => provider.GetRequiredService<T>());
+        }
+
+        public IProducerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
+            where T : IMessageMiddleware
+        {
+            this.ServiceCollection.TryAddSingleton(typeof(T));
+            this.middlewaresFactories.Add(provider => factory(provider));
+            return this;
+        }
+
+        public IProducerConfigurationBuilder UseSerializer<T>()
+            where T : IMessageSerializer
+        {
+            return this.UseSerializer(provider => provider.GetRequiredService<T>());
+        }
+
+        public IProducerConfigurationBuilder UseSerializer<T>(Factory<T> factory)
+            where T : IMessageSerializer
+        {
+            this.ServiceCollection.TryAddSingleton(typeof(T));
+            this.serializerFactory = provider => factory(provider);
+            return this;
+        }
+
+        public IProducerConfigurationBuilder UseCompressor<T>()
+            where T : IMessageCompressor
+        {
+            return this.UseCompressor(provider => provider.GetRequiredService<T>());
+        }
+
+        public IProducerConfigurationBuilder UseCompressor<T>(Factory<T> factory)
+            where T : IMessageCompressor
+        {
+            this.ServiceCollection.TryAddSingleton(typeof(T));
+            this.compressorFactory = provider => factory(provider);
+            return this;
+        }
+
+        public ProducerConfiguration Build(ClusterConfiguration clusterConfiguration)
+        {
+            var configuration = new ProducerConfiguration(
+                clusterConfiguration,
+                this.topic,
+                this.serializerFactory,
+                this.compressorFactory,
+                this.acks,
+                this.middlewaresFactories,
+                this.baseProducerConfig ?? new ProducerConfig());
+
+            this.ServiceCollection.AddTransient(
+                typeof(IMessageProducer<>).MakeGenericType(this.producerType),
+                provider => Activator.CreateInstance(
+                    typeof(MessageProducer<>).MakeGenericType(this.producerType),
+                    provider,
+                    configuration));
+
+            return configuration;
+        }
+    }
+}

@@ -14,7 +14,7 @@
             [typeof(TestMessage).FullName] = typeof(TestMessage)
         };
 
-        public Task Invoke(IMessageContext context, MessageDelegate next)
+        public Task Invoke(IMessageContext context, MiddlewareDelegate next)
         {
             if (context.Message.Headers.TryGetValue("Message-Type", out var messageTypeNameHeader))
             {

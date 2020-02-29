@@ -14,8 +14,8 @@ namespace KafkaFlow
             ConsumerMessage message,
             IOffsetManager offsetManager,
             int workerId,
-            Type serializer,
-            Type compressor)
+            IMessageSerializer serializer,
+            IMessageCompressor compressor)
         {
             this.offsetManager = offsetManager;
             this.Message = message;
@@ -30,8 +30,8 @@ namespace KafkaFlow
 
         public MessageContext(
             IMessage message,
-            Type serializer,
-            Type compressor,
+            IMessageSerializer serializer,
+            IMessageCompressor compressor,
             string topic)
         {
             this.Message = message;
@@ -48,9 +48,9 @@ namespace KafkaFlow
 
         public object MessageObject { get; set; }
 
-        public Type Serializer { get; set; }
+        public IMessageSerializer Serializer { get; set; }
 
-        public Type Compressor { get; set; }
+        public IMessageCompressor Compressor { get; set; }
 
         public string Topic { get; set; }
 

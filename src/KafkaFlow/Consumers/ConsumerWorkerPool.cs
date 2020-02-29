@@ -1,20 +1,20 @@
 namespace KafkaFlow.Consumers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Confluent.Kafka;
-    using KafkaFlow.Configuration.Consumers;
-    using KafkaFlow.Consumers.DistribuitionStrategies;
+    using KafkaFlow.Configuration;
 
     public class ConsumerWorkerPool : IConsumerWorkerPool
     {
+        private readonly IServiceProvider serviceProvider;
         private readonly ConsumerConfiguration configuration;
-        private readonly IMessageConsumer messageConsumer;
         private readonly ILogHandler logHandler;
         private readonly IMiddlewareExecutor middlewareExecutor;
-        private readonly IDistribuitionStrategyFactory distribuitionStrategyFactory;
+        private readonly Factory<IDistribuitionStrategy> distribuitionStrategyFactory;
 
         private readonly List<IConsumerWorker> workers = new List<IConsumerWorker>();
 
@@ -23,14 +23,14 @@ namespace KafkaFlow.Consumers
         private OffsetManager offsetManager;
 
         public ConsumerWorkerPool(
+            IServiceProvider serviceProvider,
             ConsumerConfiguration configuration,
-            IMessageConsumer messageConsumer,
             ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor,
-            IDistribuitionStrategyFactory distribuitionStrategyFactory)
+            Factory<IDistribuitionStrategy> distribuitionStrategyFactory)
         {
+            this.serviceProvider = serviceProvider;
             this.configuration = configuration;
-            this.messageConsumer = messageConsumer;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
             this.distribuitionStrategyFactory = distribuitionStrategyFactory;
@@ -44,24 +44,27 @@ namespace KafkaFlow.Consumers
             this.offsetManager = new OffsetManager(consumer, partitions);
             var workersCount = this.configuration.WorkersCount;
 
-            await Task.WhenAll(Enumerable
-                .Range(0, workersCount)
-                .Select(workerId =>
-                {
-                    var worker = new ConsumerWorker(
-                        workerId,
-                        this.configuration,
-                        this.messageConsumer, this.offsetManager,
-                        this.logHandler,
-                        this.middlewareExecutor);
+            await Task.WhenAll(
+                    Enumerable
+                        .Range(0, workersCount)
+                        .Select(
+                            workerId =>
+                            {
+                                var worker = new ConsumerWorker(
+                                    this.serviceProvider,
+                                    workerId,
+                                    this.configuration,
+                                    this.offsetManager,
+                                    this.logHandler,
+                                    this.middlewareExecutor);
 
-                    this.workers.Add(worker);
+                                this.workers.Add(worker);
 
-                    return worker.StartAsync(stopCancellationToken);
-                }))
+                                return worker.StartAsync(stopCancellationToken);
+                            }))
                 .ConfigureAwait(false);
 
-            this.distribuitionStrategy = this.distribuitionStrategyFactory.Create();
+            this.distribuitionStrategy = this.distribuitionStrategyFactory(this.serviceProvider);
             this.distribuitionStrategy.Init(this.workers.AsReadOnly());
         }
 
@@ -76,7 +79,7 @@ namespace KafkaFlow.Consumers
         {
             this.offsetManager.InitializeOffsetIfNeeded(message);
 
-            var worker = (IConsumerWorker)await this.distribuitionStrategy
+            var worker = (IConsumerWorker) await this.distribuitionStrategy
                 .GetWorkerAsync(message.Key)
                 .ConfigureAwait(false);
 

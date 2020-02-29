@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\KafkaFlow.Serializer.ProtoBuf\KafkaFlow.Serializer.ProtoBuf.csproj" />
+    <ProjectReference Include="..\..\src\KafkaFlow.TypedHandler\KafkaFlow.TypedHandler.csproj" />
     <ProjectReference Include="..\..\src\KafkaFlow\KafkaFlow.csproj" />
     <ProjectReference Include="..\KafkaFlow.Samples.Common\KafkaFlow.Samples.Common.csproj" />
   </ItemGroup>

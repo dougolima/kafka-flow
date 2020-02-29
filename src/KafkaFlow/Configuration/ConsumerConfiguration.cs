@@ -1,9 +1,8 @@
-namespace KafkaFlow.Configuration.Consumers
+namespace KafkaFlow.Configuration
 {
     using System;
     using System.Collections.Generic;
     using Confluent.Kafka;
-    using KafkaFlow.Consumers.DistribuitionStrategies;
 
     public class ConsumerConfiguration
     {
@@ -13,43 +12,41 @@ namespace KafkaFlow.Configuration.Consumers
             string groupId,
             int workersCount,
             int bufferSize,
-            ConfigurableDefinition<IDistribuitionStrategy> distribuitionStrategy,
-            IEnumerable<ConfigurableDefinition<IMessageMiddleware>> middlewares)
+            Factory<IDistribuitionStrategy> distribuitionStrategyFactory,
+            List<Factory<IMessageMiddleware>> middlewaresFactories,
+            Factory<IMessageSerializer> serializerFactory,
+            Factory<IMessageCompressor> compressorFactory)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
-            this.DistribuitionStrategy = distribuitionStrategy;
-            this.Middlewares = middlewares;
+            this.DistribuitionStrategyFactory = distribuitionStrategyFactory ?? throw new ArgumentNullException(nameof(distribuitionStrategyFactory));
+            this.MiddlewaresFactories = middlewaresFactories ?? throw new ArgumentNullException(nameof(middlewaresFactories));
+            this.SerializerFactory = serializerFactory ?? throw new ArgumentNullException(nameof(serializerFactory));
+            this.CompressorFactory = compressorFactory ?? throw new ArgumentNullException(nameof(compressorFactory));
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
             this.WorkersCount = workersCount > 0 ?
                 workersCount :
-                throw new ArgumentOutOfRangeException(nameof(workersCount), workersCount, "The value must be greater than 0");
+                throw new ArgumentOutOfRangeException(
+                    nameof(workersCount),
+                    workersCount,
+                    "The value must be greater than 0");
             this.BufferSize = bufferSize > 0 ?
                 bufferSize :
-                throw new ArgumentOutOfRangeException(nameof(bufferSize), bufferSize, "The value must be greater than 0");
-        }
-
-        protected ConsumerConfiguration(ConsumerConfiguration baseConfiguration)
-        : this(
-            baseConfiguration.Cluster,
-            baseConfiguration.Topic,
-            baseConfiguration.GroupId,
-            baseConfiguration.WorkersCount,
-            baseConfiguration.BufferSize,
-            baseConfiguration.DistribuitionStrategy,
-            baseConfiguration.Middlewares)
-        {
-            this.MaxPollIntervalMs = baseConfiguration.MaxPollIntervalMs;
-            this.AutoCommitIntervalMs = baseConfiguration.AutoCommitIntervalMs;
-            this.AutoOffsetReset = baseConfiguration.AutoOffsetReset;
-            this.AutoStoreOffsets = baseConfiguration.AutoStoreOffsets;
+                throw new ArgumentOutOfRangeException(
+                    nameof(bufferSize),
+                    bufferSize,
+                    "The value must be greater than 0");
         }
 
         public ClusterConfiguration Cluster { get; }
 
-        public ConfigurableDefinition<IDistribuitionStrategy> DistribuitionStrategy { get; }
+        public Factory<IDistribuitionStrategy> DistribuitionStrategyFactory { get; }
 
-        public IEnumerable<ConfigurableDefinition<IMessageMiddleware>> Middlewares { get; }
+        public List<Factory<IMessageMiddleware>> MiddlewaresFactories { get; }
+
+        public Factory<IMessageSerializer> SerializerFactory { get; }
+
+        public Factory<IMessageCompressor> CompressorFactory { get; }
 
         public string Topic { get; }
 

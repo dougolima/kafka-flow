@@ -3,22 +3,14 @@ namespace KafkaFlow.Configuration
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using KafkaFlow.Configuration.Consumers;
-    using KafkaFlow.Configuration.Consumers.Raw;
-    using KafkaFlow.Configuration.Consumers.TypedHandler;
-    using KafkaFlow.Configuration.Producers;
-    using KafkaFlow.Consumers;
     using Microsoft.Extensions.DependencyInjection;
 
     public class ClusterConfigurationBuilder
     {
         private readonly IServiceCollection services;
 
-        private readonly List<IProducerConfigurationBuilder> producers = new List<IProducerConfigurationBuilder>();
-        private readonly List<IConsumerConfigurationBuilder> consumers = new List<IConsumerConfigurationBuilder>();
-
-        private readonly List<ConfigurableDefinition<IMessageMiddleware>> consumersMiddlewares = new List<ConfigurableDefinition<IMessageMiddleware>>();
-        private readonly List<ConfigurableDefinition<IMessageMiddleware>> producersMiddlewares = new List<ConfigurableDefinition<IMessageMiddleware>>();
+        private readonly List<ProducerConfigurationBuilder> producers = new List<ProducerConfigurationBuilder>();
+        private readonly List<ConsumerConfigurationBuilder> consumers = new List<ConsumerConfigurationBuilder>();
 
         private IEnumerable<string> brokers;
 
@@ -31,9 +23,7 @@ namespace KafkaFlow.Configuration
         {
             var configuration = new ClusterConfiguration(
                 kafkaConfiguration,
-                this.brokers.ToList(),
-                this.consumersMiddlewares,
-                this.producersMiddlewares);
+                this.brokers.ToList());
 
             configuration.AddProducers(this.producers.Select(x => x.Build(configuration)));
             configuration.AddConsumers(this.consumers.Select(x => x.Build(configuration)));
@@ -53,70 +43,14 @@ namespace KafkaFlow.Configuration
         }
 
         /// <summary>
-        /// Register a middleware for consumers of the entire cluster
-        /// </summary>
-        /// <param name="configurator">A handler to configure the middleware</param>
-        /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder UseConsumerMiddleware<TMiddleware>(Action<IMessageMiddleware, IServiceProvider> configurator)
-            where TMiddleware : IMessageMiddleware
-        {
-            this.consumersMiddlewares.Add(
-                new ConfigurableDefinition<IMessageMiddleware>(
-                    typeof(TMiddleware),
-                    (middleware, provider) => configurator((TMiddleware)middleware, provider)));
-
-            return this;
-        }
-
-        /// <summary>
-        /// Register a middleware for consumers of the entire cluster
-        /// </summary>
-        /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder UseConsumerMiddleware<TMiddleware>()
-            where TMiddleware : IMessageMiddleware
-        {
-            return this.UseConsumerMiddleware<TMiddleware>((middleware, provider) => { });
-        }
-
-        /// <summary>
-        /// Register a middleware for producers of the entire cluster
-        /// </summary>
-        /// <param name="configurator">A handler to configure the middleware</param>
-        /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder UseProducerMiddleware<TMiddleware>(Action<TMiddleware, IServiceProvider> configurator)
-            where TMiddleware : IMessageMiddleware
-        {
-            this.producersMiddlewares.Add(
-                new ConfigurableDefinition<IMessageMiddleware>(
-                    typeof(TMiddleware),
-                    (middleware, provider) => configurator((TMiddleware)middleware, provider)));
-
-            return this;
-        }
-
-        /// <summary>
-        /// Register a middleware for producers of the entire cluster
-        /// </summary>
-        /// <typeparam name="TMiddleware">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder UseProducerMiddleware<TMiddleware>()
-            where TMiddleware : IMessageMiddleware
-        {
-            return this.UseConsumerMiddleware<TMiddleware>((middleware, provider) => { });
-        }
-
-        /// <summary>
         /// Adds a producer to the cluster
         /// </summary>
         /// <param name="producer">A handler to configure the producer</param>
         /// <typeparam name="TProducer">The class responsible for the production</typeparam>
         /// <returns></returns>
-        public ClusterConfigurationBuilder AddProducer<TProducer>(Action<ProducerConfigurationBuilder<TProducer>> producer)
+        public ClusterConfigurationBuilder AddProducer<TProducer>(Action<IProducerConfigurationBuilder> producer)
         {
-            var builder = new ProducerConfigurationBuilder<TProducer>(this.services);
+            var builder = new ProducerConfigurationBuilder(this.services, typeof(TProducer));
 
             producer(builder);
 
@@ -126,30 +60,13 @@ namespace KafkaFlow.Configuration
         }
 
         /// <summary>
-        /// Adds a <see cref="RawConsumer"/> to the cluster
-        /// </summary>
-        /// <param name="consumer">A handler to configure the consumer</param>
-        /// <typeparam name="THandler">A type that implements the <see cref="IMessageHandler{TMessage}"/> interface</typeparam>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder AddRawConsumer<THandler>(Action<RawConsumerConfigurationBuilder> consumer) where THandler : IMessageHandler<byte[]>
-        {
-            var builder = new RawConsumerConfigurationBuilder(typeof(THandler), this.services);
-
-            consumer(builder);
-
-            this.consumers.Add(builder);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a <see cref="TypedHandlerConsumer"/> to the cluster
+        /// Adds a consumer to the cluster
         /// </summary>
         /// <param name="consumer">A handler to configure the consumer</param>
         /// <returns></returns>
-        public ClusterConfigurationBuilder AddTypedHandlerConsumer(Action<TypedHandlerConsumerConfigurationBuilder> consumer)
+        public ClusterConfigurationBuilder AddConsumer(Action<IConsumerConfigurationBuilder> consumer)
         {
-            var builder = new TypedHandlerConsumerConfigurationBuilder(this.services);
+            var builder = new ConsumerConfigurationBuilder(this.services);
 
             consumer(builder);
 

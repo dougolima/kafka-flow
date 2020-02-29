@@ -6,7 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Confluent.Kafka;
-    using KafkaFlow.Configuration.Consumers;
+    using KafkaFlow.Configuration;
 
     public class KafkaConsumer
     {

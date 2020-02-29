@@ -1,4 +1,4 @@
-namespace KafkaFlow.Configuration.Consumers.TypedHandler
+namespace KafkaFlow.TypedHandler
 {
     using System;
     using System.Collections.Generic;
@@ -16,7 +16,5 @@ namespace KafkaFlow.Configuration.Consumers.TypedHandler
         {
             return this.mapping.TryGetValue(messageType, out var handlerType) ? handlerType : null;
         }
-
-        public IEnumerable<Type> Handlers => this.mapping.Values;
     }
 }

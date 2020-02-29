@@ -5,7 +5,7 @@ namespace KafkaFlow.Producers
     using System.Text;
     using System.Threading.Tasks;
     using Confluent.Kafka;
-    using KafkaFlow.Configuration.Producers;
+    using KafkaFlow.Configuration;
     using KafkaFlow.Extensions;
 
     public class MessageProducer<TProducer> : IMessageProducer<TProducer>
@@ -22,12 +22,12 @@ namespace KafkaFlow.Producers
         {
             this.configuration = configuration;
 
-            this.serializer = (IMessageSerializer)serviceProvider.GetService(configuration.Serializer);
-            this.compressor = (IMessageCompressor)serviceProvider.GetService(configuration.Compressor);
+            this.serializer = configuration.SerializerFactory(serviceProvider);
+            this.compressor = configuration.CompressorFactory(serviceProvider);
 
             this.producer = new ProducerBuilder<byte[], byte[]>(configuration.GetKafkaConfig()).Build();
 
-            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.Middlewares, serviceProvider);
+            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.MiddlewaresFactories, serviceProvider);
         }
 
         public Task ProduceAsync(
@@ -42,9 +42,12 @@ namespace KafkaFlow.Producers
 
             return this.middlewareExecutor.Execute(
                 new MessageContext(
-                    new ProducerMessage(messageKey, compressedMessage, headers),
-                    this.configuration.Serializer,
-                    this.configuration.Compressor,
+                    new ProducerMessage(
+                        messageKey,
+                        compressedMessage,
+                        headers),
+                    this.serializer,
+                    this.compressor,
                     topic)
                 {
                     MessageType = message.GetType(),
