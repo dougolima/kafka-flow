@@ -28,7 +28,7 @@ namespace KafkaFlow.Configuration
         /// </summary>
         /// <param name="autoOffsetReset"></param>
         /// <returns></returns>
-        // IConsumerConfigurationBuilder WithAutoOffsetReset(AutoOffsetReset autoOffsetReset);
+        IConsumerConfigurationBuilder WithAutoOffsetReset(AutoOffsetReset autoOffsetReset);
 
         /// <summary>
         /// Set the interval used by the framework to commit the stored offsets in Kafka

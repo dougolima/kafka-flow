@@ -67,6 +67,6 @@ namespace KafkaFlow.Configuration
         /// </summary>
         /// <param name="acks"></param>
         /// <returns></returns>
-        // IProducerConfigurationBuilder WithAcks(Acks acks);
+        IProducerConfigurationBuilder WithAcks(Acks acks);
     }
 }

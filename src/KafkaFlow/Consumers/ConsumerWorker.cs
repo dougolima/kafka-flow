@@ -6,7 +6,7 @@ namespace KafkaFlow.Consumers
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
 
-    public class ConsumerWorker : IConsumerWorker
+    internal class ConsumerWorker : IConsumerWorker
     {
         private readonly IServiceProvider serviceProvider;
         private readonly ConsumerConfiguration configuration;

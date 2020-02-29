@@ -5,7 +5,7 @@ namespace KafkaFlow
     using Confluent.Kafka;
     using KafkaFlow.Consumers;
 
-    public class MessageContext : IMessageContext
+    internal class MessageContext : IMessageContext
     {
         private readonly IOffsetManager offsetManager;
         private readonly ConsumeResult<byte[], byte[]> kafkaResult;
@@ -52,7 +52,7 @@ namespace KafkaFlow
 
         public IMessageCompressor Compressor { get; set; }
 
-        public string Topic { get; set; }
+        public string Topic { get; }
 
         public int? Partition { get; set; }
 

@@ -8,7 +8,7 @@ namespace KafkaFlow.Consumers
     using Confluent.Kafka;
     using KafkaFlow.Configuration;
 
-    public class ConsumerWorkerPool : IConsumerWorkerPool
+    internal class ConsumerWorkerPool : IConsumerWorkerPool
     {
         private readonly IServiceProvider serviceProvider;
         private readonly ConsumerConfiguration configuration;
@@ -79,7 +79,7 @@ namespace KafkaFlow.Consumers
         {
             this.offsetManager.InitializeOffsetIfNeeded(message);
 
-            var worker = (IConsumerWorker) await this.distribuitionStrategy
+            var worker = (IConsumerWorker)await this.distribuitionStrategy
                 .GetWorkerAsync(message.Key)
                 .ConfigureAwait(false);
 

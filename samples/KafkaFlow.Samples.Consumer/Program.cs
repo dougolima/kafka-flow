@@ -25,6 +25,7 @@
                                     .WithGroupId("print-console-handler")
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
+                                    .WithAutoOffsetReset(AutoOffsetReset.Latest)
                                     .UseMiddleware<MessageTypeResolverMiddleware>()
                                     .UseSerializer<ProtobufMessageSerializer>()
                                     .UseTypedHandlers(handlers =>

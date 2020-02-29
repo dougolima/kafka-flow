@@ -23,7 +23,7 @@
                                     .DefaultTopic("test-topic")
                                     .UseSerializer<ProtobufMessageSerializer>()
                                     .UseMiddleware<MessageTypeNameHeaderMiddleware>()
-                                    // .WithAcks(Confluent.Kafka.Acks.All)
+                                    .WithAcks(Acks.All)
                                 )
                     )
             );

@@ -17,11 +17,11 @@ namespace KafkaFlow
 
         IMessageCompressor Compressor { get; set; }
 
-        string Topic { get; set; }
+        string Topic { get; }
 
-        int? Partition { get; set; }
+        int? Partition { get; }
 
-        long? Offset { get; set; }
+        long? Offset { get; }
 
         /// <summary>
         /// Store the message offset when manual store option is used

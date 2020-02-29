@@ -11,7 +11,7 @@ namespace KafkaFlow.Configuration
             string topic,
             Factory<IMessageSerializer> serializerFactory,
             Factory<IMessageCompressor> compressorFactory,
-            Acks? acks,
+            KafkaFlow.Acks? acks,
             IReadOnlyList<Factory<IMessageMiddleware>> middlewaresFactories,
             ProducerConfig baseProducerConfig)
         {
@@ -36,14 +36,25 @@ namespace KafkaFlow.Configuration
 
         public ProducerConfig BaseProducerConfig { get; }
 
-        public Acks? Acks { get; }
+        public KafkaFlow.Acks? Acks { get; }
 
         public ProducerConfig GetKafkaConfig()
         {
             this.BaseProducerConfig.BootstrapServers = string.Join(",", this.Cluster.Brokers);
-            this.BaseProducerConfig.Acks = this.Acks;
+            this.BaseProducerConfig.Acks = ParseAcks(this.Acks);
 
             return this.BaseProducerConfig;
+        }
+
+        private static Acks? ParseAcks(KafkaFlow.Acks? acks)
+        {
+            return acks switch
+            {
+                KafkaFlow.Acks.Leader => Confluent.Kafka.Acks.Leader,
+                KafkaFlow.Acks.All => Confluent.Kafka.Acks.All,
+                KafkaFlow.Acks.None => Confluent.Kafka.Acks.None,
+                _ => null
+            };
         }
     }
 }

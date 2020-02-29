@@ -13,7 +13,7 @@ namespace KafkaFlow.Configuration
 
         private string topic;
         private ProducerConfig baseProducerConfig;
-        private Acks? acks;
+        private KafkaFlow.Acks? acks;
 
         private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
 
@@ -40,7 +40,7 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IProducerConfigurationBuilder WithAcks(Acks acks)
+        public IProducerConfigurationBuilder WithAcks(KafkaFlow.Acks acks)
         {
             this.acks = acks;
             return this;

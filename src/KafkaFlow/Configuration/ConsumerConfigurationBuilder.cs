@@ -1,7 +1,6 @@
 namespace KafkaFlow.Configuration
 {
     using System.Collections.Generic;
-    using Confluent.Kafka;
     using KafkaFlow.Consumers.DistribuitionStrategies;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,7 +16,7 @@ namespace KafkaFlow.Configuration
         private int? maxPollIntervalMs;
         private int workersCount;
         private int bufferSize;
-        private bool? autoStoreOffsets;
+        private bool autoStoreOffsets = true;
 
         private Factory<IDistribuitionStrategy> distribuitionStrategyFactory = provider => new BytesSumDistribuitionStrategy();
 
@@ -160,10 +159,9 @@ namespace KafkaFlow.Configuration
             {
                 AutoOffsetReset = this.autoOffsetReset,
                 AutoCommitIntervalMs = this.autoCommitIntervalMs,
-                MaxPollIntervalMs = this.maxPollIntervalMs
+                MaxPollIntervalMs = this.maxPollIntervalMs,
+                AutoStoreOffsets = this.autoStoreOffsets
             };
-
-            configuration.AutoStoreOffsets = this.autoStoreOffsets ?? configuration.AutoStoreOffsets;
 
             return configuration;
         }

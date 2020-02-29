@@ -56,7 +56,7 @@ namespace KafkaFlow.Configuration
 
         public int BufferSize { get; }
 
-        public AutoOffsetReset? AutoOffsetReset { get; set; }
+        public KafkaFlow.AutoOffsetReset? AutoOffsetReset { get; set; }
 
         public int? AutoCommitIntervalMs { get; set; }
 
@@ -69,12 +69,22 @@ namespace KafkaFlow.Configuration
             return new ConsumerConfig
             {
                 BootstrapServers = string.Join(",", this.Cluster.Brokers),
-                AutoOffsetReset = this.AutoOffsetReset,
+                AutoOffsetReset = ParseAutoOffsetReset(this.AutoOffsetReset),
                 GroupId = this.GroupId,
                 EnableAutoOffsetStore = false,
                 EnableAutoCommit = true,
                 AutoCommitIntervalMs = this.AutoCommitIntervalMs,
                 MaxPollIntervalMs = this.MaxPollIntervalMs
+            };
+        }
+
+        private static AutoOffsetReset? ParseAutoOffsetReset(KafkaFlow.AutoOffsetReset? autoOffsetReset)
+        {
+            return autoOffsetReset switch
+            {
+                KafkaFlow.AutoOffsetReset.Latest => Confluent.Kafka.AutoOffsetReset.Latest,
+                KafkaFlow.AutoOffsetReset.Earliest => Confluent.Kafka.AutoOffsetReset.Earliest,
+                _ => null,
             };
         }
     }

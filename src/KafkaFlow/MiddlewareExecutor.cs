@@ -4,7 +4,7 @@ namespace KafkaFlow
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class MiddlewareExecutor : IMiddlewareExecutor
+    internal class MiddlewareExecutor : IMiddlewareExecutor
     {
         private readonly IEnumerable<Factory<IMessageMiddleware>> middlewares;
         private readonly IServiceProvider serviceProvider;
@@ -17,7 +17,7 @@ namespace KafkaFlow
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task Execute(IMessageContext context, Func<IMessageContext, Task> nextOperation)
+        public async Task Execute(MessageContext context, Func<MessageContext, Task> nextOperation)
         {
             using (var enumerator = this.middlewares.GetEnumerator())
             {
@@ -31,8 +31,8 @@ namespace KafkaFlow
 
         private Task ExecuteDefinition(
             IEnumerator<Factory<IMessageMiddleware>> enumerator,
-            IMessageContext context,
-            Func<IMessageContext, Task> nextOperation)
+            MessageContext context,
+            Func<MessageContext, Task> nextOperation)
         {
             if (!enumerator.MoveNext() || enumerator.Current is null)
             {
