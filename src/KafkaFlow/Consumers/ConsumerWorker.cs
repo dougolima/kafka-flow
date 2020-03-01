@@ -8,7 +8,6 @@ namespace KafkaFlow.Consumers
 
     internal class ConsumerWorker : IConsumerWorker
     {
-        private readonly IServiceProvider serviceProvider;
         private readonly ConsumerConfiguration configuration;
         private readonly IOffsetManager offsetManager;
         private readonly ILogHandler logHandler;
@@ -16,12 +15,11 @@ namespace KafkaFlow.Consumers
 
         private CancellationTokenSource cancellationTokenSource;
 
-        private readonly Channel<ConsumerMessage> messagesBuffer;
+        private readonly Channel<MessageContext> messagesBuffer;
         private Task backgroundTask;
         private Action onMessageFinishedHandler;
 
         public ConsumerWorker(
-            IServiceProvider serviceProvider,
             int workerId,
             ConsumerConfiguration configuration,
             IOffsetManager offsetManager,
@@ -29,19 +27,18 @@ namespace KafkaFlow.Consumers
             IMiddlewareExecutor middlewareExecutor)
         {
             this.Id = workerId;
-            this.serviceProvider = serviceProvider;
             this.configuration = configuration;
             this.offsetManager = offsetManager;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
-            this.messagesBuffer = Channel.CreateBounded<ConsumerMessage>(configuration.BufferSize);
+            this.messagesBuffer = Channel.CreateBounded<MessageContext>(configuration.BufferSize);
         }
 
         public int Id { get; }
 
-        public ValueTask EnqueueAsync(ConsumerMessage message)
+        public ValueTask EnqueueAsync(MessageContext context)
         {
-            return this.messagesBuffer.Writer.WriteAsync(message);
+            return this.messagesBuffer.Writer.WriteAsync(context);
         }
 
         public Task StartAsync(CancellationToken stopCancellationToken = default)
@@ -56,32 +53,25 @@ namespace KafkaFlow.Consumers
                     {
                         try
                         {
-                            var message = await this.messagesBuffer.Reader
+                            var context = await this.messagesBuffer.Reader
                                 .ReadAsync(this.cancellationTokenSource.Token)
                                 .ConfigureAwait(false);
 
                             try
                             {
-                                var context = new MessageContext(
-                                    message,
-                                    this.offsetManager,
-                                    this.Id,
-                                    this.configuration.SerializerFactory(this.serviceProvider),
-                                    this.configuration.CompressorFactory(this.serviceProvider));
-
                                 await this.middlewareExecutor
                                     .Execute(context, con => Task.CompletedTask)
                                     .ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {
-                                this.logHandler.Error("Error executing consumer", ex, message);
+                                this.logHandler.Error("Error executing consumer", ex, context);
                             }
                             finally
                             {
                                 if (this.configuration.AutoStoreOffsets)
                                 {
-                                    this.offsetManager.StoreOffset(message.KafkaResult.TopicPartitionOffset);
+                                    this.offsetManager.StoreOffset(context.KafkaResult.TopicPartitionOffset);
                                 }
 
                                 this.onMessageFinishedHandler?.Invoke();

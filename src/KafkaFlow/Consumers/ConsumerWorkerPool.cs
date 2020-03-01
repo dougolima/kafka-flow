@@ -50,9 +50,7 @@ namespace KafkaFlow.Consumers
                         .Select(
                             workerId =>
                             {
-                                var worker = new ConsumerWorker(
-                                    this.serviceProvider,
-                                    workerId,
+                                var worker = new ConsumerWorker(workerId,
                                     this.configuration,
                                     this.offsetManager,
                                     this.logHandler,
@@ -75,16 +73,16 @@ namespace KafkaFlow.Consumers
             this.workers.Clear();
         }
 
-        public async Task EnqueueAsync(ConsumerMessage message)
+        public async Task EnqueueAsync(ConsumeResult<byte[], byte[]> message)
         {
-            this.offsetManager.InitializeOffsetIfNeeded(message);
+            this.offsetManager.InitializeOffsetIfNeeded(message.TopicPartitionOffset);
 
             var worker = (IConsumerWorker)await this.distribuitionStrategy
                 .GetWorkerAsync(message.Key)
                 .ConfigureAwait(false);
 
             await worker
-                .EnqueueAsync(message)
+                .EnqueueAsync(new MessageContext(message, this.offsetManager, worker.Id))
                 .ConfigureAwait(false);
         }
     }

@@ -16,7 +16,7 @@
             }
         }
 
-        public object Desserialize(byte[] data, Type type)
+        public object Deserialize(byte[] data, Type type)
         {
             using (var stream = new MemoryStream(data))
             {

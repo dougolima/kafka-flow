@@ -22,10 +22,6 @@ namespace KafkaFlow.Configuration
 
         private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
 
-        private Factory<IMessageSerializer> serializerFactory;
-
-        private Factory<IMessageCompressor> compressorFactory = provider => new NullMessageCompressor();
-
         public ConsumerConfigurationBuilder(IServiceCollection services)
         {
             this.ServiceCollection = services;
@@ -115,35 +111,6 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IConsumerConfigurationBuilder UseSerializer<T>()
-            where T : IMessageSerializer
-        {
-            return this.UseSerializer(provider => provider.GetRequiredService<T>());
-
-        }
-
-        public IConsumerConfigurationBuilder UseSerializer<T>(Factory<T> factory)
-            where T : IMessageSerializer
-        {
-            this.ServiceCollection.TryAddSingleton(typeof(T));
-            this.serializerFactory = provider => factory(provider);
-            return this;
-        }
-
-        public IConsumerConfigurationBuilder UseCompressor<T>()
-            where T : IMessageCompressor
-        {
-            return this.UseCompressor(provider => provider.GetRequiredService<T>());
-        }
-
-        public IConsumerConfigurationBuilder UseCompressor<T>(Factory<T> factory)
-            where T : IMessageCompressor
-        {
-            this.ServiceCollection.TryAddSingleton(typeof(T));
-            this.compressorFactory = provider => factory(provider);
-            return this;
-        }
-
         public virtual ConsumerConfiguration Build(ClusterConfiguration clusterConfiguration)
         {
             var configuration = new ConsumerConfiguration(
@@ -153,9 +120,7 @@ namespace KafkaFlow.Configuration
                 this.workersCount,
                 this.bufferSize,
                 this.distribuitionStrategyFactory,
-                this.middlewaresFactories,
-                this.serializerFactory,
-                this.compressorFactory)
+                this.middlewaresFactories)
             {
                 AutoOffsetReset = this.autoOffsetReset,
                 AutoCommitIntervalMs = this.autoCommitIntervalMs,

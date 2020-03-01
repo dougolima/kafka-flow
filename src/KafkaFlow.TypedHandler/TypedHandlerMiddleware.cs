@@ -21,28 +21,21 @@ namespace KafkaFlow.TypedHandler
         {
             using (var scope = this.serviceProvider.CreateScope())
             {
-                var handlerType = this.configuration.HandlerMapping.GetHandlerType(context.MessageType);
+                var handlerType = this.configuration.HandlerMapping.GetHandlerType(context.Message.GetType());
 
                 if (handlerType == null)
                 {
                     return;
                 }
 
-                if (context.Message.Value != null)
-                {
-                    var decompressedMessage = context.Compressor.Decompress(context.Message.Value);
-
-                    context.MessageObject = context.Serializer.Desserialize(decompressedMessage, context.MessageType);
-                }
-
                 var handler = scope.ServiceProvider.GetService(handlerType);
 
                 await HandlerExecutor
-                    .GetExecutor(context.MessageType)
+                    .GetExecutor(context.Message.GetType())
                     .Execute(
                         handler,
                         context,
-                        context.MessageObject)
+                        context.Message)
                     .ConfigureAwait(false);
             }
         }

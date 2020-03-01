@@ -1,8 +1,11 @@
 ﻿namespace KafkaFlow.Samples.Consumer
 {
     using System.Threading;
+    using KafkaFlow.Compressor;
+    using KafkaFlow.Compressor.Gzip;
     using KafkaFlow.Extensions;
     using KafkaFlow.Samples.Common;
+    using KafkaFlow.Serializer;
     using KafkaFlow.Serializer.ProtoBuf;
     using KafkaFlow.TypedHandler;
     using Microsoft.Extensions.DependencyInjection;
@@ -26,8 +29,8 @@
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
-                                    .UseMiddleware<MessageTypeResolverMiddleware>()
-                                    .UseSerializer<ProtobufMessageSerializer>()
+                                    .UseCompressorMiddleware<GzipMessageCompressor>()
+                                    .UseSerializerMiddleware<ProtobufMessageSerializer, SampleMessageTypeResolver>()
                                     .UseTypedHandlers(handlers =>
                                         handlers
                                             .WithHandlerLifetime(ServiceLifetime.Singleton)

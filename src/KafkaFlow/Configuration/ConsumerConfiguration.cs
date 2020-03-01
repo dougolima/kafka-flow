@@ -13,15 +13,11 @@ namespace KafkaFlow.Configuration
             int workersCount,
             int bufferSize,
             Factory<IDistribuitionStrategy> distribuitionStrategyFactory,
-            List<Factory<IMessageMiddleware>> middlewaresFactories,
-            Factory<IMessageSerializer> serializerFactory,
-            Factory<IMessageCompressor> compressorFactory)
+            List<Factory<IMessageMiddleware>> middlewaresFactories)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
             this.DistribuitionStrategyFactory = distribuitionStrategyFactory ?? throw new ArgumentNullException(nameof(distribuitionStrategyFactory));
             this.MiddlewaresFactories = middlewaresFactories ?? throw new ArgumentNullException(nameof(middlewaresFactories));
-            this.SerializerFactory = serializerFactory ?? throw new ArgumentNullException(nameof(serializerFactory));
-            this.CompressorFactory = compressorFactory ?? throw new ArgumentNullException(nameof(compressorFactory));
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
             this.WorkersCount = workersCount > 0 ?
@@ -43,10 +39,6 @@ namespace KafkaFlow.Configuration
         public Factory<IDistribuitionStrategy> DistribuitionStrategyFactory { get; }
 
         public List<Factory<IMessageMiddleware>> MiddlewaresFactories { get; }
-
-        public Factory<IMessageSerializer> SerializerFactory { get; }
-
-        public Factory<IMessageCompressor> CompressorFactory { get; }
 
         public string Topic { get; }
 

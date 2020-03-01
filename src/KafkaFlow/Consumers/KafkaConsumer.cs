@@ -105,11 +105,9 @@
                     {
                         while (!this.cancellationTokenSource.IsCancellationRequested)
                         {
-                            ConsumerMessage message = null;
-
                             try
                             {
-                                message = new ConsumerMessage(consumer.Consume(this.cancellationTokenSource.Token));
+                                var message = consumer.Consume(this.cancellationTokenSource.Token);
 
                                 await this.consumerWorkerPool
                                     .EnqueueAsync(message)
@@ -123,7 +121,7 @@
                                 this.logHandler.Error(
                                     "Kafka fatal error occurred. Trying to restart in 5 seconds",
                                     ex,
-                                    message);
+                                    null);
 
                                 _ = Task.Delay(5000).ContinueWith(t => this.CreateBackgroundTask());
 
@@ -134,7 +132,7 @@
                                 this.logHandler.Error(
                                     "Error consuming message from Kafka",
                                     ex,
-                                    message);
+                                    null);
                             }
                         }
 

@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\KafkaFlow.Serializer\KafkaFlow.Serializer.csproj" />
     <ProjectReference Include="..\..\src\KafkaFlow\KafkaFlow.csproj" />
   </ItemGroup>
 

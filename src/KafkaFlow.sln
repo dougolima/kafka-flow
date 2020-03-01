@@ -29,11 +29,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serializat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compression", "Compression", "{0A782A83-B66D-4B99-9BE2-2B18AAD2E03C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaFlow.Abstractions", "KafkaFlow.Abstractions\KafkaFlow.Abstractions.csproj", "{88808771-56BE-422B-94DC-7AB070F64E98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaFlow.Abstractions", "KafkaFlow.Abstractions\KafkaFlow.Abstractions.csproj", "{88808771-56BE-422B-94DC-7AB070F64E98}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Middlewares", "Middlewares", "{3FB1A133-14CA-4927-9CC5-6CDD641E6A97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaFlow.TypedHandler", "KafkaFlow.TypedHandler\KafkaFlow.TypedHandler.csproj", "{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaFlow.TypedHandler", "KafkaFlow.TypedHandler\KafkaFlow.TypedHandler.csproj", "{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaFlow.Serializer", "KafkaFlow.Serializer\KafkaFlow.Serializer.csproj", "{B7197114-B1C7-49EC-8740-1E09233B2C40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaFlow.Compressor", "KafkaFlow.Compressor\KafkaFlow.Compressor.csproj", "{D29EC709-33DE-4045-8F3B-EC6619CDB429}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,14 @@ Global
 		{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7197114-B1C7-49EC-8740-1E09233B2C40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7197114-B1C7-49EC-8740-1E09233B2C40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7197114-B1C7-49EC-8740-1E09233B2C40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7197114-B1C7-49EC-8740-1E09233B2C40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D29EC709-33DE-4045-8F3B-EC6619CDB429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D29EC709-33DE-4045-8F3B-EC6619CDB429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D29EC709-33DE-4045-8F3B-EC6619CDB429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D29EC709-33DE-4045-8F3B-EC6619CDB429}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,7 +105,9 @@ Global
 		{FD0D825E-98BF-49C3-AF58-A6A21B99D934} = {303AE78F-6C96-4DF4-AC89-5C4FD53AFF0B}
 		{B801F61B-5730-4C85-9C6A-FD0FBA4C35E4} = {303AE78F-6C96-4DF4-AC89-5C4FD53AFF0B}
 		{88808771-56BE-422B-94DC-7AB070F64E98} = {068CB250-2804-4C7E-9490-17F432B9CE21}
-		{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE} = {3FB1A133-14CA-4927-9CC5-6CDD641E6A97}
+		{E47EF9E0-A1C7-4FF0-AEC5-143F52ED0FBE} = {068CB250-2804-4C7E-9490-17F432B9CE21}
+		{B7197114-B1C7-49EC-8740-1E09233B2C40} = {ADAAA63C-E17C-4F1B-A062-3CCA071D75C2}
+		{D29EC709-33DE-4045-8F3B-EC6619CDB429} = {0A782A83-B66D-4B99-9BE2-2B18AAD2E03C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6AE955B5-16B0-41CF-9F12-66D15B3DD1AB}

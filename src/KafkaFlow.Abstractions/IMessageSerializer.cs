@@ -6,6 +6,6 @@ namespace KafkaFlow
     {
         byte[] Serialize(object obj);
 
-        object Desserialize(byte[] data, Type type);
+        object Deserialize(byte[] data, Type type);
     }
 }

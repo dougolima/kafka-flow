@@ -1,6 +1,5 @@
 namespace KafkaFlow.Producers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public interface IMessageProducer<TProducer> : IMessageProducer
@@ -13,11 +12,11 @@ namespace KafkaFlow.Producers
             string topic,
             string partitionKey,
             object message,
-            Dictionary<string, byte[]> headers = null);
+            IMessageHeaders headers = null);
 
         Task ProduceAsync(
             string partitionKey,
             object message,
-            Dictionary<string, byte[]> headers = null);
+            IMessageHeaders headers = null);
     }
 }

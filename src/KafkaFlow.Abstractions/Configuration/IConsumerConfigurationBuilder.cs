@@ -22,7 +22,7 @@ namespace KafkaFlow.Configuration
 
         /// <summary>
         /// Set the initial offset strategy used by new consumer groups.
-        /// If your consumer group (set by method <see cref="KafkaFlow.Configuration.Consumers.ConsumerConfigurationBuilder.WithGroupId(string)"/>) has no offset stored in Kafka, this configuration will be used
+        /// If your consumer group (set by method <see cref="WithGroupId(string)"/>) has no offset stored in Kafka, this configuration will be used
         /// Use Earliest to read the topic from the beginning
         /// Use Latest to read only new messages in the topic
         /// </summary>
@@ -82,7 +82,7 @@ namespace KafkaFlow.Configuration
         IConsumerConfigurationBuilder WithAutoStoreOffsets();
 
         /// <summary>
-        /// The Handler or Middleware should call the <see cref="KafkaFlow.IMessageContext.StoreOffset()">
+        /// The Handler or Middleware should call the <see cref="IMessageContext.StoreOffset()"/>
         /// </summary>
         /// <returns></returns>
         IConsumerConfigurationBuilder WithManualStoreOffsets();
@@ -103,37 +103,5 @@ namespace KafkaFlow.Configuration
         /// <returns></returns>
         IConsumerConfigurationBuilder UseMiddleware<T>()
             where T : IMessageMiddleware;
-
-        /// <summary>
-        /// Set the default serializer to be used when consuming messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageSerializer"/> interface</typeparam>
-        /// <returns></returns>
-        IConsumerConfigurationBuilder UseSerializer<T>()
-            where T : IMessageSerializer;
-
-        /// <summary>
-        /// Set the default serializer to be used when consuming messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageSerializer"/> interface</typeparam>
-        /// <returns></returns>
-        IConsumerConfigurationBuilder UseSerializer<T>(Factory<T> factory)
-            where T : IMessageSerializer;
-
-        /// <summary>
-        /// Set the default compressor to be used when consuming messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageCompressor"/> interface</typeparam>
-        /// <returns></returns>
-        IConsumerConfigurationBuilder UseCompressor<T>()
-            where T : IMessageCompressor;
-
-        /// <summary>
-        /// Set the default compressor to be used when consuming messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageCompressor"/> interface</typeparam>
-        /// <returns></returns>
-        IConsumerConfigurationBuilder UseCompressor<T>(Factory<T> factory)
-            where T : IMessageCompressor;
     }
 }

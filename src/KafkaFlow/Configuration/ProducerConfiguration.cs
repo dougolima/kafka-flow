@@ -9,26 +9,18 @@ namespace KafkaFlow.Configuration
         public ProducerConfiguration(
             ClusterConfiguration cluster,
             string topic,
-            Factory<IMessageSerializer> serializerFactory,
-            Factory<IMessageCompressor> compressorFactory,
             KafkaFlow.Acks? acks,
             IReadOnlyList<Factory<IMessageMiddleware>> middlewaresFactories,
             ProducerConfig baseProducerConfig)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
-            this.SerializerFactory = serializerFactory ?? throw new ArgumentNullException(nameof(serializerFactory));
-            this.CompressorFactory = compressorFactory ?? throw new ArgumentNullException(nameof(compressorFactory));
             this.Acks = acks;
             this.MiddlewaresFactories = middlewaresFactories;
             this.BaseProducerConfig = baseProducerConfig;
         }
 
         public IReadOnlyList<Factory<IMessageMiddleware>> MiddlewaresFactories { get; }
-
-        public Factory<IMessageCompressor> CompressorFactory { get; }
-
-        public Factory<IMessageSerializer> SerializerFactory { get; }
 
         public ClusterConfiguration Cluster { get; }
 

@@ -1,8 +1,11 @@
 ﻿namespace KafkaFlow.Samples.Producer
 {
     using System;
+    using KafkaFlow.Compressor;
+    using KafkaFlow.Compressor.Gzip;
     using KafkaFlow.Extensions;
     using KafkaFlow.Samples.Common;
+    using KafkaFlow.Serializer;
     using KafkaFlow.Serializer.ProtoBuf;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -21,8 +24,8 @@
                             .AddProducer<PrintConsoleProducer>(
                                 producer => producer
                                     .DefaultTopic("test-topic")
-                                    .UseSerializer<ProtobufMessageSerializer>()
-                                    .UseMiddleware<MessageTypeNameHeaderMiddleware>()
+                                    .UseSerializerMiddleware<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                    .UseCompressorMiddleware<GzipMessageCompressor>()
                                     .WithAcks(Acks.All)
                                 )
                     )

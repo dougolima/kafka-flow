@@ -24,7 +24,7 @@
             return Encoding.UTF8.GetBytes(serialized);
         }
 
-        public object Desserialize(byte[] data, Type type)
+        public object Deserialize(byte[] data, Type type)
         {
             var json = Encoding.UTF8.GetString(data);
 

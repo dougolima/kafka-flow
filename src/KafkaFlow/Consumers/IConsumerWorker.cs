@@ -3,9 +3,9 @@ namespace KafkaFlow.Consumers
     using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IConsumerWorker : IWorker
+    internal interface IConsumerWorker : IWorker
     {
-        ValueTask EnqueueAsync(ConsumerMessage message);
+        ValueTask EnqueueAsync(MessageContext context);
 
         Task StartAsync(CancellationToken stopCancelltionToken = default);
 

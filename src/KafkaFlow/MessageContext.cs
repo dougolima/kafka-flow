@@ -1,62 +1,57 @@
 namespace KafkaFlow
 {
     using System;
-    using System.Text;
     using Confluent.Kafka;
     using KafkaFlow.Consumers;
 
     internal class MessageContext : IMessageContext
     {
         private readonly IOffsetManager offsetManager;
-        private readonly ConsumeResult<byte[], byte[]> kafkaResult;
 
         public MessageContext(
-            ConsumerMessage message,
+            ConsumeResult<byte[], byte[]> kafkaResult,
             IOffsetManager offsetManager,
-            int workerId,
-            IMessageSerializer serializer,
-            IMessageCompressor compressor)
+            int workerId)
         {
             this.offsetManager = offsetManager;
-            this.Message = message;
+            this.Message = this.RawMessage = kafkaResult.Value;
+            this.Headers = new MessageHeaders(kafkaResult.Headers);
+            this.KafkaResult = kafkaResult;
             this.WorkerId = workerId;
-            this.Serializer = serializer;
-            this.Compressor = compressor;
-            this.kafkaResult = message.KafkaResult;
-            this.Topic = message.KafkaResult.Topic;
-            this.Partition = message.KafkaResult.Partition.Value;
-            this.Offset = message.KafkaResult.Offset.Value;
+            this.Topic = kafkaResult.Topic;
+            this.Partition = kafkaResult.Partition.Value;
+            this.Offset = kafkaResult.Offset.Value;
         }
 
         public MessageContext(
-            IMessage message,
-            IMessageSerializer serializer,
-            IMessageCompressor compressor,
+            object message,
+            IMessageHeaders headers,
             string topic)
         {
             this.Message = message;
-            this.Serializer = serializer;
-            this.Compressor = compressor;
+            this.Headers = headers ?? new MessageHeaders();
             this.Topic = topic;
         }
 
-        public IMessage Message { get; }
-
+        public ConsumeResult<byte[], byte[]> KafkaResult { get; }
         public int WorkerId { get; }
 
-        public Type MessageType { get; set; }
+        public byte[] RawMessage { get; }
 
-        public object MessageObject { get; set; }
+        public object Message { get; private set; }
 
-        public IMessageSerializer Serializer { get; set; }
-
-        public IMessageCompressor Compressor { get; set; }
+        public IMessageHeaders Headers { get; }
 
         public string Topic { get; }
 
         public int? Partition { get; set; }
 
         public long? Offset { get; set; }
+
+        public void TransformMessage(object message)
+        {
+            this.Message = message;
+        }
 
         public void StoreOffset()
         {
@@ -65,16 +60,7 @@ namespace KafkaFlow
                 throw new InvalidOperationException("You can only store offsets in consumers");
             }
 
-            this.offsetManager.StoreOffset(this.kafkaResult.TopicPartitionOffset);
+            this.offsetManager.StoreOffset(this.KafkaResult.TopicPartitionOffset);
         }
-
-        public string GetStringHeader(string key, Encoding encoding)
-        {
-            return this.Message.Headers.TryGetValue(key, out var data) ?
-                encoding.GetString(data) :
-                null;
-        }
-
-        public string GetStringHeader(string key) => this.GetStringHeader(key, Encoding.UTF8);
     }
 }

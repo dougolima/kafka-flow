@@ -24,38 +24,6 @@ namespace KafkaFlow.Configuration
             where T : IMessageMiddleware;
 
         /// <summary>
-        /// Set the default serializer to be used when producing messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageSerializer"/> interface</typeparam>
-        /// <returns></returns>
-        IProducerConfigurationBuilder UseSerializer<T>()
-            where T : IMessageSerializer;
-
-        /// <summary>
-        /// Set the default serializer to be used when producing messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageSerializer"/> interface</typeparam>
-        /// <returns></returns>
-        IProducerConfigurationBuilder UseSerializer<T>(Factory<T> factory)
-            where T : IMessageSerializer;
-
-        /// <summary>
-        /// Set the default compressor to be used when producing messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageCompressor"/> interface</typeparam>
-        /// <returns></returns>
-        IProducerConfigurationBuilder UseCompressor<T>()
-            where T : IMessageCompressor;
-
-        /// <summary>
-        /// Set the default compressor to be used when producing messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageCompressor"/> interface</typeparam>
-        /// <returns></returns>
-        IProducerConfigurationBuilder UseCompressor<T>(Factory<T> factory)
-            where T : IMessageCompressor;
-
-        /// <summary>
         /// Set the default topic to be used when producing messages
         /// </summary>
         /// <param name="topic">Topic name</param>
@@ -63,7 +31,7 @@ namespace KafkaFlow.Configuration
         IProducerConfigurationBuilder DefaultTopic(string topic);
 
         /// <summary>
-        /// Set the <see cref="Confluent.Kafka.Acks"/> to be used when producing messages
+        /// Set the <see cref="Acks"/> to be used when producing messages
         /// </summary>
         /// <param name="acks"></param>
         /// <returns></returns>

@@ -17,9 +17,6 @@ namespace KafkaFlow.Configuration
 
         private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
 
-        private Factory<IMessageSerializer> serializerFactory;
-        private Factory<IMessageCompressor> compressorFactory = provider => new NullMessageCompressor();
-
         public ProducerConfigurationBuilder(IServiceCollection services, Type type)
         {
             this.ServiceCollection = services;
@@ -60,41 +57,11 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IProducerConfigurationBuilder UseSerializer<T>()
-            where T : IMessageSerializer
-        {
-            return this.UseSerializer(provider => provider.GetRequiredService<T>());
-        }
-
-        public IProducerConfigurationBuilder UseSerializer<T>(Factory<T> factory)
-            where T : IMessageSerializer
-        {
-            this.ServiceCollection.TryAddSingleton(typeof(T));
-            this.serializerFactory = provider => factory(provider);
-            return this;
-        }
-
-        public IProducerConfigurationBuilder UseCompressor<T>()
-            where T : IMessageCompressor
-        {
-            return this.UseCompressor(provider => provider.GetRequiredService<T>());
-        }
-
-        public IProducerConfigurationBuilder UseCompressor<T>(Factory<T> factory)
-            where T : IMessageCompressor
-        {
-            this.ServiceCollection.TryAddSingleton(typeof(T));
-            this.compressorFactory = provider => factory(provider);
-            return this;
-        }
-
         public ProducerConfiguration Build(ClusterConfiguration clusterConfiguration)
         {
             var configuration = new ProducerConfiguration(
                 clusterConfiguration,
                 this.topic,
-                this.serializerFactory,
-                this.compressorFactory,
                 this.acks,
                 this.middlewaresFactories,
                 this.baseProducerConfig ?? new ProducerConfig());
