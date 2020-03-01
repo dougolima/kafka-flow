@@ -81,6 +81,7 @@ namespace KafkaFlow.Configuration
         public IConsumerConfigurationBuilder WithWorkDistribuitionStretagy<T>()
             where T : IDistribuitionStrategy
         {
+            this.ServiceCollection.TryAddTransient(typeof(T));
             this.distribuitionStrategyFactory = provider => provider.GetRequiredService<T>();
             return this;
         }
