@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.2</LangVersion>
     <Authors>Farfetch - Enabling Team</Authors>
     <Company>Farfetch</Company>
     <Product>KafkaFlow</Product>

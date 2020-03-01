@@ -32,11 +32,11 @@
 
             this.consumerBuilder = new ConsumerBuilder<byte[], byte[]>(kafkaConfig);
 
-            this.consumerBuilder.SetPartitionsAssignedHandler(this.OnPartitionAssigned);
-            this.consumerBuilder.SetPartitionsRevokedHandler(this.OnPartitionRevoked);
+            this.consumerBuilder.SetPartitionsAssignedHandler((consumer, partitions) => this.OnPartitionAssigned(consumer, partitions));
+            this.consumerBuilder.SetPartitionsRevokedHandler((consumer, partitions) => this.OnPartitionRevoked(partitions));
         }
 
-        private void OnPartitionRevoked(IConsumer<byte[], byte[]> consumer, List<TopicPartitionOffset> partitions)
+        private void OnPartitionRevoked(IReadOnlyCollection<TopicPartitionOffset> partitions)
         {
             this.logHandler.Info(
                 "Partitions revoked",
@@ -51,7 +51,7 @@
             this.consumerWorkerPool.StopAsync().GetAwaiter().GetResult();
         }
 
-        private void OnPartitionAssigned(IConsumer<byte[], byte[]> consumer, List<TopicPartition> partitions)
+        private void OnPartitionAssigned(IConsumer<byte[], byte[]> consumer, IReadOnlyCollection<TopicPartition> partitions)
         {
             this.logHandler.Info(
                 "Partitions assigned",

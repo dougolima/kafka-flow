@@ -72,12 +72,17 @@ namespace KafkaFlow.Configuration
 
         private static AutoOffsetReset? ParseAutoOffsetReset(KafkaFlow.AutoOffsetReset? autoOffsetReset)
         {
-            return autoOffsetReset switch
+            switch (autoOffsetReset)
             {
-                KafkaFlow.AutoOffsetReset.Latest => Confluent.Kafka.AutoOffsetReset.Latest,
-                KafkaFlow.AutoOffsetReset.Earliest => Confluent.Kafka.AutoOffsetReset.Earliest,
-                _ => null,
-            };
+                case KafkaFlow.AutoOffsetReset.Latest:
+                    return Confluent.Kafka.AutoOffsetReset.Latest;
+
+                case KafkaFlow.AutoOffsetReset.Earliest:
+                    return Confluent.Kafka.AutoOffsetReset.Latest;
+
+                default:
+                    return null;
+            }
         }
     }
 }

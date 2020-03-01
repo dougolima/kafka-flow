@@ -40,13 +40,20 @@ namespace KafkaFlow.Configuration
 
         private static Acks? ParseAcks(KafkaFlow.Acks? acks)
         {
-            return acks switch
+            switch (acks)
             {
-                KafkaFlow.Acks.Leader => Confluent.Kafka.Acks.Leader,
-                KafkaFlow.Acks.All => Confluent.Kafka.Acks.All,
-                KafkaFlow.Acks.None => Confluent.Kafka.Acks.None,
-                _ => null
-            };
+                case KafkaFlow.Acks.Leader:
+                    return Confluent.Kafka.Acks.Leader;
+
+                case KafkaFlow.Acks.All:
+                    return Confluent.Kafka.Acks.All;
+
+                case KafkaFlow.Acks.None:
+                    return Confluent.Kafka.Acks.None;
+
+                default:
+                    return null;
+            }
         }
     }
 }
