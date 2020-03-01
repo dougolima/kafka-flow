@@ -25,6 +25,17 @@ namespace KafkaFlow.Producers
 
         public Task ProduceAsync(
             string topic,
+            byte[] partitionKey,
+            byte[] message,
+            IMessageHeaders headers = null)
+        {
+            return this.middlewareExecutor.Execute(
+                new MessageContext(message, partitionKey, headers, topic),
+                this.InternalProduce);
+        }
+
+        public Task ProduceAsync(
+            string topic,
             string partitionKey,
             object message,
             IMessageHeaders headers = null)
@@ -32,28 +43,8 @@ namespace KafkaFlow.Producers
             var messageKey = Encoding.UTF8.GetBytes(partitionKey);
 
             return this.middlewareExecutor.Execute(
-                new MessageContext(
-                    message,
-                    headers,
-                    topic),
-                async context =>
-                {
-                    var result = await this.producer
-                        .ProduceAsync(
-                            context.Topic,
-                            new Message<byte[], byte[]>
-                            {
-                                Key = messageKey,
-                                Value = (byte[])context.Message,
-                                Headers = ((MessageHeaders)context.Headers).GetKafkaHeaders(),
-                                Timestamp = Timestamp.Default
-                            })
-                        .ConfigureAwait(false);
-
-                    context.Offset = result.Offset;
-                    context.Partition = result.Partition;
-                }
-            );
+                new MessageContext(message, messageKey, headers, topic),
+                this.InternalProduce);
         }
 
         public Task ProduceAsync(
@@ -66,6 +57,31 @@ namespace KafkaFlow.Producers
                 partitionKey,
                 message,
                 headers);
+        }
+
+        private async Task InternalProduce(MessageContext context)
+        {
+            if (!(context.Message is byte[] value))
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(context.Message)} must be a byte array to be produced, it is a {context.Message.GetType().FullName}." +
+                    "You should serialize or encode your message object using a middleware");
+            }
+
+            var result = await this.producer
+                .ProduceAsync(
+                    context.Topic,
+                    new Message<byte[], byte[]>
+                    {
+                        Key = context.PartitionKey,
+                        Value = value,
+                        Headers = ((MessageHeaders)context.Headers).GetKafkaHeaders(),
+                        Timestamp = Timestamp.Default
+                    })
+                .ConfigureAwait(false);
+
+            context.Offset = result.Offset;
+            context.Partition = result.Partition;
         }
     }
 }

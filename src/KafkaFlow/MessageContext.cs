@@ -13,10 +13,11 @@ namespace KafkaFlow
             IOffsetManager offsetManager,
             int workerId)
         {
+            this.KafkaResult = kafkaResult;
             this.offsetManager = offsetManager;
             this.Message = this.RawMessage = kafkaResult.Value;
+            this.PartitionKey = kafkaResult.Key;
             this.Headers = new MessageHeaders(kafkaResult.Headers);
-            this.KafkaResult = kafkaResult;
             this.WorkerId = workerId;
             this.Topic = kafkaResult.Topic;
             this.Partition = kafkaResult.Partition.Value;
@@ -25,18 +26,23 @@ namespace KafkaFlow
 
         public MessageContext(
             object message,
+            byte[] partitionKey,
             IMessageHeaders headers,
             string topic)
         {
             this.Message = message;
+            this.PartitionKey = partitionKey;
             this.Headers = headers ?? new MessageHeaders();
             this.Topic = topic;
         }
 
         public ConsumeResult<byte[], byte[]> KafkaResult { get; }
+
         public int WorkerId { get; }
 
         public byte[] RawMessage { get; }
+
+        public byte[] PartitionKey { get; }
 
         public object Message { get; private set; }
 
