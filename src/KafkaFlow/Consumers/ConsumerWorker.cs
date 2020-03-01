@@ -4,6 +4,7 @@ namespace KafkaFlow.Consumers
     using System.Threading;
     using System.Threading.Channels;
     using System.Threading.Tasks;
+    using Confluent.Kafka;
     using KafkaFlow.Configuration;
 
     internal class ConsumerWorker : IConsumerWorker
@@ -15,7 +16,7 @@ namespace KafkaFlow.Consumers
 
         private CancellationTokenSource cancellationTokenSource;
 
-        private readonly Channel<MessageContext> messagesBuffer;
+        private readonly Channel<ConsumeResult<byte[], byte[]>> messagesBuffer;
         private Task backgroundTask;
         private Action onMessageFinishedHandler;
 
@@ -31,14 +32,14 @@ namespace KafkaFlow.Consumers
             this.offsetManager = offsetManager;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
-            this.messagesBuffer = Channel.CreateBounded<MessageContext>(configuration.BufferSize);
+            this.messagesBuffer = Channel.CreateBounded<ConsumeResult<byte[], byte[]>>(configuration.BufferSize);
         }
 
         public int Id { get; }
 
-        public ValueTask EnqueueAsync(MessageContext context)
+        public ValueTask EnqueueAsync(ConsumeResult<byte[], byte[]> message)
         {
-            return this.messagesBuffer.Writer.WriteAsync(context);
+            return this.messagesBuffer.Writer.WriteAsync(message);
         }
 
         public Task StartAsync(CancellationToken stopCancellationToken = default)
@@ -53,9 +54,11 @@ namespace KafkaFlow.Consumers
                     {
                         try
                         {
-                            var context = await this.messagesBuffer.Reader
+                            var message = await this.messagesBuffer.Reader
                                 .ReadAsync(this.cancellationTokenSource.Token)
                                 .ConfigureAwait(false);
+
+                            var context = new MessageContext(message, this.offsetManager, this.Id);
 
                             try
                             {

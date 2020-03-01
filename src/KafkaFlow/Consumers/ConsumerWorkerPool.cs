@@ -82,7 +82,7 @@ namespace KafkaFlow.Consumers
                 .ConfigureAwait(false);
 
             await worker
-                .EnqueueAsync(new MessageContext(message, this.offsetManager, worker.Id))
+                .EnqueueAsync(message)
                 .ConfigureAwait(false);
         }
     }
