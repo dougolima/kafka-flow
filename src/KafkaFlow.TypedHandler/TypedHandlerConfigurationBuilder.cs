@@ -19,11 +19,11 @@ namespace KafkaFlow.TypedHandler
         }
 
         /// <summary>
-        /// Register all classes that implements the <see cref="IMessageHandler{TMessage}"/> interface from the assembly of the provided type
+        /// Adds all classes that implements the <see cref="IMessageHandler{TMessage}"/> interface from the assembly of the provided type
         /// </summary>
         /// <typeparam name="T">A type that implements the <see cref="IMessageHandler{TMessage}"/> interface</typeparam>
         /// <returns></returns>
-        public TypedHandlerConfigurationBuilder ScanHandlersFromAssemblyOf<T>()
+        public TypedHandlerConfigurationBuilder AddHandlersFromAssemblyOf<T>()
             where T : IMessageHandler
         {
             var handlersType = typeof(T).Assembly
