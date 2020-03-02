@@ -1,5 +1,7 @@
 namespace KafkaFlow
 {
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Text;
     using Confluent.Kafka;
 
@@ -32,5 +34,18 @@ namespace KafkaFlow
         public string GetString(string key) => this.GetString(key, Encoding.UTF8);
 
         public Headers GetKafkaHeaders() => this.headers;
+
+        public IEnumerator<KeyValuePair<string, byte[]>> GetEnumerator()
+        {
+            foreach (var header in this.headers)
+            {
+                yield return new KeyValuePair<string, byte[]>(header.Key, header.GetValueBytes());
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }
