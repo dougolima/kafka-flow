@@ -14,11 +14,11 @@ namespace KafkaFlow.Consumers
         private readonly ConsumerConfiguration configuration;
         private readonly ILogHandler logHandler;
         private readonly IMiddlewareExecutor middlewareExecutor;
-        private readonly Factory<IDistribuitionStrategy> distribuitionStrategyFactory;
+        private readonly Factory<IDistributionStrategy> distributionStrategyFactory;
 
         private readonly List<IConsumerWorker> workers = new List<IConsumerWorker>();
 
-        private IDistribuitionStrategy distribuitionStrategy;
+        private IDistributionStrategy distributionStrategy;
 
         private OffsetManager offsetManager;
 
@@ -27,13 +27,13 @@ namespace KafkaFlow.Consumers
             ConsumerConfiguration configuration,
             ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor,
-            Factory<IDistribuitionStrategy> distribuitionStrategyFactory)
+            Factory<IDistributionStrategy> distributionStrategyFactory)
         {
             this.serviceProvider = serviceProvider;
             this.configuration = configuration;
             this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
-            this.distribuitionStrategyFactory = distribuitionStrategyFactory;
+            this.distributionStrategyFactory = distributionStrategyFactory;
         }
 
         public async Task StartAsync(
@@ -62,8 +62,8 @@ namespace KafkaFlow.Consumers
                             }))
                 .ConfigureAwait(false);
 
-            this.distribuitionStrategy = this.distribuitionStrategyFactory(this.serviceProvider);
-            this.distribuitionStrategy.Init(this.workers.AsReadOnly());
+            this.distributionStrategy = this.distributionStrategyFactory(this.serviceProvider);
+            this.distributionStrategy.Init(this.workers.AsReadOnly());
         }
 
         public async Task StopAsync()
@@ -77,7 +77,7 @@ namespace KafkaFlow.Consumers
         {
             this.offsetManager.InitializeOffsetIfNeeded(message.TopicPartitionOffset);
 
-            var worker = (IConsumerWorker)await this.distribuitionStrategy
+            var worker = (IConsumerWorker)await this.distributionStrategy
                 .GetWorkerAsync(message.Key)
                 .ConfigureAwait(false);
 

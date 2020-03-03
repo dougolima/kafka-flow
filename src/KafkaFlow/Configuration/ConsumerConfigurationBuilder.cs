@@ -1,7 +1,7 @@
 namespace KafkaFlow.Configuration
 {
     using System.Collections.Generic;
-    using KafkaFlow.Consumers.DistribuitionStrategies;
+    using KafkaFlow.Consumers.DistributionStrategies;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -18,7 +18,7 @@ namespace KafkaFlow.Configuration
         private int bufferSize;
         private bool autoStoreOffsets = true;
 
-        private Factory<IDistribuitionStrategy> distribuitionStrategyFactory = provider => new BytesSumDistribuitionStrategy();
+        private Factory<IDistributionStrategy> distributionStrategyFactory = provider => new BytesSumDistributionStrategy();
 
         private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
 
@@ -71,18 +71,18 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IConsumerConfigurationBuilder WithWorkDistribuitionStretagy<T>(Factory<T> factory)
-            where T : IDistribuitionStrategy
+        public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
+            where T : IDistributionStrategy
         {
-            this.distribuitionStrategyFactory = provider => factory(provider);
+            this.distributionStrategyFactory = provider => factory(provider);
             return this;
         }
 
-        public IConsumerConfigurationBuilder WithWorkDistribuitionStretagy<T>()
-            where T : IDistribuitionStrategy
+        public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>()
+            where T : IDistributionStrategy
         {
             this.ServiceCollection.TryAddTransient(typeof(T));
-            this.distribuitionStrategyFactory = provider => provider.GetRequiredService<T>();
+            this.distributionStrategyFactory = provider => provider.GetRequiredService<T>();
             return this;
         }
 
@@ -120,7 +120,7 @@ namespace KafkaFlow.Configuration
                 this.groupId,
                 this.workersCount,
                 this.bufferSize,
-                this.distribuitionStrategyFactory,
+                this.distributionStrategyFactory,
                 this.middlewaresFactories)
             {
                 AutoOffsetReset = this.autoOffsetReset,

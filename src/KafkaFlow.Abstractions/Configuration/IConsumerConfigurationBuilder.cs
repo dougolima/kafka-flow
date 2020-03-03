@@ -61,19 +61,19 @@ namespace KafkaFlow.Configuration
         /// <summary>
         /// Set the strategy to choose a worker when a message arrives
         /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IDistribuitionStrategy"/> interface</typeparam>
+        /// <typeparam name="T">A class that implements the <see cref="IDistributionStrategy"/> interface</typeparam>
         /// <param name="factory">A factory to create the instance</param>
         /// <returns></returns>
-        IConsumerConfigurationBuilder WithWorkDistribuitionStretagy<T>(Factory<T> factory)
-            where T : IDistribuitionStrategy;
+        IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
+            where T : IDistributionStrategy;
 
         /// <summary>
         /// Set the strategy to choose a worker when a message arrives
         /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IDistribuitionStrategy"/> interface</typeparam>
+        /// <typeparam name="T">A class that implements the <see cref="IDistributionStrategy"/> interface</typeparam>
         /// <returns></returns>
-        IConsumerConfigurationBuilder WithWorkDistribuitionStretagy<T>()
-            where T : IDistribuitionStrategy;
+        IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>()
+            where T : IDistributionStrategy;
 
         /// <summary>
         /// Offsets will be stored after the execution of the handler and middlewares automatically, this is the default behaviour

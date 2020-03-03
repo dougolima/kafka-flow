@@ -12,11 +12,11 @@ namespace KafkaFlow.Configuration
             string groupId,
             int workersCount,
             int bufferSize,
-            Factory<IDistribuitionStrategy> distribuitionStrategyFactory,
+            Factory<IDistributionStrategy> distributionStrategyFactory,
             List<Factory<IMessageMiddleware>> middlewaresFactories)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
-            this.DistribuitionStrategyFactory = distribuitionStrategyFactory ?? throw new ArgumentNullException(nameof(distribuitionStrategyFactory));
+            this.DistributionStrategyFactory = distributionStrategyFactory ?? throw new ArgumentNullException(nameof(distributionStrategyFactory));
             this.MiddlewaresFactories = middlewaresFactories ?? throw new ArgumentNullException(nameof(middlewaresFactories));
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
@@ -36,7 +36,7 @@ namespace KafkaFlow.Configuration
 
         public ClusterConfiguration Cluster { get; }
 
-        public Factory<IDistribuitionStrategy> DistribuitionStrategyFactory { get; }
+        public Factory<IDistributionStrategy> DistributionStrategyFactory { get; }
 
         public List<Factory<IMessageMiddleware>> MiddlewaresFactories { get; }
 
