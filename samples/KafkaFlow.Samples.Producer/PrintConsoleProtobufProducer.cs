@@ -4,11 +4,11 @@
     using System.Threading.Tasks;
     using KafkaFlow.Producers;
 
-    internal class PrintConsoleProducer
+    internal class PrintConsoleProtobufProducer
     {
-        private readonly IMessageProducer<PrintConsoleProducer> producer;
+        private readonly IMessageProducer<PrintConsoleProtobufProducer> producer;
 
-        public PrintConsoleProducer(IMessageProducer<PrintConsoleProducer> producer)
+        public PrintConsoleProtobufProducer(IMessageProducer<PrintConsoleProtobufProducer> producer)
         {
             this.producer = producer;
         }

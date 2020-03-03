@@ -6,6 +6,7 @@
     using KafkaFlow.Extensions;
     using KafkaFlow.Samples.Common;
     using KafkaFlow.Serializer;
+    using KafkaFlow.Serializer.Json;
     using KafkaFlow.Serializer.ProtoBuf;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -21,17 +22,25 @@
                     .AddCluster(
                         cluster => cluster
                             .WithBrokers(new[] { "localhost:9092" })
-                            .AddProducer<PrintConsoleProducer>(
+                            .AddProducer<PrintConsoleProtobufProducer>(
                                 producer => producer
                                     .DefaultTopic("test-topic")
                                     .UseSerializerMiddleware<ProtobufMessageSerializer, SampleMessageTypeResolver>()
                                     .UseCompressorMiddleware<GzipMessageCompressor>()
                                     .WithAcks(Acks.All)
-                                )
+                            )
+                            .AddProducer<PrintConsoleJsonProducer>(
+                                producer => producer
+                                    .DefaultTopic("test-topic-json")
+                                    .UseSerializerMiddleware<JsonMessageSerializer, SampleMessageTypeResolver>()
+                                    .UseCompressorMiddleware<GzipMessageCompressor>()
+                                    .WithAcks(Acks.All)
+                            )
                     )
             );
 
-            services.AddTransient<PrintConsoleProducer>();
+            services.AddTransient<PrintConsoleProtobufProducer>();
+            services.AddTransient<PrintConsoleJsonProducer>();
 
             var provider = services.BuildServiceProvider();
 
@@ -39,7 +48,8 @@
 
             bus.StartAsync().GetAwaiter().GetResult();
 
-            var printConsole = provider.GetService<PrintConsoleProducer>();
+            var printConsole = provider.GetService<PrintConsoleProtobufProducer>();
+            var printConsoleJson = provider.GetService<PrintConsoleJsonProducer>();
 
             while (true)
             {
@@ -48,7 +58,8 @@
 
                 for (var i = 0; i < count; i++)
                 {
-                    printConsole.ProduceAsync(new TestMessage { Text = $"Message: {Guid.NewGuid()}" });
+                    printConsole.ProduceAsync(new TestMessage { Text = $"Protobuf Message: {Guid.NewGuid()}" });
+                    printConsoleJson.ProduceAsync(new TestMessage { Text = $"Json Message: {Guid.NewGuid()}" });
                 }
             }
         }

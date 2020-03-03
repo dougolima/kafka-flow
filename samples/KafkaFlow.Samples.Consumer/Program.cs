@@ -6,6 +6,7 @@
     using KafkaFlow.Extensions;
     using KafkaFlow.Samples.Common;
     using KafkaFlow.Serializer;
+    using KafkaFlow.Serializer.Json;
     using KafkaFlow.Serializer.ProtoBuf;
     using KafkaFlow.TypedHandler;
     using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,20 @@
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
                                     .UseCompressorMiddleware<GzipMessageCompressor>()
                                     .UseSerializerMiddleware<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                    .UseTypedHandlers(handlers =>
+                                        handlers
+                                            .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                            .AddHandler<PrintConsoleHandler>())
+                            )
+                            .AddConsumer(
+                                consumer => consumer
+                                    .Topic("test-topic-json")
+                                    .WithGroupId("print-console-handler")
+                                    .WithBufferSize(100)
+                                    .WithWorkersCount(10)
+                                    .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                                    .UseCompressorMiddleware<GzipMessageCompressor>()
+                                    .UseSerializerMiddleware<JsonMessageSerializer, SampleMessageTypeResolver>()
                                     .UseTypedHandlers(handlers =>
                                         handlers
                                             .WithHandlerLifetime(ServiceLifetime.Singleton)
