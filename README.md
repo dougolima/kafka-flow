@@ -13,15 +13,7 @@
 - Graceful shutdown (waits for the message processor ends to shutdown)
 - Store message offset only when message processing ends, avoiding message loss
 
-## Instalation
-
-Use nuget package manager.
-
-## Usage
-
-See samples folder to see Consumer and Consumer samples
-
-### What can we do with Middlewares?
+#### What can we do with Middlewares?
 
 - Read or write message headers
 - Ignore messages
@@ -31,6 +23,14 @@ See samples folder to see Consumer and Consumer samples
 - Tracing
 - Maintain compatibility with other frameworks
 - They can be reused in different applications
+
+## Instalation
+
+Use nuget package manager.
+
+## Usage
+
+See samples folder to see Consumer and Consumer samples
 
 ## Contributing
 
