@@ -29,7 +29,7 @@ A flexible framewrok to process Kafka messages with multithreading, middlewares,
 - Maintain compatibility with other frameworks
 - They can be reused in different applications
 
-## Instalation
+## Installation
 
 Use nuget package manager.
 
