@@ -31,7 +31,15 @@ A flexible framewrok to process Kafka messages with multithreading, middlewares,
 
 ## Installation
 
-Use nuget package manager.
+You should install [KafkaFlow with NuGet](https://www.nuget.org/packages/KafkaFlow):
+
+    Install-Package KafkaFlow
+    
+Or via the .NET Core command line interface:
+
+    dotnet add package KafkaFlow
+
+Either commands, from Package Manager Console or .NET Core CLI, will download and install KafkaFlow and all required dependencies.
 
 ## Usage
 
