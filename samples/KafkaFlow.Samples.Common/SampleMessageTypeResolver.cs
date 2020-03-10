@@ -9,7 +9,8 @@
     {
         private readonly Dictionary<string, Type> messageTypes = new Dictionary<string, Type>()
         {
-            [typeof(TestMessage).FullName] = typeof(TestMessage)
+            [typeof(TestMessage).FullName] = typeof(TestMessage),
+            [typeof(TestMessage2).FullName] = typeof(TestMessage2),
         };
 
         public Type OnConsume(IMessageContext context)

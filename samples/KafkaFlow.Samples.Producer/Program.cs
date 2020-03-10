@@ -59,6 +59,7 @@
                 for (var i = 0; i < count; i++)
                 {
                     printConsole.ProduceAsync(new TestMessage { Text = $"Protobuf Message: {Guid.NewGuid()}" });
+                    printConsole.ProduceAsync(new TestMessage2 { Value = $"Protobuf Message 2: {Guid.NewGuid()}" });
                     printConsoleJson.ProduceAsync(new TestMessage { Text = $"Json Message: {Guid.NewGuid()}" });
                 }
             }
