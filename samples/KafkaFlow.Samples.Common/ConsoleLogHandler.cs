@@ -17,5 +17,12 @@
         {
             Console.WriteLine($"Kafka Info: {message} | Data: {JsonSerializer.Serialize(data)}");
         }
+
+        public void Warning(string message, object data)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Kafka Warning: {message} | Data: {JsonSerializer.Serialize(data)}");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
 }

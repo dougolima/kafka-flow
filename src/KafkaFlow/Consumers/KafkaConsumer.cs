@@ -38,7 +38,7 @@
 
         private void OnPartitionRevoked(IReadOnlyCollection<TopicPartitionOffset> partitions)
         {
-            this.logHandler.Info(
+            this.logHandler.Warning(
                 "Partitions revoked",
                 new
                 {
