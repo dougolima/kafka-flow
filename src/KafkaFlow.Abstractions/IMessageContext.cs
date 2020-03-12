@@ -7,7 +7,7 @@ namespace KafkaFlow
         byte[] RawMessage { get; }
 
         object Message { get; }
-        
+
         IMessageHeaders Headers { get; }
 
         string Topic { get; }
@@ -16,11 +16,15 @@ namespace KafkaFlow
 
         long? Offset { get; }
 
+        string GroupId { get; }
+
         void TransformMessage(object message);
 
         /// <summary>
         /// Store the message offset when manual store option is used
         /// </summary>
         void StoreOffset();
+
+        IOffsetsWatermark GetOffsetsWatermark();
     }
 }

@@ -58,7 +58,11 @@ namespace KafkaFlow.Consumers
                                 .ReadAsync(this.cancellationTokenSource.Token)
                                 .ConfigureAwait(false);
 
-                            var context = new MessageContext(message, this.offsetManager, this.Id);
+                            var context = new MessageContext(
+                                message, 
+                                this.offsetManager,
+                                this.Id,
+                                this.configuration.GroupId);
 
                             try
                             {

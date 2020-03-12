@@ -48,5 +48,8 @@ namespace KafkaFlow.Consumers
                 offsets.InitializeLastOffset(partitionOffset.Offset.Value - 1);
             }
         }
+
+        public IOffsetsWatermark GetOffsetWatermark(TopicPartition partition) =>
+            new OffsetsWatermark(this.consumer.GetWatermarkOffsets(partition));
     }
 }

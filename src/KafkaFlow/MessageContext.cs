@@ -11,7 +11,8 @@ namespace KafkaFlow
         public MessageContext(
             ConsumeResult<byte[], byte[]> kafkaResult,
             IOffsetManager offsetManager,
-            int workerId)
+            int workerId,
+            string groupId)
         {
             this.KafkaResult = kafkaResult;
             this.offsetManager = offsetManager;
@@ -22,6 +23,7 @@ namespace KafkaFlow
             this.Topic = kafkaResult.Topic;
             this.Partition = kafkaResult.Partition.Value;
             this.Offset = kafkaResult.Offset.Value;
+            this.GroupId = groupId;
         }
 
         public MessageContext(
@@ -50,6 +52,8 @@ namespace KafkaFlow
 
         public string Topic { get; }
 
+        public string GroupId { get; }
+
         public int? Partition { get; set; }
 
         public long? Offset { get; set; }
@@ -67,6 +71,11 @@ namespace KafkaFlow
             }
 
             this.offsetManager.StoreOffset(this.KafkaResult.TopicPartitionOffset);
+        }
+
+        public IOffsetsWatermark GetOffsetsWatermark()
+        {
+            return this.offsetManager.GetOffsetWatermark(this.KafkaResult.TopicPartition);
         }
     }
 }

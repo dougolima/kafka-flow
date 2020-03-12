@@ -5,5 +5,7 @@ namespace KafkaFlow.Consumers
     public interface IOffsetManager
     {
         void StoreOffset(TopicPartitionOffset offset);
+
+        IOffsetsWatermark GetOffsetWatermark(TopicPartition partition);
     }
 }

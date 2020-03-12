@@ -18,7 +18,14 @@
 
         public Task Handle(IMessageContext context, TestMessage2 message)
         {
-            Console.WriteLine(message.Value);
+            var watermark = context.GetOffsetsWatermark();
+
+            Console.WriteLine("Watermark: {0} | Offset: {1} | Lag: {2} | Message: {3}",
+                watermark.High,
+                context.Offset,
+                watermark.High - context.Offset.Value - 1,
+                message.Value);
+
             return Task.CompletedTask;
         }
     }
