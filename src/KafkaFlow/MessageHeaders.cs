@@ -2,6 +2,7 @@ namespace KafkaFlow
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using Confluent.Kafka;
 
@@ -24,7 +25,15 @@ namespace KafkaFlow
             this.headers.Add(key, value);
         }
 
-        public byte[] this[string key] => this.headers.TryGetLastBytes(key, out var value) ? value : null;
+        public byte[] this[string key]
+        {
+            get => this.headers.TryGetLastBytes(key, out var value) ? value : null;
+            set
+            {
+                this.headers.Remove(key);
+                this.headers.Add(key, value);
+            }
+        }
 
         public string GetString(string key, Encoding encoding)
         {

@@ -7,7 +7,7 @@ namespace KafkaFlow
     {
         void Add(string key, byte[] value);
 
-        byte[] this[string key] { get; }
+        byte[] this[string key] { get; set; }
 
         /// <summary>
         /// Get a header value as string
