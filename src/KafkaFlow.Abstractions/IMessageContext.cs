@@ -6,6 +6,8 @@ namespace KafkaFlow
 
         byte[] RawMessage { get; }
 
+        byte[] PartitionKey { get; }
+
         object Message { get; }
 
         IMessageHeaders Headers { get; }
