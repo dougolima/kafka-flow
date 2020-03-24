@@ -38,6 +38,8 @@ namespace KafkaFlow.TypedHandler
                         context.Message)
                     .ConfigureAwait(false);
             }
+
+            await next();
         }
     }
 }
