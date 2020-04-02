@@ -25,6 +25,11 @@
 
             var messageType = this.typeResolver.OnConsume(context);
 
+            if (messageType is null)
+            {
+                return Task.CompletedTask;
+            }
+
             context.TransformMessage(this.serializer.Deserialize(rawData, messageType));
 
             return next();
