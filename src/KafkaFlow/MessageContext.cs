@@ -2,20 +2,17 @@ namespace KafkaFlow
 {
     using System;
     using Confluent.Kafka;
-    using KafkaFlow.Consumers;
 
     internal class MessageContext : IMessageContext
     {
-        private readonly IOffsetManager offsetManager;
-
         public MessageContext(
+            IMessageConsumer consumer,
             ConsumeResult<byte[], byte[]> kafkaResult,
-            IOffsetManager offsetManager,
             int workerId,
             string groupId)
         {
+            this.Consumer = consumer;
             this.KafkaResult = kafkaResult;
-            this.offsetManager = offsetManager;
             this.Message = this.RawMessage = kafkaResult.Value;
             this.PartitionKey = kafkaResult.Key;
             this.Headers = new MessageHeaders(kafkaResult.Headers);
@@ -66,19 +63,6 @@ namespace KafkaFlow
             this.MessageType = type;
         }
 
-        public void StoreOffset()
-        {
-            if (this.offsetManager == null)
-            {
-                throw new InvalidOperationException("You can only store offsets in consumers");
-            }
-
-            this.offsetManager.StoreOffset(this.KafkaResult.TopicPartitionOffset);
-        }
-
-        public IOffsetsWatermark GetOffsetsWatermark()
-        {
-            return this.offsetManager.GetOffsetWatermark(this.KafkaResult.TopicPartition);
-        }
+        public IMessageConsumer Consumer { get; }
     }
 }

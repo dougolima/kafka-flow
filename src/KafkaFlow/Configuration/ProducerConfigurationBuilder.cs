@@ -52,8 +52,8 @@ namespace KafkaFlow.Configuration
         public IProducerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
             where T : class, IMessageMiddleware
         {
-            this.ServiceCollection.TryAddSingleton<IMessageMiddleware, T>();
-            this.ServiceCollection.TryAddSingleton<T>();
+            this.ServiceCollection.TryAddScoped<IMessageMiddleware, T>();
+            this.ServiceCollection.TryAddScoped<T>();
             this.middlewaresFactories.Add(factory);
             return this;
         }
@@ -67,7 +67,7 @@ namespace KafkaFlow.Configuration
                 this.middlewaresFactories,
                 this.baseProducerConfig ?? new ProducerConfig());
 
-            this.ServiceCollection.AddTransient(
+            this.ServiceCollection.AddSingleton(
                 typeof(IMessageProducer<>).MakeGenericType(this.producerType),
                 provider => Activator.CreateInstance(
                     typeof(MessageProducer<>).MakeGenericType(this.producerType),

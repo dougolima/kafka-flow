@@ -18,7 +18,7 @@
 
         public Task Handle(IMessageContext context, TestMessage2 message)
         {
-            var watermark = context.GetOffsetsWatermark();
+            var watermark = context.Consumer.GetOffsetsWatermark();
 
             Console.WriteLine("Watermark: {0} | Offset: {1} | Lag: {2} | Message: {3}",
                 watermark.High,

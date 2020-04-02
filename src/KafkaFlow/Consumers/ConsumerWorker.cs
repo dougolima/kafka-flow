@@ -9,6 +9,7 @@ namespace KafkaFlow.Consumers
 
     internal class ConsumerWorker : IConsumerWorker
     {
+        private readonly IConsumer<byte[], byte[]> consumer;
         private readonly ConsumerConfiguration configuration;
         private readonly IOffsetManager offsetManager;
         private readonly ILogHandler logHandler;
@@ -21,6 +22,7 @@ namespace KafkaFlow.Consumers
         private Action onMessageFinishedHandler;
 
         public ConsumerWorker(
+            IConsumer<byte[], byte[]> consumer,
             int workerId,
             ConsumerConfiguration configuration,
             IOffsetManager offsetManager,
@@ -28,6 +30,7 @@ namespace KafkaFlow.Consumers
             IMiddlewareExecutor middlewareExecutor)
         {
             this.Id = workerId;
+            this.consumer = consumer;
             this.configuration = configuration;
             this.offsetManager = offsetManager;
             this.logHandler = logHandler;
@@ -59,8 +62,11 @@ namespace KafkaFlow.Consumers
                                 .ConfigureAwait(false);
 
                             var context = new MessageContext(
-                                message, 
-                                this.offsetManager,
+                                new MessageConsumerWrapper(
+                                    this.consumer,
+                                    this.offsetManager,
+                                    message),
+                                message,
                                 this.Id,
                                 this.configuration.GroupId);
 
@@ -72,13 +78,16 @@ namespace KafkaFlow.Consumers
                             }
                             catch (Exception ex)
                             {
-                                this.logHandler.Error("Error executing consumer", ex, context);
+                                this.logHandler.Error(
+                                    "Error executing consumer",
+                                    ex,
+                                    context);
                             }
                             finally
                             {
                                 if (this.configuration.AutoStoreOffsets)
                                 {
-                                    this.offsetManager.StoreOffset(context.KafkaResult.TopicPartitionOffset);
+                                    this.offsetManager.StoreOffset(message.TopicPartitionOffset);
                                 }
 
                                 this.onMessageFinishedHandler?.Invoke();

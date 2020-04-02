@@ -138,6 +138,7 @@
                                     ex,
                                     null);
 
+                                await this.consumerWorkerPool.StopAsync().ConfigureAwait(false);
                                 _ = Task.Delay(5000).ContinueWith(t => this.CreateBackgroundTask());
 
                                 break;

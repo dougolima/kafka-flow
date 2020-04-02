@@ -2,7 +2,7 @@ namespace KafkaFlow.Consumers
 {
     using Confluent.Kafka;
 
-    internal class OffsetsWatermark : IOffsetsWatermark
+    internal readonly struct OffsetsWatermark : IOffsetsWatermark
     {
         private readonly WatermarkOffsets watermark;
 

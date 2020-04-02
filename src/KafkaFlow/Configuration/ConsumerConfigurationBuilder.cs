@@ -115,8 +115,8 @@ namespace KafkaFlow.Configuration
         public IConsumerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
             where T : class, IMessageMiddleware
         {
-            this.ServiceCollection.TryAddSingleton<IMessageMiddleware, T>();
-            this.ServiceCollection.TryAddSingleton<T>();
+            this.ServiceCollection.TryAddScoped<IMessageMiddleware, T>();
+            this.ServiceCollection.TryAddScoped<T>();
             this.middlewaresFactories.Add(factory);
             return this;
         }

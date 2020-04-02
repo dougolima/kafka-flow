@@ -35,8 +35,8 @@
             where TSerializer : class, IMessageSerializer
             where TResolver : class, IMessageTypeResolver
         {
-            // consumer.ServiceCollection.TryAddSingleton<IMessageSerializer, TSerializer>();
-            // consumer.ServiceCollection.TryAddSingleton<IMessageTypeResolver, TResolver>();
+            consumer.ServiceCollection.TryAddSingleton<IMessageSerializer, TSerializer>();
+            consumer.ServiceCollection.TryAddSingleton<IMessageTypeResolver, TResolver>();
             consumer.ServiceCollection.TryAddSingleton<TSerializer>();
             consumer.ServiceCollection.TryAddSingleton<TResolver>();
 

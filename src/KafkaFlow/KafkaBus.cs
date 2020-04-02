@@ -7,6 +7,7 @@ namespace KafkaFlow
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
     using KafkaFlow.Consumers;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class KafkaBus : IKafkaBus
     {
@@ -32,11 +33,13 @@ namespace KafkaFlow
             {
                 foreach (var consumerConfiguration in cluster.Consumers)
                 {
+                    var serviceScope = this.serviceProvider.CreateScope();
+
                     var consumerWorkerPool = new ConsumerWorkerPool(
-                        this.serviceProvider,
+                        serviceScope.ServiceProvider,
                         consumerConfiguration,
                         this.logHandler,
-                        new MiddlewareExecutor(consumerConfiguration.MiddlewaresFactories, this.serviceProvider),
+                        new MiddlewareExecutor(consumerConfiguration.MiddlewaresFactories, serviceScope.ServiceProvider),
                         consumerConfiguration.DistributionStrategyFactory);
 
                     var consumer = new KafkaConsumer(

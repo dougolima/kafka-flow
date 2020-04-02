@@ -25,12 +25,7 @@ namespace KafkaFlow
         string GroupId { get; }
 
         void TransformMessage(object message, Type type);
-
-        /// <summary>
-        /// Store the message offset when manual store option is used
-        /// </summary>
-        void StoreOffset();
-
-        IOffsetsWatermark GetOffsetsWatermark();
+        
+        IMessageConsumer Consumer { get; }
     }
 }
