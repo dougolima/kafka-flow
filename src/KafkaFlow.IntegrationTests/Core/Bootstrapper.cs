@@ -1,6 +1,7 @@
-namespace KafkaFlow.IntegrationTests
+namespace KafkaFlow.IntegrationTests.Core
 {
     using System;
+    using System.Threading;
     using KafkaFlow.Compressor;
     using KafkaFlow.Compressor.Gzip;
     using KafkaFlow.Extensions;
@@ -12,6 +13,9 @@ namespace KafkaFlow.IntegrationTests
 
     public class Bootstrapper
     {
+        private const string JsonTopicName = "test-gzip-json";
+        private const string ProtobufTopicName = "test-gzip-protobuf";
+
         private static readonly Lazy<IServiceProvider> lazyProvider = new Lazy<IServiceProvider>(SetupProvider);
 
         public static IServiceProvider GetServiceProvider() => lazyProvider.Value;
@@ -22,13 +26,14 @@ namespace KafkaFlow.IntegrationTests
 
             services.AddKafka(
                 kafka => kafka
+                    .UseLogHandler<TraceLoghandler>()
                     .AddCluster(
                         cluster => cluster
                             .WithBrokers(new[] { "localhost:9092" })
                             .AddConsumer(
                                 consumer => consumer
-                                    .Topic("test-gzip-protobuf")
-                                    .WithGroupId("test")
+                                    .Topic(ProtobufTopicName)
+                                    .WithGroupId("test-protobuf")
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
@@ -42,8 +47,8 @@ namespace KafkaFlow.IntegrationTests
                             )
                             .AddConsumer(
                                 consumer => consumer
-                                    .Topic("test-gzip-json")
-                                    .WithGroupId("test")
+                                    .Topic(JsonTopicName)
+                                    .WithGroupId("test-json")
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
@@ -58,25 +63,31 @@ namespace KafkaFlow.IntegrationTests
                             .AddProducer<JsonProducer>(
                                 producer =>
                                     producer
-                                        .DefaultTopic("test-gzip-json")
+                                        .DefaultTopic(JsonTopicName)
                                         .UseSerializerMiddleware<JsonMessageSerializer, TestMessageTypeResolver>()
                                         .UseCompressorMiddleware<GzipMessageCompressor>()
                             )
                             .AddProducer<ProtobufProducer>(
                                 producer =>
                                     producer
-                                        .DefaultTopic("test-gzip-protobuf")
+                                        .DefaultTopic(ProtobufTopicName)
                                         .UseSerializerMiddleware<ProtobufMessageSerializer, TestMessageTypeResolver>()
                                         .UseCompressorMiddleware<GzipMessageCompressor>()
                             )
                     )
             );
 
+            services.AddSingleton<JsonProducer>();
+            services.AddSingleton<ProtobufProducer>();
+
             var provider = services.BuildServiceProvider();
 
             var bus = provider.UseKafka();
 
             bus.StartAsync().GetAwaiter().GetResult();
+
+            //Wait partition assignment
+            Thread.Sleep(5000);
 
             return provider;
         }

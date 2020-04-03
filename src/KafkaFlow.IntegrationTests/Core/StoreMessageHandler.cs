@@ -1,4 +1,4 @@
-namespace KafkaFlow.IntegrationTests
+namespace KafkaFlow.IntegrationTests.Core
 {
     using System.Threading.Tasks;
     using KafkaFlow.TypedHandler;
@@ -7,13 +7,13 @@ namespace KafkaFlow.IntegrationTests
     {
         public Task Handle(IMessageContext context, TestMessage1 message)
         {
-            MessageStorage.Messages.Add(message);
+            MessageStorage.Add(message);
             return Task.CompletedTask;
         }
 
         public Task Handle(IMessageContext context, TestMessage2 message)
         {
-            MessageStorage.Messages.Add(message);
+            MessageStorage.Add(message);
             return Task.CompletedTask;
         }
     }

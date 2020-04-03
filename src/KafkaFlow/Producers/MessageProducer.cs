@@ -25,17 +25,6 @@ namespace KafkaFlow.Producers
 
         public Task ProduceAsync(
             string topic,
-            byte[] partitionKey,
-            byte[] message,
-            IMessageHeaders headers = null)
-        {
-            return this.middlewareExecutor.Execute(
-                new MessageContext(message, partitionKey, headers, topic),
-                this.InternalProduce);
-        }
-
-        public Task ProduceAsync(
-            string topic,
             string partitionKey,
             object message,
             IMessageHeaders headers = null)
