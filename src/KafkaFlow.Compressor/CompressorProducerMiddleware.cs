@@ -19,7 +19,8 @@
                 throw new InvalidOperationException($"{nameof(context.Message)} must be a byte array to be compressed and it is '{context.Message.GetType().FullName}'");
             }
 
-            context.TransformMessage(this.compressor.Compress(rawData));
+            var data = this.compressor.Compress(rawData);
+            context.TransformMessage(data, data.GetType());
 
             return next();
         }

@@ -1,5 +1,7 @@
 namespace KafkaFlow
 {
+    using System;
+
     public interface IMessageContext
     {
         int WorkerId { get; }
@@ -9,6 +11,8 @@ namespace KafkaFlow
         byte[] PartitionKey { get; }
 
         object Message { get; }
+
+        Type MessageType { get; }
 
         IMessageHeaders Headers { get; }
 
@@ -20,7 +24,7 @@ namespace KafkaFlow
 
         string GroupId { get; }
 
-        void TransformMessage(object message);
+        void TransformMessage(object message, Type type);
 
         /// <summary>
         /// Store the message offset when manual store option is used

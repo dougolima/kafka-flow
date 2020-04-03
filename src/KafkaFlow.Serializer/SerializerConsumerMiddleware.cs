@@ -18,11 +18,6 @@
 
         public Task Invoke(IMessageContext context, MiddlewareDelegate next)
         {
-            if (!(context.Message is byte[] rawData))
-            {
-                throw new InvalidOperationException($"{nameof(context.Message)} must be a byte array to be serialized and it is '{context.Message.GetType().FullName}'");
-            }
-
             var messageType = this.typeResolver.OnConsume(context);
 
             if (messageType is null)
@@ -30,7 +25,18 @@
                 return Task.CompletedTask;
             }
 
-            context.TransformMessage(this.serializer.Deserialize(rawData, messageType));
+            if (context.Message is null)
+            {
+                context.TransformMessage(null, messageType);
+                return next();
+            }
+
+            if (!(context.Message is byte[] rawData))
+            {
+                throw new InvalidOperationException($"{nameof(context.Message)} must be a byte array to be serialized and it is '{context.Message.GetType().FullName}'");
+            }
+
+            context.TransformMessage(this.serializer.Deserialize(rawData, messageType), messageType);
 
             return next();
         }

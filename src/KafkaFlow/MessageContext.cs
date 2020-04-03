@@ -48,6 +48,8 @@ namespace KafkaFlow
 
         public object Message { get; private set; }
 
+        public Type MessageType { get; private set; }
+
         public IMessageHeaders Headers { get; }
 
         public string Topic { get; }
@@ -58,9 +60,10 @@ namespace KafkaFlow
 
         public long? Offset { get; set; }
 
-        public void TransformMessage(object message)
+        public void TransformMessage(object message, Type type)
         {
             this.Message = message;
+            this.MessageType = type;
         }
 
         public void StoreOffset()

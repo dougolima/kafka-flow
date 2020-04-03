@@ -19,7 +19,8 @@
         {
             this.typeResolver.OnProduce(context);
 
-            context.TransformMessage(this.serializer.Serialize(context.Message));
+            var data = this.serializer.Serialize(context.Message);
+            context.TransformMessage(data, data.GetType());
 
             return next();
         }
