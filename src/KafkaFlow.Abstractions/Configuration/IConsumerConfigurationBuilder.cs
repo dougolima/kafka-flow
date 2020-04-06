@@ -65,7 +65,7 @@ namespace KafkaFlow.Configuration
         /// <param name="factory">A factory to create the instance</param>
         /// <returns></returns>
         IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
-            where T : IDistributionStrategy;
+            where T : class, IDistributionStrategy;
 
         /// <summary>
         /// Set the strategy to choose a worker when a message arrives
@@ -73,7 +73,7 @@ namespace KafkaFlow.Configuration
         /// <typeparam name="T">A class that implements the <see cref="IDistributionStrategy"/> interface</typeparam>
         /// <returns></returns>
         IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>()
-            where T : IDistributionStrategy;
+            where T : class, IDistributionStrategy;
 
         /// <summary>
         /// Offsets will be stored after the execution of the handler and middlewares automatically, this is the default behaviour
@@ -94,7 +94,7 @@ namespace KafkaFlow.Configuration
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
         IConsumerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : IMessageMiddleware;
+            where T : class, IMessageMiddleware;
 
         /// <summary>
         /// Register a middleware to be used when consuming messages
@@ -102,6 +102,6 @@ namespace KafkaFlow.Configuration
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
         IConsumerConfigurationBuilder UseMiddleware<T>()
-            where T : IMessageMiddleware;
+            where T : class, IMessageMiddleware;
     }
 }

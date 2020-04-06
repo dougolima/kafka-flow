@@ -8,7 +8,6 @@ namespace KafkaFlow.Configuration
     public class ConsumerConfigurationBuilder
         : IConsumerConfigurationBuilder
     {
-
         private string topic;
         private string groupId;
         private AutoOffsetReset? autoOffsetReset;
@@ -72,14 +71,14 @@ namespace KafkaFlow.Configuration
         }
 
         public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
-            where T : IDistributionStrategy
+            where T : class, IDistributionStrategy
         {
             this.distributionStrategyFactory = provider => factory(provider);
             return this;
         }
 
         public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>()
-            where T : IDistributionStrategy
+            where T : class, IDistributionStrategy
         {
             this.ServiceCollection.TryAddTransient(typeof(T));
             this.distributionStrategyFactory = provider => provider.GetRequiredService<T>();
@@ -99,16 +98,17 @@ namespace KafkaFlow.Configuration
         }
 
         public IConsumerConfigurationBuilder UseMiddleware<T>()
-            where T : IMessageMiddleware
+            where T : class, IMessageMiddleware
         {
             return this.UseMiddleware(provider => provider.GetRequiredService<T>());
         }
 
         public IConsumerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : IMessageMiddleware
+            where T : class, IMessageMiddleware
         {
-            this.ServiceCollection.TryAddSingleton(typeof(T));
-            this.middlewaresFactories.Add(provider => factory(provider));
+            this.ServiceCollection.TryAddSingleton<IMessageMiddleware, T>();
+            this.ServiceCollection.TryAddSingleton<T>();
+            this.middlewaresFactories.Add(factory);
             return this;
         }
 

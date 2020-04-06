@@ -11,10 +11,9 @@
         /// </summary>
         /// <typeparam name="TSerializer">A class that implements <see cref="IMessageSerializer"/></typeparam>
         /// <typeparam name="TResolver">A class that implements <see cref="IMessageTypeResolver"/></typeparam>
-        public static IConsumerConfigurationBuilder UseSerializerMiddleware<TSerializer, TResolver>(
-            this IConsumerConfigurationBuilder consumer)
-            where TSerializer : IMessageSerializer
-            where TResolver : IMessageTypeResolver
+        public static IConsumerConfigurationBuilder UseSerializerMiddleware<TSerializer, TResolver>(this IConsumerConfigurationBuilder consumer)
+            where TSerializer : class, IMessageSerializer
+            where TResolver : class, IMessageTypeResolver
         {
             return consumer.UseSerializerMiddleware(
                 provider => provider.GetRequiredService<TSerializer>(),
@@ -33,15 +32,18 @@
             this IConsumerConfigurationBuilder consumer,
             Factory<TSerializer> serializerFactory,
             Factory<TResolver> resolverFactory)
-            where TSerializer : IMessageSerializer
-            where TResolver : IMessageTypeResolver
+            where TSerializer : class, IMessageSerializer
+            where TResolver : class, IMessageTypeResolver
         {
-            consumer.ServiceCollection.TryAddSingleton(typeof(TSerializer));
-            consumer.ServiceCollection.TryAddSingleton(typeof(TResolver));
+            // consumer.ServiceCollection.TryAddSingleton<IMessageSerializer, TSerializer>();
+            // consumer.ServiceCollection.TryAddSingleton<IMessageTypeResolver, TResolver>();
+            consumer.ServiceCollection.TryAddSingleton<TSerializer>();
+            consumer.ServiceCollection.TryAddSingleton<TResolver>();
 
-            return consumer.UseMiddleware(provider => new SerializerConsumerMiddleware(
-                serializerFactory(provider),
-                resolverFactory(provider)));
+            return consumer.UseMiddleware(
+                provider => new SerializerConsumerMiddleware(
+                    serializerFactory(provider),
+                    resolverFactory(provider)));
         }
 
         /// <summary>
@@ -49,10 +51,9 @@
         /// </summary>
         /// <typeparam name="TSerializer">A class that implements <see cref="IMessageSerializer"/></typeparam>
         /// <typeparam name="TResolver">A class that implements <see cref="IMessageTypeResolver"/></typeparam>
-        public static IProducerConfigurationBuilder UseSerializerMiddleware<TSerializer, TResolver>(
-            this IProducerConfigurationBuilder producer)
-            where TSerializer : IMessageSerializer
-            where TResolver : IMessageTypeResolver
+        public static IProducerConfigurationBuilder UseSerializerMiddleware<TSerializer, TResolver>(this IProducerConfigurationBuilder producer)
+            where TSerializer : class, IMessageSerializer
+            where TResolver : class, IMessageTypeResolver
         {
             return producer.UseSerializerMiddleware(
                 provider => provider.GetRequiredService<TSerializer>(),
@@ -71,15 +72,18 @@
             this IProducerConfigurationBuilder producer,
             Factory<TSerializer> serializerFactory,
             Factory<TResolver> resolverFactory)
-            where TSerializer : IMessageSerializer
-            where TResolver : IMessageTypeResolver
+            where TSerializer : class, IMessageSerializer
+            where TResolver : class, IMessageTypeResolver
         {
-            producer.ServiceCollection.TryAddSingleton(typeof(TSerializer));
-            producer.ServiceCollection.TryAddSingleton(typeof(TResolver));
+            producer.ServiceCollection.TryAddSingleton<IMessageSerializer, TSerializer>();
+            producer.ServiceCollection.TryAddSingleton<IMessageTypeResolver, TResolver>();
+            producer.ServiceCollection.TryAddSingleton<TSerializer>();
+            producer.ServiceCollection.TryAddSingleton<TResolver>();
 
-            return producer.UseMiddleware(provider => new SerializerProducerMiddleware(
-                serializerFactory(provider),
-                resolverFactory(provider)));
+            return producer.UseMiddleware(
+                provider => new SerializerProducerMiddleware(
+                    serializerFactory(provider),
+                    resolverFactory(provider)));
         }
     }
 }

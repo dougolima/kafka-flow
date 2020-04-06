@@ -10,9 +10,8 @@
         /// Register a middleware to decompress the message
         /// </summary>
         /// <typeparam name="T">A class that implements <see cref="IMessageCompressor"/></typeparam>
-        public static IConsumerConfigurationBuilder UseCompressorMiddleware<T>(
-            this IConsumerConfigurationBuilder consumer)
-            where T : IMessageCompressor
+        public static IConsumerConfigurationBuilder UseCompressorMiddleware<T>(this IConsumerConfigurationBuilder consumer)
+            where T : class, IMessageCompressor
         {
             return consumer.UseCompressorMiddleware(provider => provider.GetRequiredService<T>());
         }
@@ -24,10 +23,13 @@
         /// <param name="consumer"></param>
         /// <param name="factory">A factory to create the <see cref="IMessageCompressor"/> instance</param>
         /// <returns></returns>
-        public static IConsumerConfigurationBuilder UseCompressorMiddleware<T>(this IConsumerConfigurationBuilder consumer, Factory<T> factory)
-            where T : IMessageCompressor
+        public static IConsumerConfigurationBuilder UseCompressorMiddleware<T>(
+            this IConsumerConfigurationBuilder consumer,
+            Factory<T> factory)
+            where T : class, IMessageCompressor
         {
-            consumer.ServiceCollection.TryAddSingleton(typeof(T));
+            consumer.ServiceCollection.TryAddSingleton<IMessageCompressor, T>();
+            consumer.ServiceCollection.TryAddSingleton<T>();
 
             return consumer.UseMiddleware(provider => new CompressorConsumerMiddleware(factory(provider)));
         }
@@ -36,25 +38,27 @@
         /// Register a middleware to compress the message
         /// </summary>
         /// <typeparam name="T">A class that implements <see cref="IMessageCompressor"/></typeparam>
-        public static IProducerConfigurationBuilder UseCompressorMiddleware<T>(
-            this IProducerConfigurationBuilder consumer)
-            where T : IMessageCompressor
+        public static IProducerConfigurationBuilder UseCompressorMiddleware<T>(this IProducerConfigurationBuilder producer)
+            where T : class, IMessageCompressor
         {
-            return consumer.UseCompressorMiddleware(provider => provider.GetRequiredService<T>());
+            return producer.UseCompressorMiddleware(provider => provider.GetRequiredService<T>());
         }
 
         /// <summary>
         /// Register a middleware to compress the message
         /// </summary>
         /// <typeparam name="T">A class that implements <see cref="IMessageCompressor"/></typeparam>
-        /// <param name="consumer"></param>
+        /// <param name="producer"></param>
         /// <param name="factory">A factory to create the <see cref="IMessageCompressor"/> instance</param>
-        public static IProducerConfigurationBuilder UseCompressorMiddleware<T>(this IProducerConfigurationBuilder consumer, Factory<T> factory)
-            where T : IMessageCompressor
+        public static IProducerConfigurationBuilder UseCompressorMiddleware<T>(
+            this IProducerConfigurationBuilder producer,
+            Factory<T> factory)
+            where T : class, IMessageCompressor
         {
-            consumer.ServiceCollection.TryAddSingleton(typeof(T));
+            producer.ServiceCollection.TryAddSingleton<IMessageCompressor, T>();
+            producer.ServiceCollection.TryAddSingleton<T>();
 
-            return consumer.UseMiddleware(provider => new CompressorProducerMiddleware(factory(provider)));
+            return producer.UseMiddleware(provider => new CompressorProducerMiddleware(factory(provider)));
         }
     }
 }

@@ -1,0 +1,12 @@
+ffbuild_version: 1.0
+version_prefix: 1.1
+auto_approve: true
+build:
+  steps:
+    - dotnet pack src/KafkaFlow.sln -c Release /p:Version=$BUILD_VERSION -o $WORKSPACE/ffbuild/packages
+
+tests:
+  unit:
+    steps:
+      - dotnet test src/KafkaFlow.UnitTests/KafkaFlow.UnitTests.csproj -c Release --logger:'trx' --results-directory $WORKSPACE/ffbuild/reports
+      - dotnet test src/KafkaFlow.IntegrationTests/KafkaFlow.IntegrationTests.csproj -c Release --logger:'trx' --results-directory $WORKSPACE/ffbuild/reports

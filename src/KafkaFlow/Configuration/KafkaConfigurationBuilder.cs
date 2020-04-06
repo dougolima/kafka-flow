@@ -19,7 +19,7 @@ namespace KafkaFlow.Configuration
 
         public KafkaConfiguration Build()
         {
-            var configuration = new KafkaConfiguration(this.logHandler);
+            var configuration = new KafkaConfiguration();
 
             configuration.AddClusters(this.clusters.Select(x => x.Build(configuration)));
 

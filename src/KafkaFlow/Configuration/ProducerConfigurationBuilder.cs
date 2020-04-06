@@ -44,16 +44,17 @@ namespace KafkaFlow.Configuration
         }
 
         public IProducerConfigurationBuilder UseMiddleware<T>()
-            where T : IMessageMiddleware
+            where T : class, IMessageMiddleware
         {
             return this.UseMiddleware(provider => provider.GetRequiredService<T>());
         }
 
         public IProducerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : IMessageMiddleware
+            where T : class, IMessageMiddleware
         {
-            this.ServiceCollection.TryAddSingleton(typeof(T));
-            this.middlewaresFactories.Add(provider => factory(provider));
+            this.ServiceCollection.TryAddSingleton<IMessageMiddleware, T>();
+            this.ServiceCollection.TryAddSingleton<T>();
+            this.middlewaresFactories.Add(factory);
             return this;
         }
 

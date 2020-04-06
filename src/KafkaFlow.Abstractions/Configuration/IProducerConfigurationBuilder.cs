@@ -13,7 +13,7 @@ namespace KafkaFlow.Configuration
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
         IProducerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : IMessageMiddleware;
+            where T : class, IMessageMiddleware;
 
         /// <summary>
         /// Register a middleware to be used when producing messages
@@ -21,7 +21,7 @@ namespace KafkaFlow.Configuration
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
         IProducerConfigurationBuilder UseMiddleware<T>()
-            where T : IMessageMiddleware;
+            where T : class, IMessageMiddleware;
 
         /// <summary>
         /// Set the default topic to be used when producing messages

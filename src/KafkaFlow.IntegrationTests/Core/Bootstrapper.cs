@@ -1,6 +1,7 @@
 namespace KafkaFlow.IntegrationTests.Core
 {
     using System;
+    using System.IO;
     using System.Threading;
     using KafkaFlow.Compressor;
     using KafkaFlow.Compressor.Gzip;
@@ -9,7 +10,9 @@ namespace KafkaFlow.IntegrationTests.Core
     using KafkaFlow.Serializer.Json;
     using KafkaFlow.Serializer.ProtoBuf;
     using KafkaFlow.TypedHandler;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
 
     public class Bootstrapper
     {
@@ -22,14 +25,51 @@ namespace KafkaFlow.IntegrationTests.Core
 
         private static IServiceProvider SetupProvider()
         {
-            var services = new ServiceCollection();
+            var builder = Host
+                .CreateDefaultBuilder()
+                .ConfigureAppConfiguration(
+                    (builderContext, config) =>
+                    {
+                        var basePath = Directory.GetCurrentDirectory();
 
+                        config
+                            .SetBasePath(basePath)
+                            .AddJsonFile(
+                                "conf/appsettings.json",
+                                false,
+                                true)
+                            .AddEnvironmentVariables();
+                    })
+                .ConfigureServices(SetupServices)
+                .UseDefaultServiceProvider(
+                    (context, options) =>
+                    {
+                        options.ValidateScopes = true;
+                        options.ValidateOnBuild = true;
+                    });
+
+            var host = builder.Build();
+
+            var bus = host.Services.UseKafka();
+
+            bus.StartAsync().GetAwaiter().GetResult();
+
+            //Wait partition assignment
+            Thread.Sleep(5000);
+
+            return host.Services;
+        }
+
+        private static void SetupServices(HostBuilderContext context, IServiceCollection services)
+        {
+            var brokers = context.Configuration.GetValue<string>("Kafka:Brokers");
+            
             services.AddKafka(
                 kafka => kafka
                     .UseLogHandler<TraceLoghandler>()
                     .AddCluster(
                         cluster => cluster
-                            .WithBrokers(new[] { "localhost:9092" })
+                            .WithBrokers(brokers.Split(';'))
                             .AddConsumer(
                                 consumer => consumer
                                     .Topic(ProtobufTopicName)
@@ -79,17 +119,6 @@ namespace KafkaFlow.IntegrationTests.Core
 
             services.AddSingleton<JsonProducer>();
             services.AddSingleton<ProtobufProducer>();
-
-            var provider = services.BuildServiceProvider();
-
-            var bus = provider.UseKafka();
-
-            bus.StartAsync().GetAwaiter().GetResult();
-
-            //Wait partition assignment
-            Thread.Sleep(5000);
-
-            return provider;
         }
     }
 
