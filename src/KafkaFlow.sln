@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaFlow.Compressor", "Kaf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaFlow.IntegrationTests", "KafkaFlow.IntegrationTests\KafkaFlow.IntegrationTests.csproj", "{36F459F4-8323-472A-A8C5-8C9D89F92012}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaFlow.Serializer.NewtonsoftJson", "KafkaFlow.Serializer.NewtonsoftJson\KafkaFlow.Serializer.NewtonsoftJson.csproj", "{FC622AB0-6481-4249-8D83-27BC39912103}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{36F459F4-8323-472A-A8C5-8C9D89F92012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36F459F4-8323-472A-A8C5-8C9D89F92012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36F459F4-8323-472A-A8C5-8C9D89F92012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC622AB0-6481-4249-8D83-27BC39912103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC622AB0-6481-4249-8D83-27BC39912103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC622AB0-6481-4249-8D83-27BC39912103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC622AB0-6481-4249-8D83-27BC39912103}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,6 +121,7 @@ Global
 		{B7197114-B1C7-49EC-8740-1E09233B2C40} = {ADAAA63C-E17C-4F1B-A062-3CCA071D75C2}
 		{D29EC709-33DE-4045-8F3B-EC6619CDB429} = {0A782A83-B66D-4B99-9BE2-2B18AAD2E03C}
 		{36F459F4-8323-472A-A8C5-8C9D89F92012} = {7A9B997B-DAAC-4004-94F3-32F6B88E0068}
+		{FC622AB0-6481-4249-8D83-27BC39912103} = {ADAAA63C-E17C-4F1B-A062-3CCA071D75C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6AE955B5-16B0-41CF-9F12-66D15B3DD1AB}
