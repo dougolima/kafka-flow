@@ -8,7 +8,7 @@ namespace KafkaFlow.Configuration
     {
         public ConsumerConfiguration(
             ClusterConfiguration cluster,
-            string topic,
+            IEnumerable<string> topics,
             string groupId,
             int workersCount,
             int bufferSize,
@@ -18,7 +18,7 @@ namespace KafkaFlow.Configuration
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
             this.DistributionStrategyFactory = distributionStrategyFactory ?? throw new ArgumentNullException(nameof(distributionStrategyFactory));
             this.MiddlewaresFactories = middlewaresFactories ?? throw new ArgumentNullException(nameof(middlewaresFactories));
-            this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
+            this.Topics = topics ?? throw new ArgumentNullException(nameof(topics));
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
             this.WorkersCount = workersCount > 0 ?
                 workersCount :
@@ -40,7 +40,7 @@ namespace KafkaFlow.Configuration
 
         public List<Factory<IMessageMiddleware>> MiddlewaresFactories { get; }
 
-        public string Topic { get; }
+        public IEnumerable<string> Topics { get; }
 
         public int WorkersCount { get; }
 

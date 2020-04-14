@@ -1,5 +1,6 @@
 namespace KafkaFlow.Configuration
 {
+    using System.Collections.Generic;
     using Microsoft.Extensions.DependencyInjection;
 
     public interface IConsumerConfigurationBuilder
@@ -12,6 +13,20 @@ namespace KafkaFlow.Configuration
         /// <param name="topic">Topic name</param>
         /// <returns></returns>
         IConsumerConfigurationBuilder Topic(string topic);
+
+        /// <summary>
+        /// Set the topics that will be used to read the messages
+        /// </summary>
+        /// <param name="topics">Topic names</param>
+        /// <returns></returns>
+        IConsumerConfigurationBuilder Topics(IEnumerable<string> topics);
+
+        /// <summary>
+        /// Set the topics that will be used to read the messages
+        /// </summary>
+        /// <param name="topics">Topic names</param>
+        /// <returns></returns>
+        IConsumerConfigurationBuilder Topics(params string[] topics);
 
         /// <summary>
         /// Set the group id used by the consumer

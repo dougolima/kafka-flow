@@ -1,6 +1,7 @@
 namespace KafkaFlow.Configuration
 {
     using System.Collections.Generic;
+    using System.Linq;
     using KafkaFlow.Consumers.DistributionStrategies;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -8,7 +9,7 @@ namespace KafkaFlow.Configuration
     public class ConsumerConfigurationBuilder
         : IConsumerConfigurationBuilder
     {
-        private string topic;
+        private List<string> topics = new List<string>();
         private string groupId;
         private AutoOffsetReset? autoOffsetReset;
         private int? autoCommitIntervalMs;
@@ -30,9 +31,17 @@ namespace KafkaFlow.Configuration
 
         public IConsumerConfigurationBuilder Topic(string topic)
         {
-            this.topic = topic;
+            this.topics.Add(topic);
             return this;
         }
+
+        public IConsumerConfigurationBuilder Topics(IEnumerable<string> topics)
+        {
+            this.topics.AddRange(topics);
+            return this;
+        }
+
+        public IConsumerConfigurationBuilder Topics(params string[] topics) => this.Topics(topics.AsEnumerable());
 
         public IConsumerConfigurationBuilder WithGroupId(string groupId)
         {
@@ -116,7 +125,7 @@ namespace KafkaFlow.Configuration
         {
             var configuration = new ConsumerConfiguration(
                 clusterConfiguration,
-                this.topic,
+                this.topics,
                 this.groupId,
                 this.workersCount,
                 this.bufferSize,

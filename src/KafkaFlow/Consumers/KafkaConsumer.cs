@@ -36,35 +36,50 @@
             this.consumerBuilder.SetPartitionsRevokedHandler((consumer, partitions) => this.OnPartitionRevoked(partitions));
         }
 
-        private void OnPartitionRevoked(IReadOnlyCollection<TopicPartitionOffset> partitions)
+        private void OnPartitionRevoked(IReadOnlyCollection<TopicPartitionOffset> topicPartitions)
         {
             this.logHandler.Warning(
                 "Partitions revoked",
                 new
                 {
-                    Topic = this.configuration.Topic,
-                    GroupId = this.configuration.GroupId,
-                    PartitionCount = partitions.Count,
-                    Partitions = partitions.Select(x => x.Partition.Value)
+                    this.configuration.GroupId,
+                    Topics = topicPartitions
+                        .GroupBy(x => x.Topic)
+                        .Select(
+                            x => new
+                            {
+                                x.First().Topic,
+                                PartitionsCount = x.Count(),
+                                Partitions = x.Select(y => y.Partition.Value)
+                            })
                 });
 
             this.consumerWorkerPool.StopAsync().GetAwaiter().GetResult();
         }
 
-        private void OnPartitionAssigned(IConsumer<byte[], byte[]> consumer, IReadOnlyCollection<TopicPartition> partitions)
+        private void OnPartitionAssigned(IConsumer<byte[], byte[]> consumer, IReadOnlyCollection<TopicPartition> topicPartitions)
         {
             this.logHandler.Info(
                 "Partitions assigned",
                 new
                 {
-                    Topic = this.configuration.Topic,
-                    GroupId = this.configuration.GroupId,
-                    PartitionCount = partitions.Count,
-                    Partitions = partitions.Select(x => x.Partition.Value)
+                    this.configuration.GroupId,
+                    Topics = topicPartitions
+                        .GroupBy(x => x.Topic)
+                        .Select(
+                            x => new
+                            {
+                                x.First().Topic,
+                                PartitionsCount = x.Count(),
+                                Partitions = x.Select(y => y.Partition.Value)
+                            })
                 });
 
             this.consumerWorkerPool
-                .StartAsync(consumer, partitions, this.cancellationTokenSource.Token)
+                .StartAsync(
+                    consumer,
+                    topicPartitions,
+                    this.cancellationTokenSource.Token)
                 .GetAwaiter()
                 .GetResult();
         }
@@ -96,7 +111,7 @@
         {
             var consumer = this.consumerBuilder.Build();
 
-            consumer.Subscribe(this.configuration.Topic);
+            consumer.Subscribe(this.configuration.Topics);
 
             this.backgroundTask = Task.Factory.StartNew(
                 async () =>

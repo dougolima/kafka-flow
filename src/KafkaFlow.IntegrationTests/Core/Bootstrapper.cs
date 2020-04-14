@@ -17,6 +17,7 @@ namespace KafkaFlow.IntegrationTests.Core
     public class Bootstrapper
     {
         private const string JsonTopicName = "test-gzip-json";
+        private const string JsonTopic2Name = "test-gzip-json2";
         private const string ProtobufTopicName = "test-gzip-protobuf";
 
         private static readonly Lazy<IServiceProvider> lazyProvider = new Lazy<IServiceProvider>(SetupProvider);
@@ -63,7 +64,7 @@ namespace KafkaFlow.IntegrationTests.Core
         private static void SetupServices(HostBuilderContext context, IServiceCollection services)
         {
             var brokers = context.Configuration.GetValue<string>("Kafka:Brokers");
-            
+
             services.AddKafka(
                 kafka => kafka
                     .UseLogHandler<TraceLoghandler>()
@@ -87,7 +88,7 @@ namespace KafkaFlow.IntegrationTests.Core
                             )
                             .AddConsumer(
                                 consumer => consumer
-                                    .Topic(JsonTopicName)
+                                    .Topics(JsonTopicName, JsonTopic2Name)
                                     .WithGroupId("test-json")
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
@@ -104,6 +105,13 @@ namespace KafkaFlow.IntegrationTests.Core
                                 producer =>
                                     producer
                                         .DefaultTopic(JsonTopicName)
+                                        .UseSerializerMiddleware<JsonMessageSerializer, TestMessageTypeResolver>()
+                                        .UseCompressorMiddleware<GzipMessageCompressor>()
+                            )
+                            .AddProducer<JsonProducer2>(
+                                producer =>
+                                    producer
+                                        .DefaultTopic(JsonTopic2Name)
                                         .UseSerializerMiddleware<JsonMessageSerializer, TestMessageTypeResolver>()
                                         .UseCompressorMiddleware<GzipMessageCompressor>()
                             )
@@ -127,6 +135,10 @@ namespace KafkaFlow.IntegrationTests.Core
     }
 
     internal class JsonProducer
+    {
+    }
+
+    internal class JsonProducer2
     {
     }
 }

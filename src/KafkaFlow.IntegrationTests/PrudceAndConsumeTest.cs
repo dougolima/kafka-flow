@@ -2,6 +2,7 @@ namespace KafkaFlow.IntegrationTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
     using KafkaFlow.IntegrationTests.Core;
@@ -27,17 +28,25 @@ namespace KafkaFlow.IntegrationTests
         public async Task JsonMessageTest()
         {
             // Arrange
-            var producer = this.provider.GetRequiredService<IMessageProducer<JsonProducer>>();
-            var messages = this.CreatesMessages();
+            var producer1 = this.provider.GetRequiredService<IMessageProducer<JsonProducer>>();
+            var messages1 = this.CreatesMessages();
+
+            var producer2 = this.provider.GetRequiredService<IMessageProducer<JsonProducer2>>();
+            var messages2 = this.CreatesMessages();
 
             // Act
-            foreach (var message in messages)
+            foreach (var message in messages1)
             {
-                await producer.ProduceAsync(message.Id.ToString(), message);
+                await producer1.ProduceAsync(message.Id.ToString(), message);
+            }
+
+            foreach (var message in messages2)
+            {
+                await producer2.ProduceAsync(message.Id.ToString(), message);
             }
 
             // Assert
-            foreach (var message in messages)
+            foreach (var message in messages1.Concat(messages2))
             {
                 await MessageStorage.AssertMessageAsync(message);
             }
