@@ -39,7 +39,7 @@ namespace KafkaFlow
                         serviceScope.ServiceProvider,
                         consumerConfiguration,
                         this.logHandler,
-                        new MiddlewareExecutor(consumerConfiguration.MiddlewaresFactories, serviceScope.ServiceProvider),
+                        new MiddlewareExecutor(consumerConfiguration.MiddlewareConfiguration, serviceScope.ServiceProvider),
                         consumerConfiguration.DistributionStrategyFactory);
 
                     var consumer = new KafkaConsumer(

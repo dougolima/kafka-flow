@@ -78,13 +78,16 @@ namespace KafkaFlow.IntegrationTests.Core
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
-                                    .UseCompressorMiddleware<GzipMessageCompressor>()
-                                    .UseSerializerMiddleware<ProtobufMessageSerializer, TestMessageTypeResolver>()
-                                    .UseTypedHandlers(
-                                        handlers =>
-                                            handlers
-                                                .WithHandlerLifetime(ServiceLifetime.Singleton)
-                                                .AddHandler<StoreMessageHandler>())
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<ProtobufMessageSerializer, TestMessageTypeResolver>()
+                                            .AddTypedHandlers(
+                                                handlers =>
+                                                    handlers
+                                                        .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                                        .AddHandler<StoreMessageHandler>())
+                                    )
                             )
                             .AddConsumer(
                                 consumer => consumer
@@ -93,34 +96,43 @@ namespace KafkaFlow.IntegrationTests.Core
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
-                                    .UseCompressorMiddleware<GzipMessageCompressor>()
-                                    .UseSerializerMiddleware<JsonMessageSerializer, TestMessageTypeResolver>()
-                                    .UseTypedHandlers(
-                                        handlers =>
-                                            handlers
-                                                .WithHandlerLifetime(ServiceLifetime.Singleton)
-                                                .AddHandler<StoreMessageHandler>())
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<JsonMessageSerializer, TestMessageTypeResolver>()
+                                            .AddTypedHandlers(
+                                                handlers =>
+                                                    handlers
+                                                        .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                                        .AddHandler<StoreMessageHandler>())
+                                    )
                             )
                             .AddProducer<JsonProducer>(
-                                producer =>
-                                    producer
-                                        .DefaultTopic(JsonTopicName)
-                                        .UseSerializerMiddleware<JsonMessageSerializer, TestMessageTypeResolver>()
-                                        .UseCompressorMiddleware<GzipMessageCompressor>()
+                                producer => producer
+                                    .DefaultTopic(JsonTopicName)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<JsonMessageSerializer, TestMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
                             )
                             .AddProducer<JsonProducer2>(
-                                producer =>
-                                    producer
-                                        .DefaultTopic(JsonTopic2Name)
-                                        .UseSerializerMiddleware<JsonMessageSerializer, TestMessageTypeResolver>()
-                                        .UseCompressorMiddleware<GzipMessageCompressor>()
+                                producer => producer
+                                    .DefaultTopic(JsonTopic2Name)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<JsonMessageSerializer, TestMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
                             )
                             .AddProducer<ProtobufProducer>(
-                                producer =>
-                                    producer
-                                        .DefaultTopic(ProtobufTopicName)
-                                        .UseSerializerMiddleware<ProtobufMessageSerializer, TestMessageTypeResolver>()
-                                        .UseCompressorMiddleware<GzipMessageCompressor>()
+                                producer => producer
+                                    .DefaultTopic(ProtobufTopicName)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<ProtobufMessageSerializer, TestMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
                             )
                     )
             );

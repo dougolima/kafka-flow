@@ -52,7 +52,7 @@ namespace KafkaFlow.TypedHandler
         /// <typeparam name="T">A type that implements the <see cref="IMessageHandler{TMessage}"/> interface</typeparam>
         /// <returns></returns>
         public TypedHandlerConfigurationBuilder AddHandler<T>()
-            where T : IMessageHandler
+            where T : class, IMessageHandler
         {
             this.handlers.Add(typeof(T));
             return this;

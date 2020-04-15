@@ -1,29 +1,33 @@
 namespace KafkaFlow.Configuration
 {
     using System;
-    using System.Collections.Generic;
     using Confluent.Kafka;
     using KafkaFlow.Producers;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public class ProducerConfigurationBuilder : IProducerConfigurationBuilder
     {
         private readonly Type producerType;
+        private readonly MiddlewareConfigurationBuilder middlewareConfigurationBuilder;
 
         private string topic;
         private ProducerConfig baseProducerConfig;
         private KafkaFlow.Acks? acks;
 
-        private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
-
         public ProducerConfigurationBuilder(IServiceCollection services, Type type)
         {
             this.ServiceCollection = services;
             this.producerType = type;
+            this.middlewareConfigurationBuilder = new MiddlewareConfigurationBuilder(services);
         }
 
         public IServiceCollection ServiceCollection { get; }
+
+        public IProducerConfigurationBuilder AddMiddlewares(Action<IProducerMiddlewareConfigurationBuilder> middlewares)
+        {
+            middlewares(this.middlewareConfigurationBuilder);
+            return this;
+        }
 
         public IProducerConfigurationBuilder DefaultTopic(string topic)
         {
@@ -43,28 +47,13 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IProducerConfigurationBuilder UseMiddleware<T>()
-            where T : class, IMessageMiddleware
-        {
-            return this.UseMiddleware(provider => provider.GetRequiredService<T>());
-        }
-
-        public IProducerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : class, IMessageMiddleware
-        {
-            this.ServiceCollection.TryAddScoped<IMessageMiddleware, T>();
-            this.ServiceCollection.TryAddScoped<T>();
-            this.middlewaresFactories.Add(factory);
-            return this;
-        }
-
         public ProducerConfiguration Build(ClusterConfiguration clusterConfiguration)
         {
             var configuration = new ProducerConfiguration(
                 clusterConfiguration,
                 this.topic,
                 this.acks,
-                this.middlewaresFactories,
+                this.middlewareConfigurationBuilder.Build(),
                 this.baseProducerConfig ?? new ProducerConfig());
 
             this.ServiceCollection.AddSingleton(

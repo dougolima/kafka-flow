@@ -1,5 +1,6 @@
 namespace KafkaFlow.Configuration
 {
+    using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -103,20 +104,10 @@ namespace KafkaFlow.Configuration
         IConsumerConfigurationBuilder WithManualStoreOffsets();
 
         /// <summary>
-        /// Register a middleware to be used when consuming messages
+        /// Adds middlewares to the consumer. The middlewares will be executed in the registration order
         /// </summary>
-        /// <param name="factory">A factory to create the instance</param>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
+        /// <param name="middlewares">A handler to register middlewares</param>
         /// <returns></returns>
-        IConsumerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : class, IMessageMiddleware;
-
-        /// <summary>
-        /// Register a middleware to be used when consuming messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
-        /// <returns></returns>
-        IConsumerConfigurationBuilder UseMiddleware<T>()
-            where T : class, IMessageMiddleware;
+        IConsumerConfigurationBuilder AddMiddlewares(Action<IConsumerMiddlewareConfigurationBuilder> middlewares);
     }
 }

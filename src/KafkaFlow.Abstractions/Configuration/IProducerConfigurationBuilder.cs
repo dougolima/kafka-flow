@@ -1,5 +1,6 @@
 namespace KafkaFlow.Configuration
 {
+    using System;
     using Microsoft.Extensions.DependencyInjection;
 
     public interface IProducerConfigurationBuilder
@@ -7,21 +8,11 @@ namespace KafkaFlow.Configuration
         IServiceCollection ServiceCollection { get; }
 
         /// <summary>
-        /// Register a middleware to be used when producing messages
+        /// Adds middlewares to the producer. The middlewares will be executed in the registration order
         /// </summary>
-        /// <param name="factory">A factory to create the instance</param>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
+        /// <param name="middlewares">A handler to register middlewares</param>
         /// <returns></returns>
-        IProducerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : class, IMessageMiddleware;
-
-        /// <summary>
-        /// Register a middleware to be used when producing messages
-        /// </summary>
-        /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
-        /// <returns></returns>
-        IProducerConfigurationBuilder UseMiddleware<T>()
-            where T : class, IMessageMiddleware;
+        IProducerConfigurationBuilder AddMiddlewares(Action<IProducerMiddlewareConfigurationBuilder> middlewares);
 
         /// <summary>
         /// Set the default topic to be used when producing messages

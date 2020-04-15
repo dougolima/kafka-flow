@@ -25,15 +25,21 @@
                             .AddProducer<PrintConsoleProtobufProducer>(
                                 producer => producer
                                     .DefaultTopic("test-topic")
-                                    .UseSerializerMiddleware<ProtobufMessageSerializer, SampleMessageTypeResolver>()
-                                    .UseCompressorMiddleware<GzipMessageCompressor>()
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
                                     .WithAcks(Acks.All)
                             )
                             .AddProducer<PrintConsoleJsonProducer>(
                                 producer => producer
                                     .DefaultTopic("test-topic-json")
-                                    .UseSerializerMiddleware<JsonMessageSerializer, SampleMessageTypeResolver>()
-                                    .UseCompressorMiddleware<GzipMessageCompressor>()
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<JsonMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
                                     .WithAcks(Acks.All)
                             )
                     )

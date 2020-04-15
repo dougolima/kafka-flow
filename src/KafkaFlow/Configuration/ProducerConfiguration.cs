@@ -10,17 +10,15 @@ namespace KafkaFlow.Configuration
             ClusterConfiguration cluster,
             string topic,
             KafkaFlow.Acks? acks,
-            IReadOnlyList<Factory<IMessageMiddleware>> middlewaresFactories,
+            MiddlewareConfiguration middlewareConfiguration,
             ProducerConfig baseProducerConfig)
         {
             this.Cluster = cluster ?? throw new ArgumentNullException(nameof(cluster));
             this.Topic = string.IsNullOrWhiteSpace(topic) ? throw new ArgumentNullException(nameof(topic)) : topic;
             this.Acks = acks;
-            this.MiddlewaresFactories = middlewaresFactories;
+            this.MiddlewareConfiguration = middlewareConfiguration;
             this.BaseProducerConfig = baseProducerConfig;
         }
-
-        public IReadOnlyList<Factory<IMessageMiddleware>> MiddlewaresFactories { get; }
 
         public ClusterConfiguration Cluster { get; }
 
@@ -29,6 +27,8 @@ namespace KafkaFlow.Configuration
         public ProducerConfig BaseProducerConfig { get; }
 
         public KafkaFlow.Acks? Acks { get; }
+        
+        public MiddlewareConfiguration MiddlewareConfiguration { get; }
 
         public ProducerConfig GetKafkaConfig()
         {

@@ -30,12 +30,15 @@
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
-                                    .UseCompressorMiddleware<GzipMessageCompressor>()
-                                    .UseSerializerMiddleware<ProtobufMessageSerializer, SampleMessageTypeResolver>()
-                                    .UseTypedHandlers(handlers =>
-                                        handlers
-                                            .WithHandlerLifetime(ServiceLifetime.Singleton)
-                                            .AddHandler<PrintConsoleHandler>())
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddTypedHandlers(
+                                                handlers => handlers
+                                                    .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                                    .AddHandler<PrintConsoleHandler>())
+                                    )
                             )
                             .AddConsumer(
                                 consumer => consumer
@@ -44,12 +47,15 @@
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
-                                    .UseCompressorMiddleware<GzipMessageCompressor>()
-                                    .UseSerializerMiddleware<JsonMessageSerializer, SampleMessageTypeResolver>()
-                                    .UseTypedHandlers(handlers =>
-                                        handlers
-                                            .WithHandlerLifetime(ServiceLifetime.Singleton)
-                                            .AddHandler<PrintConsoleHandler>())
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<JsonMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddTypedHandlers(
+                                                handlers => handlers
+                                                    .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                                    .AddHandler<PrintConsoleHandler>())
+                                    )
                             )
                     )
             );

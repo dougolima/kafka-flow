@@ -20,7 +20,7 @@ namespace KafkaFlow.Producers
 
             this.producer = new ProducerBuilder<byte[], byte[]>(configuration.GetKafkaConfig()).Build();
 
-            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.MiddlewaresFactories, serviceProvider);
+            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.MiddlewareConfiguration, serviceProvider);
         }
 
         public Task ProduceAsync(
@@ -32,7 +32,11 @@ namespace KafkaFlow.Producers
             var messageKey = Encoding.UTF8.GetBytes(partitionKey);
 
             return this.middlewareExecutor.Execute(
-                new MessageContext(message, messageKey, headers, topic),
+                new MessageContext(
+                    message,
+                    messageKey,
+                    headers,
+                    topic),
                 this.InternalProduce);
         }
 
@@ -64,7 +68,7 @@ namespace KafkaFlow.Producers
                     {
                         Key = context.PartitionKey,
                         Value = value,
-                        Headers = ((MessageHeaders)context.Headers).GetKafkaHeaders(),
+                        Headers = ((MessageHeaders) context.Headers).GetKafkaHeaders(),
                         Timestamp = Timestamp.Default
                     })
                 .ConfigureAwait(false);

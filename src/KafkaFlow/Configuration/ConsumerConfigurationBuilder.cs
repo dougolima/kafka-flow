@@ -1,5 +1,6 @@
 namespace KafkaFlow.Configuration
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using KafkaFlow.Consumers.DistributionStrategies;
@@ -9,7 +10,9 @@ namespace KafkaFlow.Configuration
     public class ConsumerConfigurationBuilder
         : IConsumerConfigurationBuilder
     {
-        private List<string> topics = new List<string>();
+        private readonly List<string> topics = new List<string>();
+        private readonly MiddlewareConfigurationBuilder middlewareConfigurationBuilder;
+
         private string groupId;
         private AutoOffsetReset? autoOffsetReset;
         private int? autoCommitIntervalMs;
@@ -20,10 +23,9 @@ namespace KafkaFlow.Configuration
 
         private Factory<IDistributionStrategy> distributionStrategyFactory = provider => new BytesSumDistributionStrategy();
 
-        private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new List<Factory<IMessageMiddleware>>();
-
         public ConsumerConfigurationBuilder(IServiceCollection services)
         {
+            this.middlewareConfigurationBuilder = new MiddlewareConfigurationBuilder(services);
             this.ServiceCollection = services;
         }
 
@@ -82,7 +84,7 @@ namespace KafkaFlow.Configuration
         public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
             where T : class, IDistributionStrategy
         {
-            this.distributionStrategyFactory = provider => factory(provider);
+            this.distributionStrategyFactory = factory;
             return this;
         }
 
@@ -106,23 +108,16 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IConsumerConfigurationBuilder UseMiddleware<T>()
-            where T : class, IMessageMiddleware
+        public IConsumerConfigurationBuilder AddMiddlewares(Action<IConsumerMiddlewareConfigurationBuilder> middlewares)
         {
-            return this.UseMiddleware(provider => provider.GetRequiredService<T>());
-        }
-
-        public IConsumerConfigurationBuilder UseMiddleware<T>(Factory<T> factory)
-            where T : class, IMessageMiddleware
-        {
-            this.ServiceCollection.TryAddScoped<IMessageMiddleware, T>();
-            this.ServiceCollection.TryAddScoped<T>();
-            this.middlewaresFactories.Add(factory);
+            middlewares(this.middlewareConfigurationBuilder);
             return this;
         }
 
         public virtual ConsumerConfiguration Build(ClusterConfiguration clusterConfiguration)
         {
+            var middlewareConfiguration = this.middlewareConfigurationBuilder.Build();
+
             var configuration = new ConsumerConfiguration(
                 clusterConfiguration,
                 this.topics,
@@ -130,7 +125,8 @@ namespace KafkaFlow.Configuration
                 this.workersCount,
                 this.bufferSize,
                 this.distributionStrategyFactory,
-                this.middlewaresFactories)
+                middlewareConfiguration
+            )
             {
                 AutoOffsetReset = this.autoOffsetReset,
                 AutoCommitIntervalMs = this.autoCommitIntervalMs,
