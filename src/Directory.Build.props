@@ -1,11 +1,12 @@
 <Project>
   <PropertyGroup>
     <LangVersion>7.2</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>Farfetch - Enabling Team</Authors>
     <Company>Farfetch</Company>
     <Product>KafkaFlow</Product>
-    <PackageProjectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka</PackageProjectUrl>
-    <RepositoryUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka.git</RepositoryUrl>
+    <PackageProjectUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka-flow</PackageProjectUrl>
+    <RepositoryUrl>https://gitlab.fftech.info/teams/product/enablingteam/kafka-flow.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>
