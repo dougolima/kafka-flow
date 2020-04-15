@@ -3,7 +3,7 @@ version_prefix: 1.1
 auto_approve: true
 build:
   steps:
-    - dotnet pack src/KafkaFlow.sln -c Release /p:Version=$BUILD_VERSION -o $WORKSPACE/ffbuild/packages
+    - dotnet pack src/KafkaFlow.sln -c Release /p:Version=$BUILD_VERSION -o $WORKSPACE/ffbuild/packages --include-source --include-symbols
 
 tests:
   unit:
