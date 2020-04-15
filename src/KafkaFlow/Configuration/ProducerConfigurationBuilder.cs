@@ -8,7 +8,7 @@ namespace KafkaFlow.Configuration
     public class ProducerConfigurationBuilder : IProducerConfigurationBuilder
     {
         private readonly Type producerType;
-        private readonly MiddlewareConfigurationBuilder middlewareConfigurationBuilder;
+        private readonly ProducerMiddlewareConfigurationBuilder middlewareConfigurationBuilder;
 
         private string topic;
         private ProducerConfig baseProducerConfig;
@@ -18,7 +18,7 @@ namespace KafkaFlow.Configuration
         {
             this.ServiceCollection = services;
             this.producerType = type;
-            this.middlewareConfigurationBuilder = new MiddlewareConfigurationBuilder(services);
+            this.middlewareConfigurationBuilder = new ProducerMiddlewareConfigurationBuilder(services);
         }
 
         public IServiceCollection ServiceCollection { get; }

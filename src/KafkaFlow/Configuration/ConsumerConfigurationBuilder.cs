@@ -11,7 +11,7 @@ namespace KafkaFlow.Configuration
         : IConsumerConfigurationBuilder
     {
         private readonly List<string> topics = new List<string>();
-        private readonly MiddlewareConfigurationBuilder middlewareConfigurationBuilder;
+        private readonly ConsumerMiddlewareConfigurationBuilder middlewareConfigurationBuilder;
 
         private string groupId;
         private AutoOffsetReset? autoOffsetReset;
@@ -25,7 +25,7 @@ namespace KafkaFlow.Configuration
 
         public ConsumerConfigurationBuilder(IServiceCollection services)
         {
-            this.middlewareConfigurationBuilder = new MiddlewareConfigurationBuilder(services);
+            this.middlewareConfigurationBuilder = new ConsumerMiddlewareConfigurationBuilder(services);
             this.ServiceCollection = services;
         }
 

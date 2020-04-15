@@ -1,6 +1,26 @@
 namespace KafkaFlow.Configuration
 {
-    public interface IConsumerMiddlewareConfigurationBuilder : IMiddlewareConfigurationBuilder
+    using Microsoft.Extensions.DependencyInjection;
+
+    public interface IConsumerMiddlewareConfigurationBuilder
     {
+        IServiceCollection ServiceCollection { get; }
+
+        /// <summary>
+        /// Register a middleware
+        /// </summary>
+        /// <param name="factory">A factory to create the instance</param>
+        /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
+        /// <returns></returns>
+        IConsumerMiddlewareConfigurationBuilder Add<T>(Factory<T> factory)
+            where T : class, IMessageMiddleware;
+
+        /// <summary>
+        /// Register a middleware
+        /// </summary>
+        /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
+        /// <returns></returns>
+        IConsumerMiddlewareConfigurationBuilder Add<T>()
+            where T : class, IMessageMiddleware;
     }
 }
