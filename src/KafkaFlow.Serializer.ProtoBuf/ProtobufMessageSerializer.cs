@@ -2,7 +2,7 @@
 {
     using System;
     using System.IO;
-    using Serializer = global::ProtoBuf.Serializer;
+    using global::ProtoBuf;
 
     public class ProtobufMessageSerializer : IMessageSerializer
     {

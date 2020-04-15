@@ -40,7 +40,7 @@
             middlewares.ServiceCollection.TryAddSingleton<TSerializer>();
             middlewares.ServiceCollection.TryAddSingleton<TResolver>();
 
-            return (IConsumerMiddlewareConfigurationBuilder) middlewares.Add(
+            return middlewares.Add(
                 provider => new SerializerConsumerMiddleware(
                     serializerFactory(provider),
                     resolverFactory(provider)));
@@ -80,7 +80,7 @@
             middlewares.ServiceCollection.TryAddSingleton<TSerializer>();
             middlewares.ServiceCollection.TryAddSingleton<TResolver>();
 
-            return (IProducerMiddlewareConfigurationBuilder) middlewares.Add(
+            return middlewares.Add(
                 provider => new SerializerProducerMiddleware(
                     serializerFactory(provider),
                     resolverFactory(provider)));

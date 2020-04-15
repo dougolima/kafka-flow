@@ -4,6 +4,7 @@ namespace KafkaFlow.Configuration
     using Confluent.Kafka;
     using KafkaFlow.Producers;
     using Microsoft.Extensions.DependencyInjection;
+    using Acks = KafkaFlow.Acks;
 
     public class ProducerConfigurationBuilder : IProducerConfigurationBuilder
     {
@@ -12,7 +13,7 @@ namespace KafkaFlow.Configuration
 
         private string topic;
         private ProducerConfig baseProducerConfig;
-        private KafkaFlow.Acks? acks;
+        private Acks? acks;
 
         public ProducerConfigurationBuilder(IServiceCollection services, Type type)
         {
@@ -41,7 +42,7 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IProducerConfigurationBuilder WithAcks(KafkaFlow.Acks acks)
+        public IProducerConfigurationBuilder WithAcks(Acks acks)
         {
             this.acks = acks;
             return this;

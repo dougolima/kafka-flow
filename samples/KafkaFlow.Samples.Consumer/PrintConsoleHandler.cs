@@ -2,7 +2,6 @@
 {
     using System;
     using System.Threading.Tasks;
-    using KafkaFlow;
     using KafkaFlow.Samples.Common;
     using KafkaFlow.TypedHandler;
 

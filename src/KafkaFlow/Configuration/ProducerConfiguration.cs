@@ -1,15 +1,15 @@
 namespace KafkaFlow.Configuration
 {
     using System;
-    using System.Collections.Generic;
     using Confluent.Kafka;
+    using Acks = KafkaFlow.Acks;
 
     public class ProducerConfiguration
     {
         public ProducerConfiguration(
             ClusterConfiguration cluster,
             string topic,
-            KafkaFlow.Acks? acks,
+            Acks? acks,
             MiddlewareConfiguration middlewareConfiguration,
             ProducerConfig baseProducerConfig)
         {
@@ -26,7 +26,7 @@ namespace KafkaFlow.Configuration
 
         public ProducerConfig BaseProducerConfig { get; }
 
-        public KafkaFlow.Acks? Acks { get; }
+        public Acks? Acks { get; }
         
         public MiddlewareConfiguration MiddlewareConfiguration { get; }
 
@@ -38,7 +38,7 @@ namespace KafkaFlow.Configuration
             return this.BaseProducerConfig;
         }
 
-        private static Acks? ParseAcks(KafkaFlow.Acks? acks)
+        private static Confluent.Kafka.Acks? ParseAcks(Acks? acks)
         {
             switch (acks)
             {

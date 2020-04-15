@@ -7,10 +7,10 @@
 
     public class SampleMessageTypeResolver : IMessageTypeResolver
     {
-        private readonly Dictionary<string, Type> messageTypes = new Dictionary<string, Type>()
+        private readonly Dictionary<string, Type> messageTypes = new Dictionary<string, Type>
         {
             [typeof(TestMessage).FullName] = typeof(TestMessage),
-            [typeof(TestMessage2).FullName] = typeof(TestMessage2),
+            [typeof(TestMessage2).FullName] = typeof(TestMessage2)
         };
 
         public Type OnConsume(IMessageContext context)

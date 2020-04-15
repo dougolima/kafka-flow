@@ -2,7 +2,6 @@
 {
     using System;
     using System.Text.Json;
-    using KafkaFlow;
 
     public class ConsoleLogHandler : ILogHandler
     {

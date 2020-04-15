@@ -31,7 +31,7 @@
             middlewares.ServiceCollection.TryAddSingleton<IMessageCompressor, T>();
             middlewares.ServiceCollection.TryAddSingleton<T>();
 
-            return (IConsumerMiddlewareConfigurationBuilder) middlewares.Add(
+            return middlewares.Add(
                 provider => new CompressorConsumerMiddleware(factory(provider)));
         }
 
@@ -59,7 +59,7 @@
             middlewares.ServiceCollection.TryAddSingleton<IMessageCompressor, T>();
             middlewares.ServiceCollection.TryAddSingleton<T>();
 
-            return (IProducerMiddlewareConfigurationBuilder) middlewares.Add(
+            return middlewares.Add(
                 provider => new CompressorProducerMiddleware(factory(provider)));
         }
     }

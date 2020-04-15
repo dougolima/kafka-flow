@@ -3,6 +3,7 @@ namespace KafkaFlow.Configuration
     using System;
     using System.Collections.Generic;
     using Confluent.Kafka;
+    using AutoOffsetReset = KafkaFlow.AutoOffsetReset;
 
     public class ConsumerConfiguration
     {
@@ -48,7 +49,7 @@ namespace KafkaFlow.Configuration
 
         public int BufferSize { get; }
 
-        public KafkaFlow.AutoOffsetReset? AutoOffsetReset { get; set; }
+        public AutoOffsetReset? AutoOffsetReset { get; set; }
 
         public int? AutoCommitIntervalMs { get; set; }
 
@@ -70,7 +71,7 @@ namespace KafkaFlow.Configuration
             };
         }
 
-        private static AutoOffsetReset? ParseAutoOffsetReset(KafkaFlow.AutoOffsetReset? autoOffsetReset)
+        private static Confluent.Kafka.AutoOffsetReset? ParseAutoOffsetReset(AutoOffsetReset? autoOffsetReset)
         {
             switch (autoOffsetReset)
             {
