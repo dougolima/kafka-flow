@@ -6,8 +6,6 @@ namespace KafkaFlow
     {
         int WorkerId { get; }
 
-        byte[] RawMessage { get; }
-
         byte[] PartitionKey { get; }
 
         object Message { get; }

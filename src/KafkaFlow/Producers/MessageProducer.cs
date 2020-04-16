@@ -32,7 +32,7 @@ namespace KafkaFlow.Producers
             var messageKey = Encoding.UTF8.GetBytes(partitionKey);
 
             return this.middlewareExecutor.Execute(
-                new MessageContext(
+                new ProducerMessageContext(
                     message,
                     messageKey,
                     headers,
@@ -52,8 +52,10 @@ namespace KafkaFlow.Producers
                 headers);
         }
 
-        private async Task InternalProduce(MessageContext context)
+        private async Task InternalProduce(IMessageContext c)
         {
+            var context = (ProducerMessageContext) c;
+
             if (!(context.Message is byte[] value))
             {
                 throw new InvalidOperationException(

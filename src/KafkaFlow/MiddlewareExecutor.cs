@@ -19,19 +19,18 @@ namespace KafkaFlow
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task Execute(MessageContext context, Func<MessageContext, Task> nextOperation)
+        public Task Execute(IMessageContext context, Func<IMessageContext, Task> nextOperation)
         {
-            await this.ExecuteDefinition(
-                    0,
-                    context,
-                    nextOperation)
-                .ConfigureAwait(false);
+            return this.ExecuteDefinition(
+                0,
+                context,
+                nextOperation);
         }
 
         private Task ExecuteDefinition(
             int index,
-            MessageContext context,
-            Func<MessageContext, Task> nextOperation)
+            IMessageContext context,
+            Func<IMessageContext, Task> nextOperation)
         {
             if (this.configuration.Factories.Count == index)
             {
