@@ -4,9 +4,9 @@ namespace KafkaFlow.Configuration
 
     public class MiddlewareConfiguration
     {
-        public IReadOnlyCollection<Factory<IMessageMiddleware>> Factories { get; }
+        public IReadOnlyList<Factory<IMessageMiddleware>> Factories { get; }
 
-        public MiddlewareConfiguration(IReadOnlyCollection<Factory<IMessageMiddleware>> factories)
+        public MiddlewareConfiguration(IReadOnlyList<Factory<IMessageMiddleware>> factories)
         {
             this.Factories = factories;
         }

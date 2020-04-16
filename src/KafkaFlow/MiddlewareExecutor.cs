@@ -2,6 +2,7 @@ namespace KafkaFlow
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using KafkaFlow.Configuration;
 
@@ -20,32 +21,29 @@ namespace KafkaFlow
 
         public async Task Execute(MessageContext context, Func<MessageContext, Task> nextOperation)
         {
-            using (var enumerator = this.configuration.Factories.GetEnumerator())
-            {
-                await this.ExecuteDefinition(
-                        enumerator,
-                        context,
-                        nextOperation)
-                    .ConfigureAwait(false);
-            }
+            await this.ExecuteDefinition(
+                    0,
+                    context,
+                    nextOperation)
+                .ConfigureAwait(false);
         }
 
         private Task ExecuteDefinition(
-            IEnumerator<Factory<IMessageMiddleware>> enumerator,
+            int index,
             MessageContext context,
             Func<MessageContext, Task> nextOperation)
         {
-            if (!enumerator.MoveNext() || enumerator.Current is null)
+            if (this.configuration.Factories.Count == index)
             {
                 return nextOperation(context);
             }
 
-            var middleware = enumerator.Current(this.serviceProvider);
+            var middleware = this.configuration.Factories[index](this.serviceProvider);
 
             return middleware.Invoke(
                 context,
                 () => this.ExecuteDefinition(
-                    enumerator,
+                    index + 1,
                     context,
                     nextOperation));
         }
