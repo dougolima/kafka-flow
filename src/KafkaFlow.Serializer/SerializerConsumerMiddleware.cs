@@ -24,10 +24,9 @@
             {
                 return Task.CompletedTask;
             }
-
+            
             if (context.Message is null)
             {
-                context.TransformMessage(null, messageType);
                 return next();
             }
 
@@ -36,7 +35,7 @@
                 throw new InvalidOperationException($"{nameof(context.Message)} must be a byte array to be serialized and it is '{context.Message.GetType().FullName}'");
             }
 
-            context.TransformMessage(this.serializer.Deserialize(rawData, messageType), messageType);
+            context.TransformMessage(this.serializer.Deserialize(rawData, messageType));
 
             return next();
         }

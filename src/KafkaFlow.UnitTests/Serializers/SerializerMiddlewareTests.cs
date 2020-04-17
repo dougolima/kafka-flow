@@ -44,7 +44,7 @@ namespace KafkaFlow.UnitTests.Serializers
             // Assert
             this.nextCalled.Should().BeFalse();
             this.typeResolverMock.VerifyAll();
-            this.contextMock.Verify(x => x.TransformMessage(It.IsAny<object>(), It.IsAny<Type>()), Times.Never);
+            this.contextMock.Verify(x => x.TransformMessage(It.IsAny<object>()), Times.Never);
             this.serializerMock.Verify(x => x.Deserialize(It.IsAny<byte[]>(), It.IsAny<Type>()), Times.Never);
         }
 
@@ -67,7 +67,6 @@ namespace KafkaFlow.UnitTests.Serializers
 
             // Assert
             this.nextCalled.Should().BeTrue();
-            this.contextMock.Verify(x => x.TransformMessage(null, messageType));
             this.serializerMock.Verify(x => x.Deserialize(It.IsAny<byte[]>(), It.IsAny<Type>()), Times.Never);
             this.typeResolverMock.VerifyAll();
         }
@@ -92,7 +91,7 @@ namespace KafkaFlow.UnitTests.Serializers
             // Assert
             act.Should().Throw<InvalidOperationException>();
             this.nextCalled.Should().BeFalse();
-            this.contextMock.Verify(x => x.TransformMessage(It.IsAny<object>(), It.IsAny<Type>()), Times.Never);
+            this.contextMock.Verify(x => x.TransformMessage(It.IsAny<object>()), Times.Never);
             this.serializerMock.Verify(x => x.Deserialize(It.IsAny<byte[]>(), It.IsAny<Type>()), Times.Never);
             this.typeResolverMock.VerifyAll();
         }
@@ -122,7 +121,7 @@ namespace KafkaFlow.UnitTests.Serializers
 
             // Assert
             this.nextCalled.Should().BeTrue();
-            this.contextMock.Verify(x => x.TransformMessage(deserializedMessage, messageType));
+            this.contextMock.Verify(x => x.TransformMessage(deserializedMessage));
             this.serializerMock.VerifyAll();
             this.typeResolverMock.VerifyAll();
         }

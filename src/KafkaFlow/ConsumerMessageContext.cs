@@ -16,7 +16,6 @@ namespace KafkaFlow
             this.result = result;
             this.Consumer = consumer;
             this.Message = result.Value;
-            this.MessageType = result.Value.GetType();
             this.Headers = new MessageHeaders(result.Headers);
             this.WorkerId = workerId;
             this.GroupId = groupId;
@@ -28,8 +27,6 @@ namespace KafkaFlow
 
         public object Message { get; private set; }
 
-        public Type MessageType { get; private set; }
-
         public IMessageHeaders Headers { get; }
 
         public string Topic => this.result.Topic;
@@ -40,10 +37,9 @@ namespace KafkaFlow
 
         public long? Offset => this.result.Offset.Value;
 
-        public void TransformMessage(object message, Type type)
+        public void TransformMessage(object message)
         {
             this.Message = message;
-            this.MessageType = type;
         }
 
         public IMessageConsumer Consumer { get; }

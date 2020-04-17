@@ -10,8 +10,6 @@ namespace KafkaFlow
 
         object Message { get; }
 
-        Type MessageType { get; }
-
         IMessageHeaders Headers { get; }
 
         string Topic { get; }
@@ -22,7 +20,7 @@ namespace KafkaFlow
 
         string GroupId { get; }
 
-        void TransformMessage(object message, Type type);
+        void TransformMessage(object message);
         
         IMessageConsumer Consumer { get; }
     }

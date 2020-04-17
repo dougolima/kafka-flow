@@ -20,7 +20,7 @@
             this.typeResolver.OnProduce(context);
 
             var data = this.serializer.Serialize(context.Message);
-            context.TransformMessage(data, data.GetType());
+            context.TransformMessage(data);
 
             return next();
         }

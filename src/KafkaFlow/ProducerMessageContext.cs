@@ -11,7 +11,6 @@ namespace KafkaFlow
             string topic)
         {
             this.Message = message;
-            this.MessageType = message.GetType();
             this.PartitionKey = partitionKey;
             this.Headers = headers ?? new MessageHeaders();
             this.Topic = topic;
@@ -25,8 +24,6 @@ namespace KafkaFlow
 
         public object Message { get; private set; }
 
-        public Type MessageType { get; private set; }
-
         public IMessageHeaders Headers { get; }
 
         public string Topic { get; }
@@ -37,12 +34,11 @@ namespace KafkaFlow
 
         public long? Offset { get; set; }
 
-        public void TransformMessage(object message, Type type)
+        public void TransformMessage(object message)
         {
             this.Message = message;
-            this.MessageType = type;
         }
-
+        
         public IMessageConsumer Consumer => null;
     }
 }

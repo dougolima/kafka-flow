@@ -20,7 +20,7 @@
             }
 
             var data = this.compressor.Decompress(rawData);
-            context.TransformMessage(data, data.GetType());
+            context.TransformMessage(data);
 
             return next();
         }

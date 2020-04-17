@@ -21,7 +21,7 @@ namespace KafkaFlow.TypedHandler
         {
             using (var scope = this.serviceProvider.CreateScope())
             {
-                var handlerType = this.configuration.HandlerMapping.GetHandlerType(context.MessageType);
+                var handlerType = this.configuration.HandlerMapping.GetHandlerType(context.Message.GetType());
 
                 if (handlerType == null)
                 {
@@ -31,7 +31,7 @@ namespace KafkaFlow.TypedHandler
                 var handler = scope.ServiceProvider.GetService(handlerType);
 
                 await HandlerExecutor
-                    .GetExecutor(context.MessageType)
+                    .GetExecutor(context.Message.GetType())
                     .Execute(
                         handler,
                         context,
