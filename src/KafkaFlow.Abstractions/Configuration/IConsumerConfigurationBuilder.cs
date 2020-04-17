@@ -80,7 +80,7 @@ namespace KafkaFlow.Configuration
         /// <typeparam name="T">A class that implements the <see cref="IDistributionStrategy"/> interface</typeparam>
         /// <param name="factory">A factory to create the instance</param>
         /// <returns></returns>
-        IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
+        IConsumerConfigurationBuilder WithWorkDistributionStrategy<T>(Factory<T> factory)
             where T : class, IDistributionStrategy;
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace KafkaFlow.Configuration
         /// </summary>
         /// <typeparam name="T">A class that implements the <see cref="IDistributionStrategy"/> interface</typeparam>
         /// <returns></returns>
-        IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>()
+        IConsumerConfigurationBuilder WithWorkDistributionStrategy<T>()
             where T : class, IDistributionStrategy;
 
         /// <summary>

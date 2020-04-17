@@ -81,14 +81,14 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>(Factory<T> factory)
+        public IConsumerConfigurationBuilder WithWorkDistributionStrategy<T>(Factory<T> factory)
             where T : class, IDistributionStrategy
         {
             this.distributionStrategyFactory = factory;
             return this;
         }
 
-        public IConsumerConfigurationBuilder WithWorkDistributionStretagy<T>()
+        public IConsumerConfigurationBuilder WithWorkDistributionStrategy<T>()
             where T : class, IDistributionStrategy
         {
             this.ServiceCollection.TryAddTransient(typeof(T));
