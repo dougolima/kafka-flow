@@ -2,7 +2,7 @@ namespace KafkaFlow.Consumers
 {
     using Confluent.Kafka;
 
-    public interface IOffsetManager
+    internal interface IOffsetManager
     {
         void StoreOffset(TopicPartitionOffset offset);
     }

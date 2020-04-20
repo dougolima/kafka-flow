@@ -7,7 +7,7 @@ namespace KafkaFlow.Configuration
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
-    public class ConsumerConfigurationBuilder
+    internal sealed class ConsumerConfigurationBuilder
         : IConsumerConfigurationBuilder
     {
         private readonly List<string> topics = new List<string>();
@@ -114,7 +114,7 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        public virtual ConsumerConfiguration Build(ClusterConfiguration clusterConfiguration)
+        public ConsumerConfiguration Build(ClusterConfiguration clusterConfiguration)
         {
             var middlewareConfiguration = this.middlewareConfigurationBuilder.Build();
 

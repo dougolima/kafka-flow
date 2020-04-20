@@ -8,7 +8,7 @@
     using Confluent.Kafka;
     using KafkaFlow.Configuration;
 
-    public class KafkaConsumer
+    internal class KafkaConsumer
     {
         private readonly ConsumerConfiguration configuration;
         private readonly ILogHandler logHandler;

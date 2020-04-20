@@ -6,7 +6,7 @@ namespace KafkaFlow.Producers
     using Confluent.Kafka;
     using KafkaFlow.Configuration;
 
-    public class MessageProducer<TProducer> : IMessageProducer<TProducer>
+    internal class MessageProducer<TProducer> : IMessageProducer<TProducer>
     {
         private readonly ProducerConfiguration configuration;
         private readonly IProducer<byte[], byte[]> producer;

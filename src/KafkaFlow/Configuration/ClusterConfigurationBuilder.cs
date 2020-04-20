@@ -5,7 +5,8 @@ namespace KafkaFlow.Configuration
     using System.Linq;
     using Microsoft.Extensions.DependencyInjection;
 
-    public class ClusterConfigurationBuilder
+    internal class ClusterConfigurationBuilder
+        : IClusterConfigurationBuilder
     {
         private readonly IServiceCollection services;
 
@@ -31,24 +32,13 @@ namespace KafkaFlow.Configuration
             return configuration;
         }
 
-        /// <summary>
-        /// Set the Kafka Brokers to be used
-        /// </summary>
-        /// <param name="brokers"></param>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder WithBrokers(IEnumerable<string> brokers)
+        public IClusterConfigurationBuilder WithBrokers(IEnumerable<string> brokers)
         {
             this.brokers = brokers;
             return this;
         }
 
-        /// <summary>
-        /// Adds a producer to the cluster
-        /// </summary>
-        /// <param name="producer">A handler to configure the producer</param>
-        /// <typeparam name="TProducer">The class responsible for the production</typeparam>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder AddProducer<TProducer>(Action<IProducerConfigurationBuilder> producer)
+        public IClusterConfigurationBuilder AddProducer<TProducer>(Action<IProducerConfigurationBuilder> producer)
         {
             var builder = new ProducerConfigurationBuilder(this.services, typeof(TProducer));
 
@@ -59,12 +49,7 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        /// <summary>
-        /// Adds a consumer to the cluster
-        /// </summary>
-        /// <param name="consumer">A handler to configure the consumer</param>
-        /// <returns></returns>
-        public ClusterConfigurationBuilder AddConsumer(Action<IConsumerConfigurationBuilder> consumer)
+        public IClusterConfigurationBuilder AddConsumer(Action<IConsumerConfigurationBuilder> consumer)
         {
             var builder = new ConsumerConfigurationBuilder(this.services);
 

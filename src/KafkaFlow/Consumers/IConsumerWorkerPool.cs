@@ -5,7 +5,7 @@ namespace KafkaFlow.Consumers
     using System.Threading.Tasks;
     using Confluent.Kafka;
 
-    public interface IConsumerWorkerPool
+    internal interface IConsumerWorkerPool
     {
         Task StartAsync(
             IConsumer<byte[], byte[]> consumer,

@@ -5,7 +5,7 @@ namespace KafkaFlow.Configuration
     using Confluent.Kafka;
     using AutoOffsetReset = KafkaFlow.AutoOffsetReset;
 
-    public class ConsumerConfiguration
+    internal class ConsumerConfiguration
     {
         public ConsumerConfiguration(
             ClusterConfiguration cluster,

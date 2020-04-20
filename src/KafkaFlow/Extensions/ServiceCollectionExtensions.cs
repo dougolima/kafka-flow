@@ -4,11 +4,13 @@ namespace KafkaFlow.Extensions
     using KafkaFlow.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddKafka(
             this IServiceCollection services,
-            Action<KafkaConfigurationBuilder> kafka)
+            Action<IKafkaConfigurationBuilder> kafka)
         {
             var builder = new KafkaConfigurationBuilder(services);
 

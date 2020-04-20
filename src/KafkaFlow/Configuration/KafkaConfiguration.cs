@@ -2,7 +2,7 @@ namespace KafkaFlow.Configuration
 {
     using System.Collections.Generic;
 
-    public class KafkaConfiguration
+    internal class KafkaConfiguration
     {
         private readonly List<ClusterConfiguration> clusters = new List<ClusterConfiguration>();
 

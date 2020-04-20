@@ -6,7 +6,8 @@ namespace KafkaFlow.Configuration
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
-    public class KafkaConfigurationBuilder
+    internal class KafkaConfigurationBuilder
+        : IKafkaConfigurationBuilder
     {
         private readonly IServiceCollection services;
         private readonly List<ClusterConfigurationBuilder> clusters = new List<ClusterConfigurationBuilder>();
@@ -28,12 +29,7 @@ namespace KafkaFlow.Configuration
             return configuration;
         }
 
-        /// <summary>
-        /// Adds a new Cluster
-        /// </summary>
-        /// <param name="cluster"></param>
-        /// <returns></returns>
-        public KafkaConfigurationBuilder AddCluster(Action<ClusterConfigurationBuilder> cluster)
+        public IKafkaConfigurationBuilder AddCluster(Action<IClusterConfigurationBuilder> cluster)
         {
             var builder = new ClusterConfigurationBuilder(this.services);
 
@@ -44,12 +40,7 @@ namespace KafkaFlow.Configuration
             return this;
         }
 
-        /// <summary>
-        /// Set the log handler to be used by the Framework, if none is provided the <see cref="NullLogHandler"/> will be used
-        /// </summary>
-        /// <typeparam name="TLogHandler">A class that implements the <see cref="ILogHandler"/> interface</typeparam>
-        /// <returns></returns>
-        public KafkaConfigurationBuilder UseLogHandler<TLogHandler>() where TLogHandler : ILogHandler
+        public IKafkaConfigurationBuilder UseLogHandler<TLogHandler>() where TLogHandler : ILogHandler
         {
             this.logHandler = typeof(TLogHandler);
             return this;

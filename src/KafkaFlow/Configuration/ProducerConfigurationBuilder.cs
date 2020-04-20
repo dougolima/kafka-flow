@@ -6,7 +6,7 @@ namespace KafkaFlow.Configuration
     using Microsoft.Extensions.DependencyInjection;
     using Acks = KafkaFlow.Acks;
 
-    public class ProducerConfigurationBuilder : IProducerConfigurationBuilder
+    internal class ProducerConfigurationBuilder : IProducerConfigurationBuilder
     {
         private readonly Type producerType;
         private readonly ProducerMiddlewareConfigurationBuilder middlewareConfigurationBuilder;

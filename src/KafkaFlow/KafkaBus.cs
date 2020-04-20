@@ -9,8 +9,9 @@ namespace KafkaFlow
     using KafkaFlow.Consumers;
     using Microsoft.Extensions.DependencyInjection;
 
-    public class KafkaBus : IKafkaBus
+    internal class KafkaBus : IKafkaBus
     {
+        private readonly KafkaConfiguration configuration;
         private readonly ILogHandler logHandler;
         private readonly IServiceProvider serviceProvider;
         private readonly List<KafkaConsumer> consumers = new List<KafkaConsumer>();
@@ -20,16 +21,14 @@ namespace KafkaFlow
             ILogHandler logHandler,
             IServiceProvider serviceProvider)
         {
+            this.configuration = configuration;
             this.logHandler = logHandler;
             this.serviceProvider = serviceProvider;
-            this.Configuration = configuration;
         }
-
-        public KafkaConfiguration Configuration { get; }
 
         public async Task StartAsync(CancellationToken stopCancellationToken = default)
         {
-            foreach (var cluster in this.Configuration.Clusters)
+            foreach (var cluster in this.configuration.Clusters)
             {
                 foreach (var consumerConfiguration in cluster.Consumers)
                 {

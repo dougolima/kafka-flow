@@ -4,6 +4,8 @@ namespace KafkaFlow.Extensions
     using KafkaFlow.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>
+    /// </summary>
     public static class ServiceProviderExtensions
     {
         public static IKafkaBus UseKafka(this IServiceProvider provider)

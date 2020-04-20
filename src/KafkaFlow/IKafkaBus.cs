@@ -6,8 +6,6 @@ namespace KafkaFlow
 
     public interface IKafkaBus
     {
-        KafkaConfiguration Configuration { get; }
-
         Task StartAsync(CancellationToken stopCancellationToken = default);
 
         Task StopAsync();

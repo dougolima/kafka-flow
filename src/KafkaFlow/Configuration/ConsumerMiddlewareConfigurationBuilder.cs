@@ -4,7 +4,7 @@ namespace KafkaFlow.Configuration
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
-    public class ConsumerMiddlewareConfigurationBuilder
+    internal class ConsumerMiddlewareConfigurationBuilder
         : IConsumerMiddlewareConfigurationBuilder
     {
         public IServiceCollection ServiceCollection { get; }
