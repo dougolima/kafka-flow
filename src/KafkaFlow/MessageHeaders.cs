@@ -5,11 +5,11 @@ namespace KafkaFlow
     using System.Text;
     using Confluent.Kafka;
 
-    internal class MessageHeaders : IMessageHeaders
+    public class MessageHeaders : IMessageHeaders
     {
         private readonly Headers headers;
 
-        public MessageHeaders(Headers headers)
+        internal MessageHeaders(Headers headers)
         {
             this.headers = headers;
         }
