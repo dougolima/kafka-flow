@@ -27,7 +27,7 @@
             
             if (context.Message is null)
             {
-                return next();
+                return next(context);
             }
 
             if (!(context.Message is byte[] rawData))
@@ -37,7 +37,7 @@
 
             context.TransformMessage(this.serializer.Deserialize(rawData, messageType));
 
-            return next();
+            return next(context);
         }
     }
 }

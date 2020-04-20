@@ -1,9 +1,8 @@
 namespace KafkaFlow
 {
-    using System;
     using Confluent.Kafka;
 
-    internal struct ConsumerMessageContext : IMessageContext
+    internal class ConsumerMessageContext : IMessageContext
     {
         private readonly ConsumeResult<byte[], byte[]> result;
 
@@ -37,11 +36,13 @@ namespace KafkaFlow
 
         public long? Offset => this.result.Offset.Value;
 
+        public IMessageConsumer Consumer { get; }
+
         public void TransformMessage(object message)
         {
             this.Message = message;
         }
 
-        public IMessageConsumer Consumer { get; }
+        public IMessageContext Clone() => (IMessageContext) this.MemberwiseClone();
     }
 }

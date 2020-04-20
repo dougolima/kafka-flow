@@ -41,9 +41,9 @@ namespace KafkaFlow
 
             return middleware.Invoke(
                 context,
-                () => this.ExecuteDefinition(
+                nextContext => this.ExecuteDefinition(
                     index + 1,
-                    context,
+                    nextContext.Clone(),
                     nextOperation));
         }
     }

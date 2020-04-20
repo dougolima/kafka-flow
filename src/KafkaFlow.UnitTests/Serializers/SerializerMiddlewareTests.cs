@@ -126,7 +126,7 @@ namespace KafkaFlow.UnitTests.Serializers
             this.typeResolverMock.VerifyAll();
         }
 
-        private Task SetNextCalled()
+        private Task SetNextCalled(IMessageContext context)
         {
             this.nextCalled = true;
             return Task.CompletedTask;

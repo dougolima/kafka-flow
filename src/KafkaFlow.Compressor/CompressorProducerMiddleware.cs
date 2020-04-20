@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    public class CompressorProducerMiddleware : IMessageMiddleware
+    internal class CompressorProducerMiddleware : IMessageMiddleware
     {
         private readonly IMessageCompressor compressor;
 
@@ -22,7 +22,7 @@
             var data = this.compressor.Compress(rawData);
             context.TransformMessage(data);
 
-            return next();
+            return next(context);
         }
     }
 }

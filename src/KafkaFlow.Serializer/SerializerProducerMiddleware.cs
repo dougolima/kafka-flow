@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
 
-    public class SerializerProducerMiddleware : IMessageMiddleware
+    internal class SerializerProducerMiddleware : IMessageMiddleware
     {
         private readonly IMessageSerializer serializer;
         private readonly IMessageTypeResolver typeResolver;
@@ -22,7 +22,7 @@
             var data = this.serializer.Serialize(context.Message);
             context.TransformMessage(data);
 
-            return next();
+            return next(context);
         }
     }
 }

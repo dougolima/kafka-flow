@@ -4,6 +4,8 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
+    /// <summary>
+    /// </summary>
     public static class ConfigurationBuilderExtensions
     {
         /// <summary>

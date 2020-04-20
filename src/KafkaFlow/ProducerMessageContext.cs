@@ -1,8 +1,6 @@
 namespace KafkaFlow
 {
-    using System;
-
-    internal struct ProducerMessageContext : IMessageContext
+    internal class ProducerMessageContext : IMessageContext
     {
         public ProducerMessageContext(
             object message,
@@ -34,11 +32,13 @@ namespace KafkaFlow
 
         public long? Offset { get; set; }
 
+        public IMessageConsumer Consumer => null;
+
         public void TransformMessage(object message)
         {
             this.Message = message;
         }
-        
-        public IMessageConsumer Consumer => null;
+
+        public IMessageContext Clone() => (IMessageContext) this.MemberwiseClone();
     }
 }

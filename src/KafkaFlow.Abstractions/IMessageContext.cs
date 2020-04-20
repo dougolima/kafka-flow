@@ -1,7 +1,5 @@
 namespace KafkaFlow
 {
-    using System;
-
     public interface IMessageContext
     {
         int WorkerId { get; }
@@ -20,8 +18,10 @@ namespace KafkaFlow
 
         string GroupId { get; }
 
-        void TransformMessage(object message);
-        
         IMessageConsumer Consumer { get; }
+
+        void TransformMessage(object message);
+
+        IMessageContext Clone();
     }
 }
