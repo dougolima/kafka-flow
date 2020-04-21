@@ -2,21 +2,15 @@ namespace KafkaFlow
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
-    using KafkaFlow.Configuration;
 
     internal class MiddlewareExecutor : IMiddlewareExecutor
     {
-        private readonly MiddlewareConfiguration configuration;
-        private readonly IServiceProvider serviceProvider;
+        private readonly IReadOnlyList<IMessageMiddleware> middlewares;
 
-        public MiddlewareExecutor(
-            MiddlewareConfiguration configuration,
-            IServiceProvider serviceProvider)
+        public MiddlewareExecutor(IReadOnlyList<IMessageMiddleware> middlewares)
         {
-            this.configuration = configuration;
-            this.serviceProvider = serviceProvider;
+            this.middlewares = middlewares;
         }
 
         public Task Execute(IMessageContext context, Func<IMessageContext, Task> nextOperation)
@@ -32,19 +26,18 @@ namespace KafkaFlow
             IMessageContext context,
             Func<IMessageContext, Task> nextOperation)
         {
-            if (this.configuration.Factories.Count == index)
+            if (this.middlewares.Count == index)
             {
                 return nextOperation(context);
             }
 
-            var middleware = this.configuration.Factories[index](this.serviceProvider);
-
-            return middleware.Invoke(
-                context,
-                nextContext => this.ExecuteDefinition(
-                    index + 1,
-                    nextContext.Clone(),
-                    nextOperation));
+            return this.middlewares[index]
+                .Invoke(
+                    context,
+                    nextContext => this.ExecuteDefinition(
+                        index + 1,
+                        nextContext.Clone(),
+                        nextOperation));
         }
     }
 }

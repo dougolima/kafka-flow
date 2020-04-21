@@ -34,11 +34,15 @@ namespace KafkaFlow
                 {
                     var serviceScope = this.serviceProvider.CreateScope();
 
+                    var middlewares = consumerConfiguration.MiddlewareConfiguration.Factories
+                        .Select(factory => factory(serviceScope.ServiceProvider))
+                        .ToList();
+
                     var consumerWorkerPool = new ConsumerWorkerPool(
                         serviceScope.ServiceProvider,
                         consumerConfiguration,
                         this.logHandler,
-                        new MiddlewareExecutor(consumerConfiguration.MiddlewareConfiguration, serviceScope.ServiceProvider),
+                        new MiddlewareExecutor(middlewares),
                         consumerConfiguration.DistributionStrategyFactory);
 
                     var consumer = new KafkaConsumer(

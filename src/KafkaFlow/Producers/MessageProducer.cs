@@ -1,6 +1,7 @@
 namespace KafkaFlow.Producers
 {
     using System;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Confluent.Kafka;
@@ -20,7 +21,11 @@ namespace KafkaFlow.Producers
 
             this.producer = new ProducerBuilder<byte[], byte[]>(configuration.GetKafkaConfig()).Build();
 
-            this.middlewareExecutor = new MiddlewareExecutor(this.configuration.MiddlewareConfiguration, serviceProvider);
+            var middlewares = this.configuration.MiddlewareConfiguration.Factories
+                .Select(factory => factory(serviceProvider))
+                .ToList();
+
+            this.middlewareExecutor = new MiddlewareExecutor(middlewares);
         }
 
         public Task ProduceAsync(
