@@ -1,8 +1,10 @@
 ﻿namespace KafkaFlow.Samples.Consumer
 {
+    using System;
     using System.Threading;
     using KafkaFlow.Compressor;
     using KafkaFlow.Compressor.Gzip;
+    using KafkaFlow.Consumers;
     using KafkaFlow.Extensions;
     using KafkaFlow.Samples.Common;
     using KafkaFlow.Serializer;
@@ -66,9 +68,34 @@
 
             bus.StartAsync().GetAwaiter().GetResult();
 
+            var consumerAcessor = provider.GetRequiredService<IConsumerAccessor>();
+
             while (true)
             {
-                Thread.Sleep(10000);
+                var input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "pause":
+
+                        foreach (var consumer in consumerAcessor.All)
+                        {
+                            consumer.Pause(consumer.Assignment);
+                        }
+
+                        break;
+
+                    case "resume":
+
+                        foreach (var consumer in consumerAcessor.All)
+                        {
+                            consumer.Resume(consumer.Assignment);
+                        }
+
+                        break;
+                    case "exit":
+                        return;
+                }
             }
         }
     }
