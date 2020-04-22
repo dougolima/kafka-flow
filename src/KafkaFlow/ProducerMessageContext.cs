@@ -32,7 +32,7 @@ namespace KafkaFlow
 
         public long? Offset { get; set; }
 
-        public IMessageConsumer Consumer => null;
+        public IMessageContextConsumer Consumer => null;
 
         public void TransformMessage(object message)
         {

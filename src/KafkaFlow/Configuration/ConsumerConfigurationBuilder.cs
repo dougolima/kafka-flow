@@ -13,6 +13,7 @@ namespace KafkaFlow.Configuration
         private readonly List<string> topics = new List<string>();
         private readonly ConsumerMiddlewareConfigurationBuilder middlewareConfigurationBuilder;
 
+        private string name;
         private string groupId;
         private AutoOffsetReset? autoOffsetReset;
         private int? autoCommitIntervalMs;
@@ -44,6 +45,12 @@ namespace KafkaFlow.Configuration
         }
 
         public IConsumerConfigurationBuilder Topics(params string[] topics) => this.Topics(topics.AsEnumerable());
+
+        public IConsumerConfigurationBuilder WithName(string name)
+        {
+            this.name = name;
+            return this;
+        }
 
         public IConsumerConfigurationBuilder WithGroupId(string groupId)
         {
@@ -121,6 +128,7 @@ namespace KafkaFlow.Configuration
             var configuration = new ConsumerConfiguration(
                 clusterConfiguration,
                 this.topics,
+                this.name,
                 this.groupId,
                 this.workersCount,
                 this.bufferSize,

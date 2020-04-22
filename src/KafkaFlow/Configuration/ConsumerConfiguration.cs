@@ -10,6 +10,7 @@ namespace KafkaFlow.Configuration
         public ConsumerConfiguration(
             ClusterConfiguration cluster,
             IEnumerable<string> topics,
+            string consumerName,
             string groupId,
             int workersCount,
             int bufferSize,
@@ -20,6 +21,7 @@ namespace KafkaFlow.Configuration
             this.DistributionStrategyFactory = distributionStrategyFactory ?? throw new ArgumentNullException(nameof(distributionStrategyFactory));
             this.MiddlewareConfiguration = middlewareConfiguration ?? throw new ArgumentNullException(nameof(middlewareConfiguration));
             this.Topics = topics ?? throw new ArgumentNullException(nameof(topics));
+            this.ConsumerName = consumerName ?? Guid.NewGuid().ToString();
             this.GroupId = string.IsNullOrWhiteSpace(groupId) ? throw new ArgumentNullException(nameof(groupId)) : groupId;
             this.WorkersCount = workersCount > 0 ?
                 workersCount :
@@ -42,6 +44,8 @@ namespace KafkaFlow.Configuration
         public MiddlewareConfiguration MiddlewareConfiguration { get; }
 
         public IEnumerable<string> Topics { get; }
+
+        public string ConsumerName { get; }
 
         public int WorkersCount { get; }
 

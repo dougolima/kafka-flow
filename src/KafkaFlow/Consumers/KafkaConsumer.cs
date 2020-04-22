@@ -11,6 +11,7 @@
     internal class KafkaConsumer
     {
         private readonly ConsumerConfiguration configuration;
+        private readonly IConsumerManager consumerManager;
         private readonly ILogHandler logHandler;
         private readonly IConsumerWorkerPool consumerWorkerPool;
 
@@ -21,10 +22,12 @@
 
         public KafkaConsumer(
             ConsumerConfiguration configuration,
+            IConsumerManager consumerManager,
             ILogHandler logHandler,
             IConsumerWorkerPool consumerWorkerPool)
         {
             this.configuration = configuration;
+            this.consumerManager = consumerManager;
             this.logHandler = logHandler;
             this.consumerWorkerPool = consumerWorkerPool;
 
@@ -110,6 +113,12 @@
         private void CreateBackgroundTask()
         {
             var consumer = this.consumerBuilder.Build();
+
+            this.consumerManager.AddOrUpdateConsumer(
+                new MessageConsumer(
+                    consumer,
+                    this.configuration.ConsumerName,
+                    this.configuration.GroupId));
 
             consumer.Subscribe(this.configuration.Topics);
 

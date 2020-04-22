@@ -12,16 +12,19 @@ namespace KafkaFlow
     internal class KafkaBus : IKafkaBus
     {
         private readonly KafkaConfiguration configuration;
+        private readonly IConsumerManager consumerManager;
         private readonly ILogHandler logHandler;
         private readonly IServiceProvider serviceProvider;
         private readonly List<KafkaConsumer> consumers = new List<KafkaConsumer>();
 
         public KafkaBus(
             KafkaConfiguration configuration,
+            IConsumerManager consumerManager,
             ILogHandler logHandler,
             IServiceProvider serviceProvider)
         {
             this.configuration = configuration;
+            this.consumerManager = consumerManager;
             this.logHandler = logHandler;
             this.serviceProvider = serviceProvider;
         }
@@ -47,6 +50,7 @@ namespace KafkaFlow
 
                     var consumer = new KafkaConsumer(
                         consumerConfiguration,
+                        this.consumerManager,
                         this.logHandler,
                         consumerWorkerPool);
 

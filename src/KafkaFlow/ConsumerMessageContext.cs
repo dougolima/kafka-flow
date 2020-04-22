@@ -7,7 +7,7 @@ namespace KafkaFlow
         private readonly ConsumeResult<byte[], byte[]> result;
 
         public ConsumerMessageContext(
-            IMessageConsumer consumer,
+            IMessageContextConsumer consumer,
             ConsumeResult<byte[], byte[]> result,
             int workerId,
             string groupId)
@@ -36,7 +36,7 @@ namespace KafkaFlow
 
         public long? Offset => this.result.Offset.Value;
 
-        public IMessageConsumer Consumer { get; }
+        public IMessageContextConsumer Consumer { get; }
 
         public void TransformMessage(object message)
         {

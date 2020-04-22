@@ -1,7 +1,12 @@
 namespace KafkaFlow
 {
-    public interface IMessageConsumer
+    public interface IMessageContextConsumer
     {
+        /// <summary>
+        /// The consumer unique name defined in configuration
+        /// </summary>
+        string Name { get; }
+
         /// <summary>
         /// Store the message offset when manual store option is used
         /// </summary>

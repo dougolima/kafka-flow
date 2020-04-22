@@ -30,6 +30,13 @@ namespace KafkaFlow.Configuration
         IConsumerConfigurationBuilder Topics(params string[] topics);
 
         /// <summary>
+        /// Set a unique name for the consumer
+        /// </summary>
+        /// <param name="name">A unique name</param>
+        /// <returns></returns>
+        IConsumerConfigurationBuilder WithName(string name);
+
+        /// <summary>
         /// Set the group id used by the consumer
         /// </summary>
         /// <param name="groupId"></param>

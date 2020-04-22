@@ -62,8 +62,9 @@ namespace KafkaFlow.Consumers
                                 .ConfigureAwait(false);
 
                             var context = new ConsumerMessageContext(
-                                new MessageConsumerWrapper(
+                                new MessageContextConsumer(
                                     this.consumer,
+                                    this.configuration.ConsumerName,
                                     this.offsetManager,
                                     message),
                                 message,

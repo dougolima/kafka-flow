@@ -2,6 +2,7 @@ namespace KafkaFlow.Extensions
 {
     using System;
     using KafkaFlow.Configuration;
+    using KafkaFlow.Consumers;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -17,6 +18,8 @@ namespace KafkaFlow.Extensions
             kafka(builder);
 
             services.AddSingleton(builder.Build());
+
+            services.AddSingleton<IConsumerAccessor>(ConsumerManager.Instance);
 
             return services;
         }

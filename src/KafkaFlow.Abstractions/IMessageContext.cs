@@ -18,7 +18,7 @@ namespace KafkaFlow
 
         string GroupId { get; }
 
-        IMessageConsumer Consumer { get; }
+        IMessageContextConsumer Consumer { get; }
 
         void TransformMessage(object message);
 
