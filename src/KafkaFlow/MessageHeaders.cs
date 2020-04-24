@@ -34,13 +34,6 @@ namespace KafkaFlow
             }
         }
 
-        public string GetString(string key, Encoding encoding)
-        {
-            return this.headers.TryGetLastBytes(key, out var value) ? encoding.GetString(value) : null;
-        }
-
-        public string GetString(string key) => this.GetString(key, Encoding.UTF8);
-
         public Headers GetKafkaHeaders() => this.headers;
 
         public IEnumerator<KeyValuePair<string, byte[]>> GetEnumerator()
