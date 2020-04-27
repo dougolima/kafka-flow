@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class CompressorConsumerMiddleware : IMessageMiddleware
+    public class CompressorConsumerMiddleware : IMessageMiddleware
     {
         private readonly IMessageCompressor compressor;
 

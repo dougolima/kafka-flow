@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
 
-    internal class SerializerProducerMiddleware : IMessageMiddleware
+    public class SerializerProducerMiddleware : IMessageMiddleware
     {
         private readonly IMessageSerializer serializer;
         private readonly IMessageTypeResolver typeResolver;

@@ -4,7 +4,7 @@ namespace KafkaFlow.Consumers
     using System.Linq;
     using Confluent.Kafka;
 
-    internal class OffsetManager : IOffsetManager
+    public class OffsetManager : IOffsetManager
     {
         private readonly IConsumer<byte[], byte[]> consumer;
         private readonly Dictionary<(string, int), PartitionOffsets> partitionsOffsets;

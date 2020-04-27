@@ -9,13 +9,12 @@ namespace KafkaFlow
     {
         private readonly Headers headers;
 
-        internal MessageHeaders(Headers headers)
+        public MessageHeaders(Headers headers)
         {
             this.headers = headers;
         }
 
-        public MessageHeaders()
-            : this(new Headers())
+        public MessageHeaders() : this(new Headers())
         {
         }
 
