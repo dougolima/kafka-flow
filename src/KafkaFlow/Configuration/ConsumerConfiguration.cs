@@ -83,7 +83,7 @@ namespace KafkaFlow.Configuration
                     return Confluent.Kafka.AutoOffsetReset.Latest;
 
                 case KafkaFlow.AutoOffsetReset.Earliest:
-                    return Confluent.Kafka.AutoOffsetReset.Latest;
+                    return Confluent.Kafka.AutoOffsetReset.Earliest;
 
                 default:
                     return null;
