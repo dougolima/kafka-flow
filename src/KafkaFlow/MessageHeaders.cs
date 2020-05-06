@@ -2,7 +2,6 @@ namespace KafkaFlow
 {
     using System.Collections;
     using System.Collections.Generic;
-    using System.Text;
     using Confluent.Kafka;
 
     public class MessageHeaders : IMessageHeaders

@@ -4,7 +4,6 @@ namespace KafkaFlow.UnitTests.Compressors
     using System.Threading.Tasks;
     using Compressor;
     using FluentAssertions;
-    using KafkaFlow.Serializer;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

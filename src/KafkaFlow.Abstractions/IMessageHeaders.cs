@@ -1,7 +1,6 @@
 namespace KafkaFlow
 {
     using System.Collections.Generic;
-    using System.Text;
 
     public interface IMessageHeaders : IEnumerable<KeyValuePair<string, byte[]>>
     {

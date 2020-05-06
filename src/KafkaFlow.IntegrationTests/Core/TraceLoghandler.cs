@@ -1,4 +1,4 @@
-namespace KafkaFlow.IntegrationTests.Core
+namespace KafkaFlow.IntegrationTests.Core.Middlewares
 {
     using System;
     using System.Diagnostics;

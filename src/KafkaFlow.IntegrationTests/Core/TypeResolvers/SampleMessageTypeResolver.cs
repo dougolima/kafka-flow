@@ -1,10 +1,10 @@
-﻿namespace KafkaFlow.IntegrationTests.Core
+﻿namespace KafkaFlow.IntegrationTests.Core.TypeResolvers
 {
     using System;
     using System.Text;
     using KafkaFlow.Serializer;
 
-    public class TestMessageTypeResolver : IMessageTypeResolver
+    public class SampleMessageTypeResolver : IMessageTypeResolver
     {
         public Type OnConsume(IMessageContext context)
         {

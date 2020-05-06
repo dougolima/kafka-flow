@@ -1,7 +1,6 @@
 ﻿namespace KafkaFlow.Samples.Consumer
 {
     using System;
-    using System.Threading;
     using KafkaFlow.Compressor;
     using KafkaFlow.Compressor.Gzip;
     using KafkaFlow.Consumers;

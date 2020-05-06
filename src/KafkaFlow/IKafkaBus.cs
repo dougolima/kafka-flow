@@ -2,7 +2,6 @@ namespace KafkaFlow
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using KafkaFlow.Configuration;
 
     public interface IKafkaBus
     {

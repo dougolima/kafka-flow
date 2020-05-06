@@ -1,8 +1,9 @@
-namespace KafkaFlow.IntegrationTests.Core
+namespace KafkaFlow.IntegrationTests.Core.Middlewares
 {
     using System;
     using System.IO;
     using System.Threading;
+    using Handlers;
     using KafkaFlow.Compressor;
     using KafkaFlow.Compressor.Gzip;
     using KafkaFlow.Extensions;
@@ -13,12 +14,18 @@ namespace KafkaFlow.IntegrationTests.Core
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Producers;
+    using TypeResolvers;
 
     public class Bootstrapper
     {
-        private const string JsonTopicName = "test-gzip-json";
-        private const string JsonTopic2Name = "test-gzip-json2";
-        private const string ProtobufTopicName = "test-gzip-protobuf";
+        private const string ProtobufTopicName = "test-protobuf";
+        private const string JsonTopicName = "test-json";
+        private const string GzipTopicName = "test-gzip";
+        private const string JsonGzipTopicName = "test-json-gzip";
+        private const string ProtobufGzipTopicName = "test-protobuf-gzip";
+        private const string ProtobufGzipTopicName2 = "test-protobuf-gzip-2";
+        
 
         private static readonly Lazy<IServiceProvider> lazyProvider = new Lazy<IServiceProvider>(SetupProvider);
 
@@ -31,10 +38,8 @@ namespace KafkaFlow.IntegrationTests.Core
                 .ConfigureAppConfiguration(
                     (builderContext, config) =>
                     {
-                        var basePath = Directory.GetCurrentDirectory();
-
                         config
-                            .SetBasePath(basePath)
+                            .SetBasePath(Directory.GetCurrentDirectory())
                             .AddJsonFile(
                                 "conf/appsettings.json",
                                 false,
@@ -50,14 +55,10 @@ namespace KafkaFlow.IntegrationTests.Core
                     });
 
             var host = builder.Build();
-
             var bus = host.Services.UseKafka();
-
             bus.StartAsync().GetAwaiter().GetResult();
-
             //Wait partition assignment
             Thread.Sleep(5000);
-
             return host.Services;
         }
 
@@ -74,37 +75,84 @@ namespace KafkaFlow.IntegrationTests.Core
                             .AddConsumer(
                                 consumer => consumer
                                     .Topic(ProtobufTopicName)
-                                    .WithGroupId("test-protobuf")
+                                    .WithGroupId("consumer-protobuf")
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
                                     .AddMiddlewares(
                                         middlewares => middlewares
-                                            .AddCompressor<GzipMessageCompressor>()
-                                            .AddSerializer<ProtobufMessageSerializer, TestMessageTypeResolver>()
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
                                             .AddTypedHandlers(
                                                 handlers =>
                                                     handlers
                                                         .WithHandlerLifetime(ServiceLifetime.Singleton)
-                                                        .AddHandler<StoreMessageHandler>())
+                                                        .AddHandler<MessageHandler>())
                                     )
                             )
                             .AddConsumer(
                                 consumer => consumer
-                                    .Topics(JsonTopicName, JsonTopic2Name)
-                                    .WithGroupId("test-json")
+                                    .Topic(JsonTopicName)
+                                    .WithGroupId("consumer-json")
+                                    .WithBufferSize(100)
+                                    .WithWorkersCount(10)
+                                    .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<JsonMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddTypedHandlers(
+                                                handlers =>
+                                                    handlers
+                                                        .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                                        .AddHandlersFromAssemblyOf<MessageHandler>())
+                                    )
+                            )
+                            .AddConsumer(
+                                consumer => consumer
+                                    .Topics(GzipTopicName)
+                                    .WithGroupId("consumer-gzip")
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
                                     .AddMiddlewares(
                                         middlewares => middlewares
                                             .AddCompressor<GzipMessageCompressor>()
-                                            .AddSerializer<JsonMessageSerializer, TestMessageTypeResolver>()
+                                            .Add<GzipMiddleware>()
+                                    )
+                            )
+                            .AddConsumer(
+                                consumer => consumer
+                                    .Topics(JsonGzipTopicName)
+                                    .WithGroupId("consumer-json-gzip")
+                                    .WithBufferSize(100)
+                                    .WithWorkersCount(10)
+                                    .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<JsonMessageSerializer, SampleMessageTypeResolver>()
                                             .AddTypedHandlers(
                                                 handlers =>
                                                     handlers
                                                         .WithHandlerLifetime(ServiceLifetime.Singleton)
-                                                        .AddHandler<StoreMessageHandler>())
+                                                        .AddHandler<MessageHandler>())
+                                    )
+                            )
+                            .AddConsumer(
+                                consumer => consumer
+                                    .Topics(ProtobufGzipTopicName, ProtobufGzipTopicName2)
+                                    .WithGroupId("consumer-protobuf-gzip")
+                                    .WithBufferSize(100)
+                                    .WithWorkersCount(10)
+                                    .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddTypedHandlers(
+                                                handlers =>
+                                                    handlers
+                                                        .WithHandlerLifetime(ServiceLifetime.Singleton)
+                                                        .AddHandler<MessageHandler>())
                                     )
                             )
                             .AddProducer<JsonProducer>(
@@ -112,16 +160,15 @@ namespace KafkaFlow.IntegrationTests.Core
                                     .DefaultTopic(JsonTopicName)
                                     .AddMiddlewares(
                                         middlewares => middlewares
-                                            .AddSerializer<JsonMessageSerializer, TestMessageTypeResolver>()
-                                            .AddCompressor<GzipMessageCompressor>()
+                                            .AddSerializer<JsonMessageSerializer, SampleMessageTypeResolver>()
                                     )
                             )
-                            .AddProducer<JsonProducer2>(
+                            .AddProducer<JsonGzipProducer>(
                                 producer => producer
-                                    .DefaultTopic(JsonTopic2Name)
+                                    .DefaultTopic(JsonGzipTopicName)
                                     .AddMiddlewares(
                                         middlewares => middlewares
-                                            .AddSerializer<JsonMessageSerializer, TestMessageTypeResolver>()
+                                            .AddSerializer<JsonMessageSerializer, SampleMessageTypeResolver>()
                                             .AddCompressor<GzipMessageCompressor>()
                                     )
                             )
@@ -130,7 +177,32 @@ namespace KafkaFlow.IntegrationTests.Core
                                     .DefaultTopic(ProtobufTopicName)
                                     .AddMiddlewares(
                                         middlewares => middlewares
-                                            .AddSerializer<ProtobufMessageSerializer, TestMessageTypeResolver>()
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                    )
+                            )
+                            .AddProducer<ProtobufGzipProducer>(
+                                producer => producer
+                                    .DefaultTopic(ProtobufGzipTopicName)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
+                            )
+                            .AddProducer<ProtobufGzipProducer2>(
+                                producer => producer
+                                    .DefaultTopic(ProtobufGzipTopicName2)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
+                                            .AddSerializer<ProtobufMessageSerializer, SampleMessageTypeResolver>()
+                                            .AddCompressor<GzipMessageCompressor>()
+                                    )
+                            )
+                            .AddProducer<GzipProducer>(
+                                producer => producer
+                                    .DefaultTopic(GzipTopicName)
+                                    .AddMiddlewares(
+                                        middlewares => middlewares
                                             .AddCompressor<GzipMessageCompressor>()
                                     )
                             )
@@ -138,19 +210,11 @@ namespace KafkaFlow.IntegrationTests.Core
             );
 
             services.AddSingleton<JsonProducer>();
+            services.AddSingleton<JsonGzipProducer>();
             services.AddSingleton<ProtobufProducer>();
+            services.AddSingleton<ProtobufGzipProducer2>();
+            services.AddSingleton<ProtobufGzipProducer>();
+            services.AddSingleton<GzipProducer>();
         }
-    }
-
-    internal class ProtobufProducer
-    {
-    }
-
-    internal class JsonProducer
-    {
-    }
-
-    internal class JsonProducer2
-    {
     }
 }

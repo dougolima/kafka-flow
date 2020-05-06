@@ -1,6 +1,5 @@
 namespace KafkaFlow.UnitTests.Serializers
 {
-    using System;
     using System.Threading.Tasks;
     using FluentAssertions;
     using KafkaFlow.Serializer;
