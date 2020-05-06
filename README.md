@@ -1,6 +1,6 @@
 # KafkaFlow
 
-A flexible framewrok to process Kafka messages with multithreading, middlewares, serialization, compression, typed handlers, and message order support.
+A flexible framewrok to process Kafka messages with multithreading, middlewares, serialization, compression, typed handlers and message order support.
 
 ## Features
 
@@ -11,6 +11,7 @@ A flexible framewrok to process Kafka messages with multithreading, middlewares,
 - Multiple workers consuming the same topic (limited by the machine resources)
 - Message order guarantee for the same partition key
 - Multiple consumer groups in the same topic
+- Multiple topics in the same consumer
 - Different work distribution strategies
 - Middleware support for consumers and producers implementing `IMessageMiddleware` interface
 - Serialization middleware (ProtoBuf and Json are shipped with the framework but they have different nuget packages, you can support custom serialization using `IMessageSerializer` interface)
@@ -27,7 +28,7 @@ A flexible framewrok to process Kafka messages with multithreading, middlewares,
 - Monitoring and performance measurement
 - Tracing
 - Maintain compatibility with other frameworks
-- They can be reused in different applications
+- And so on...
 
 ## Installation
 
