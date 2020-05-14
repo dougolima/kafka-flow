@@ -1,6 +1,7 @@
 namespace KafkaFlow.Extensions
 {
     using System;
+    using System.Collections.Generic;
     using KafkaFlow.Configuration;
     using KafkaFlow.Consumers;
     using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +15,10 @@ namespace KafkaFlow.Extensions
             var scope = provider.CreateScope();
 
             return new KafkaBus(
-                scope.ServiceProvider.GetRequiredService<KafkaConfiguration>(),
                 ConsumerManager.Instance,
                 scope.ServiceProvider.GetRequiredService<ILogHandler>(),
-                scope.ServiceProvider);
+                scope.ServiceProvider,
+                scope.ServiceProvider.GetRequiredService<KafkaConfiguration>());
         }
     }
 }

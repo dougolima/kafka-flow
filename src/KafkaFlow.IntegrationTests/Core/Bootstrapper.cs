@@ -25,7 +25,7 @@ namespace KafkaFlow.IntegrationTests.Core.Middlewares
         private const string JsonGzipTopicName = "test-json-gzip";
         private const string ProtobufGzipTopicName = "test-protobuf-gzip";
         private const string ProtobufGzipTopicName2 = "test-protobuf-gzip-2";
-        
+
 
         private static readonly Lazy<IServiceProvider> lazyProvider = new Lazy<IServiceProvider>(SetupProvider);
 

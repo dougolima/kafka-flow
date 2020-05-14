@@ -12,5 +12,11 @@ namespace KafkaFlow
             ((ProducerConfigurationBuilder) builder).WithProducerConfig(config);
             return builder;
         }
+
+        public static IConsumerConfigurationBuilder WithConsumerConfig(this IConsumerConfigurationBuilder builder, ConsumerConfig config)
+        {
+            ((ConsumerConfigurationBuilder)builder).WithConsumerConfig(config);
+            return builder;
+        }
     }
 }

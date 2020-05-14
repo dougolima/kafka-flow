@@ -15,13 +15,13 @@ namespace KafkaFlow
         private readonly IConsumerManager consumerManager;
         private readonly ILogHandler logHandler;
         private readonly IServiceProvider serviceProvider;
-        private readonly List<KafkaConsumer> consumers = new List<KafkaConsumer>();
+        private readonly IList<KafkaConsumer> consumers = new List<KafkaConsumer>();
 
         public KafkaBus(
-            KafkaConfiguration configuration,
             IConsumerManager consumerManager,
             ILogHandler logHandler,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            KafkaConfiguration configuration)
         {
             this.configuration = configuration;
             this.consumerManager = consumerManager;
@@ -31,33 +31,32 @@ namespace KafkaFlow
 
         public async Task StartAsync(CancellationToken stopCancellationToken = default)
         {
-            foreach (var cluster in this.configuration.Clusters)
+            var consumers = this.configuration.Clusters.SelectMany(cl => cl.Consumers);
+
+            foreach (var consumerConfiguration in consumers)
             {
-                foreach (var consumerConfiguration in cluster.Consumers)
-                {
-                    var serviceScope = this.serviceProvider.CreateScope();
+                var serviceScope = this.serviceProvider.CreateScope();
 
-                    var middlewares = consumerConfiguration.MiddlewareConfiguration.Factories
-                        .Select(factory => factory(serviceScope.ServiceProvider))
-                        .ToList();
+                var middlewares = consumerConfiguration.MiddlewareConfiguration.Factories
+                    .Select(factory => factory(serviceScope.ServiceProvider))
+                    .ToList();
 
-                    var consumerWorkerPool = new ConsumerWorkerPool(
-                        serviceScope.ServiceProvider,
-                        consumerConfiguration,
-                        this.logHandler,
-                        new MiddlewareExecutor(middlewares),
-                        consumerConfiguration.DistributionStrategyFactory);
+                var consumerWorkerPool = new ConsumerWorkerPool(
+                    serviceScope.ServiceProvider,
+                    consumerConfiguration,
+                    this.logHandler,
+                    new MiddlewareExecutor(middlewares),
+                    consumerConfiguration.DistributionStrategyFactory);
 
-                    var consumer = new KafkaConsumer(
-                        consumerConfiguration,
-                        this.consumerManager,
-                        this.logHandler,
-                        consumerWorkerPool);
+                var consumer = new KafkaConsumer(
+                    consumerConfiguration,
+                    this.consumerManager,
+                    this.logHandler,
+                    consumerWorkerPool);
 
-                    this.consumers.Add(consumer);
+                this.consumers.Add(consumer);
 
-                    await consumer.StartAsync(stopCancellationToken).ConfigureAwait(false);
-                }
+                await consumer.StartAsync(stopCancellationToken).ConfigureAwait(false);
             }
         }
 

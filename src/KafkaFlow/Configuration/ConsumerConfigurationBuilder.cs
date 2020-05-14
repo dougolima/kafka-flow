@@ -3,6 +3,7 @@ namespace KafkaFlow.Configuration
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Confluent.Kafka;
     using KafkaFlow.Consumers.DistributionStrategies;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,20 +14,20 @@ namespace KafkaFlow.Configuration
         private readonly List<string> topics = new List<string>();
         private readonly ConsumerMiddlewareConfigurationBuilder middlewareConfigurationBuilder;
 
+        private ConsumerConfig consumerConfig;
+
         private string name;
-        private string groupId;
-        private AutoOffsetReset? autoOffsetReset;
-        private int? autoCommitIntervalMs;
-        private int? maxPollIntervalMs;
         private int workersCount;
         private int bufferSize;
         private bool autoStoreOffsets = true;
 
         private Factory<IDistributionStrategy> distributionStrategyFactory = provider => new BytesSumDistributionStrategy();
 
+
         public ConsumerConfigurationBuilder(IServiceCollection services)
         {
             this.middlewareConfigurationBuilder = new ConsumerMiddlewareConfigurationBuilder(services);
+            this.consumerConfig = new ConsumerConfig();
             this.ServiceCollection = services;
         }
 
@@ -35,6 +36,12 @@ namespace KafkaFlow.Configuration
         public IConsumerConfigurationBuilder Topic(string topic)
         {
             this.topics.Add(topic);
+            return this;
+        }
+
+        public IConsumerConfigurationBuilder WithConsumerConfig(ConsumerConfig config)
+        {
+            this.consumerConfig = config;
             return this;
         }
 
@@ -54,25 +61,35 @@ namespace KafkaFlow.Configuration
 
         public IConsumerConfigurationBuilder WithGroupId(string groupId)
         {
-            this.groupId = groupId;
+            this.consumerConfig.GroupId = groupId;
             return this;
         }
 
-        public IConsumerConfigurationBuilder WithAutoOffsetReset(AutoOffsetReset autoOffsetReset)
+        public IConsumerConfigurationBuilder WithAutoOffsetReset(KafkaFlow.AutoOffsetReset autoOffsetReset)
         {
-            this.autoOffsetReset = autoOffsetReset;
+            switch (autoOffsetReset)
+            {
+                case KafkaFlow.AutoOffsetReset.Earliest:
+                    this.consumerConfig.AutoOffsetReset = AutoOffsetReset.Earliest;
+                    break;
+                case KafkaFlow.AutoOffsetReset.Latest:
+                    this.consumerConfig.AutoOffsetReset = AutoOffsetReset.Latest;
+                    break;
+                default: break;
+            }
+
             return this;
         }
 
         public IConsumerConfigurationBuilder WithAutoCommitIntervalMs(int autoCommitIntervalMs)
         {
-            this.autoCommitIntervalMs = autoCommitIntervalMs;
+            this.consumerConfig.AutoCommitIntervalMs = autoCommitIntervalMs;
             return this;
         }
 
         public IConsumerConfigurationBuilder WithMaxPollIntervalMs(int maxPollIntervalMs)
         {
-            this.maxPollIntervalMs = maxPollIntervalMs;
+            this.consumerConfig.MaxPollIntervalMs = maxPollIntervalMs;
             return this;
         }
 
@@ -92,6 +109,7 @@ namespace KafkaFlow.Configuration
             where T : class, IDistributionStrategy
         {
             this.distributionStrategyFactory = factory;
+
             return this;
         }
 
@@ -100,6 +118,7 @@ namespace KafkaFlow.Configuration
         {
             this.ServiceCollection.TryAddTransient(typeof(T));
             this.distributionStrategyFactory = provider => provider.GetRequiredService<T>();
+
             return this;
         }
 
@@ -125,24 +144,22 @@ namespace KafkaFlow.Configuration
         {
             var middlewareConfiguration = this.middlewareConfigurationBuilder.Build();
 
-            var configuration = new ConsumerConfiguration(
-                clusterConfiguration,
+            this.consumerConfig.BootstrapServers = string.Join(",", clusterConfiguration.Brokers);
+            this.consumerConfig.EnableAutoOffsetStore = false;
+            this.consumerConfig.EnableAutoCommit = true;
+
+            return new ConsumerConfiguration(
+                this.consumerConfig,
                 this.topics,
                 this.name,
-                this.groupId,
                 this.workersCount,
                 this.bufferSize,
                 this.distributionStrategyFactory,
                 middlewareConfiguration
             )
             {
-                AutoOffsetReset = this.autoOffsetReset,
-                AutoCommitIntervalMs = this.autoCommitIntervalMs,
-                MaxPollIntervalMs = this.maxPollIntervalMs,
                 AutoStoreOffsets = this.autoStoreOffsets
             };
-
-            return configuration;
         }
     }
 }
