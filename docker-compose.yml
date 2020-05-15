@@ -1,15 +1,21 @@
-version: '2'
+version: '3'
 services:
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
+    image: wurstmeister/zookeeper
     ports:
-      - '2181:2181'
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      - "2181:2181"
+    hostname: zookeeper
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: wurstmeister/kafka
+    command: [start-kafka.sh]
     ports:
-      - '9092:9092'
+      - "9092:9092"
+    hostname: kafka
     environment:
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_PORT: 9092
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - "zookeeper"
