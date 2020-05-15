@@ -7,6 +7,7 @@ namespace KafkaFlow.IntegrationTests.Core.Middlewares
     using KafkaFlow.Compressor;
     using KafkaFlow.Compressor.Gzip;
     using KafkaFlow.Extensions;
+    using KafkaFlow.Producers;
     using KafkaFlow.Serializer;
     using KafkaFlow.Serializer.Json;
     using KafkaFlow.Serializer.ProtoBuf;
@@ -58,7 +59,8 @@ namespace KafkaFlow.IntegrationTests.Core.Middlewares
             var bus = host.Services.UseKafka();
             bus.StartAsync().GetAwaiter().GetResult();
             //Wait partition assignment
-            Thread.Sleep(5000);
+            Thread.Sleep(10000);
+
             return host.Services;
         }
 
