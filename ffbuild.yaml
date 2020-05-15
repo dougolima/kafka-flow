@@ -8,5 +8,9 @@ build:
 tests:
   unit:
     steps:
-      - dotnet test src/KafkaFlow.UnitTests/KafkaFlow.UnitTests.csproj -c Release --logger:'trx' --results-directory $WORKSPACE/ffbuild/reports
-      - dotnet test src/KafkaFlow.IntegrationTests/KafkaFlow.IntegrationTests.csproj -c Release --logger:'trx' --results-directory $WORKSPACE/ffbuild/reports
+      - dotnet test src/KafkaFlow.UnitTests/KafkaFlow.UnitTests.csproj -c Release --logger:'trx' --results-directory $WORKSPACE/ffbuild/reports      
+  system: 
+    steps:
+     - make init_broker
+     - dotnet test src/KafkaFlow.IntegrationTests/KafkaFlow.IntegrationTests.csproj -c Release --logger:'trx' --results-directory $WORKSPACE/ffbuild/reports
+     - make shutdown_broker
