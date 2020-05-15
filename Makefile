@@ -1,4 +1,4 @@
-.PHONY: init_broker
+.PHONY: init_broker shutdown_broker
 
 init_broker:	
 	@echo command | date
