@@ -146,6 +146,7 @@ namespace KafkaFlow.IntegrationTests.Core.Middlewares
                                     .WithBufferSize(100)
                                     .WithWorkersCount(10)
                                     .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                                    .WithAutoCommitIntervalMs(1)
                                     .AddMiddlewares(
                                         middlewares => middlewares
                                             .AddCompressor<GzipMessageCompressor>()

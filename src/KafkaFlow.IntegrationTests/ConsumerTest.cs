@@ -35,10 +35,8 @@ namespace KafkaFlow.IntegrationTests
             var messages2 = this.fixture.CreateMany<TestMessage2>(5).ToList();
             
             // Act
-            await Task.WhenAll(
-                messages1
-                    .Select(m => producer.ProduceAsync(m.Id.ToString(), m))
-                    .Union(messages2.Select(m => producer.ProduceAsync(m.Id.ToString(), m))));
+            await Task.WhenAll(messages1.Select(m => producer.ProduceAsync(m.Id.ToString(), m)));
+            await Task.WhenAll(messages2.Select(m => producer.ProduceAsync(m.Id.ToString(), m)));
 
             // Assert
             foreach (var message in messages1)
@@ -58,13 +56,11 @@ namespace KafkaFlow.IntegrationTests
             // Arrange
             var producer1 = this.provider.GetRequiredService<IMessageProducer<ProtobufGzipProducer>>();
             var producer2 = this.provider.GetRequiredService<IMessageProducer<ProtobufGzipProducer2>>();
-            var messages = this.fixture.CreateMany<TestMessage1>(5).ToList();
+            var messages = this.fixture.CreateMany<TestMessage1>(1).ToList();
 
             // Act
-            await Task.WhenAll(
-                messages
-                    .Select(m => producer1.ProduceAsync(m.Id.ToString(), m))
-                    .Union(messages.Select(m => producer2.ProduceAsync(m.Id.ToString(), m))));
+            await Task.WhenAll(messages.Select(m => producer1.ProduceAsync(m.Id.ToString(), m)));
+            await Task.WhenAll(messages.Select(m => producer2.ProduceAsync(m.Id.ToString(), m)));
 
             // Assert
             foreach (var message in messages)
